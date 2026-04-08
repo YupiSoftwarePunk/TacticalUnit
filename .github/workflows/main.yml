@@ -1,0 +1,15 @@
+name: actions
+on: [push]
+jobs:
+  client:
+    name: make print
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: print push
+        run: echo push created
+        
+      - name: run project
+        uses: actions/create-action@v2
+        run: npn run build
+
+      - name: 
