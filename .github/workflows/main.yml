@@ -5,11 +5,11 @@ jobs:
     name: make print
     runs-on: ubuntu-22.04-arm
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+    
       - name: print push
         run: echo push created
         
       - name: run project
-        uses: actions/create-action@v2
-        run: npn run build
-
-      - name: 
+        run: npm run build
