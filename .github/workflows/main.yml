@@ -1,15 +1,28 @@
-name: actions
-on: [push]
+name: project CI
+
+on:
+  push:
+    branches: [ "main" ]
+    
 jobs:
-  client:
-    name: make print
-    runs-on: ubuntu-22.04-arm
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-    
-      - name: print push
-        run: echo push created
-        
-      - name: run project
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Print push message
+        run: echo "Push detected! Starting the build process..."
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
         run: npm run build
