@@ -17,12 +17,15 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: 'Client/package-lock.json'
 
       - name: Print push message
         run: echo "Push detected! Starting the build process..."
 
       - name: Install dependencies
+        working-directory: Client
         run: npm ci
 
       - name: Build project
+        working-directory: Client
         run: npm run build
