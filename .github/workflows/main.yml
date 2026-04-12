@@ -50,4 +50,4 @@ jobs:
 
       - name: Run tests (Template)
         working-directory: Client
-        run: npm test || echo "Tests are not configured yet, but the step works!"
+        run: npm test || echo "Tests are currently missing, but everything works!"
