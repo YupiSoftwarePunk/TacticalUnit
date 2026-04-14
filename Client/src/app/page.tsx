@@ -126,8 +126,8 @@ export default function LandingPage() {
       <section className="relative h-[80vh] flex items-center justify-center pt-14">
         <div className="absolute inset-0 z-0 bg-bg-primary">
           <img 
-            src="https://placehold.co/1920x1080/050505/333?text=SQUAD+WARFARE" 
-            className="w-full h-full object-cover opacity-50 grayscale"
+            src="image1111.png" 
+            className="w-full h-full object-cover opacity-50 grayscale-25 object-center"
             alt="Background"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-bg-secondary via-transparent to-transparent" />
