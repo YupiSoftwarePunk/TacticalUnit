@@ -27,6 +27,7 @@
   --color-bg-primary: #e7e7e7;
   --color-bg-secondary: #FFFFFF;
   --color-bg-accent: #e6d090;
+  --color-bg-dark: #575757;
 
   --color-border-primary: #363636;
   --color-border-secondary: #464646;
@@ -46,6 +47,7 @@
   --color-bg-primary: #2A2A2A;
   --color-bg-secondary: #494949;
   --color-bg-accent: #2A2A2A;
+  --color-bg-dark: #0a0a0a;
 
   --color-border-primary: #e7e7e7;
   --color-border-secondary: #a7a7a7;

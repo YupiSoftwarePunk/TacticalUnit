@@ -12,7 +12,7 @@ const PRIDE_MEMBERS = [
     rank: "Сержант",
     roles: ["Командир отделения", "Медик"],
     reason: "За выдающееся руководство отрядом в операции 'Песчаная буря'.",
-    squadImage: "https://placehold.co/400x300/1a1a1a/ffffff?text=OPERATOR+01",
+    squadImage: "AK-74__163.png",
     discordAvatar: "https://placehold.co/80x80/222/555?text=AV",
     awards: ["🎖️", "🏅"],
   },
@@ -22,7 +22,57 @@ const PRIDE_MEMBERS = [
     rank: "Рядовой",
     roles: ["Снайпер", "Разведчик"],
     reason: "Уничтожение скрытой ФОБ противника в одиночку.",
-    squadImage: "https://placehold.co/400x300/1a1a1a/ffffff?text=OPERATOR+02",
+    squadImage: "AK-74__163.png",
+    discordAvatar: "https://placehold.co/80x80/222/555?text=AV",
+    awards: ["🎯"],
+  },
+  {
+    id: 3,
+    nickname: "Sokol",
+    rank: "Рядовой",
+    roles: ["Снайпер", "Разведчик"],
+    reason: "Уничтожение скрытой ФОБ противника в одиночку.",
+    squadImage: "AK-74__163.png",
+    discordAvatar: "https://placehold.co/80x80/222/555?text=AV",
+    awards: ["🎯"],
+  },
+  {
+    id: 4,
+    nickname: "Sokol",
+    rank: "Рядовой",
+    roles: ["Снайпер", "Разведчик"],
+    reason: "Уничтожение скрытой ФОБ противника в одиночку.",
+    squadImage: "AK-74__163.png",
+    discordAvatar: "https://placehold.co/80x80/222/555?text=AV",
+    awards: ["🎯"],
+  },
+  {
+    id: 5,
+    nickname: "Sokol",
+    rank: "Рядовой",
+    roles: ["Снайпер", "Разведчик"],
+    reason: "Уничтожение скрытой ФОБ противника в одиночку.",
+    squadImage: "AK-74__163.png",
+    discordAvatar: "https://placehold.co/80x80/222/555?text=AV",
+    awards: ["🎯"],
+  },
+  {
+    id: 6,
+    nickname: "Sokol",
+    rank: "Рядовой",
+    roles: ["Снайпер", "Разведчик"],
+    reason: "Уничтожение скрытой ФОБ противника в одиночку.",
+    squadImage: "AK-74__163.png",
+    discordAvatar: "https://placehold.co/80x80/222/555?text=AV",
+    awards: ["🎯"],
+  },
+  {
+    id: 7,
+    nickname: "Sokol",
+    rank: "Рядовой",
+    roles: ["Снайпер", "Разведчик"],
+    reason: "Уничтожение скрытой ФОБ противника в одиночку.",
+    squadImage: "AK-74__163.png",
     discordAvatar: "https://placehold.co/80x80/222/555?text=AV",
     awards: ["🎯"],
   },
@@ -112,8 +162,8 @@ export default function LandingPage() {
           {PRIDE_MEMBERS.map((m) => (
             <div key={m.id} className="min-w-[300px] bg-bg-primary border border-bg-secondary relative group">
               {/* Squad Image */}
-              <div className="h-64 bg-bg-secondary overflow-hidden">
-                <img src={m.squadImage} className="w-full h-full object-cover transition-all duration-500" />
+              <div className="h-64 bg-gradient-to-t from-bg-dark via-transparent to-transparent overflow-hidden">
+                <img src={m.squadImage} className="w-full h-full object-cover object-top  transition-all duration-500" />
               </div>
 
               {/* Info Card */}
@@ -133,7 +183,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <p className="text-xs leading-relaxed text-text-secondary border-l-2 border-accent pl-3">
+                <p className="text-xs leading-relaxed text-text-secondary border-l-2 border-accent pl-3 w-70">
                   {m.reason}
                 </p>
 
