@@ -20,6 +20,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui;
+  --font-stengazeta: var(--font-stengazeta);
+  --font-capture: var(--font-capture);
+
   --color-accent-lighter: #FEEFC4;
   --color-accent-light: #FEDA6E;
   --color-accent: #F5B902;
@@ -60,5 +64,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
