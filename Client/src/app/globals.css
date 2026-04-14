@@ -15,7 +15,14 @@
 }
 */
 
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
+*::-webkit-scrollbar {
+  display: none;
+}
 
 @custom-variant dark (&:where(.dark, .dark *));
 
