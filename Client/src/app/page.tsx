@@ -98,7 +98,8 @@ export default function LandingPage() {
       <header className="fixed top-0 z-50 w-full h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm">
         <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-xl font-black text-text-primary hover:text-text-secondary-accent tracking-tighter uppercase border-2 border-text-secondary px-2 py-0.5 transition-colors">
+            <Link href="/" className="text-xl flex items-center gap-2 font-black text-text-primary hover:text-text-secondary-accent tracking-tighter uppercase border-2 border-text-secondary px-2 py-0.5 transition-colors">
+              <img src="b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="" />
               РХБЗ
             </Link>
             <Link href="#" className="text-xs uppercase font-bold tracking-[0.2em] text-text-primary hover:text-text-secondary-accent transition-colors">
@@ -127,14 +128,14 @@ export default function LandingPage() {
         <div className="absolute inset-0 z-0 bg-bg-primary">
           <img 
             src="image1111.png" 
-            className="w-full h-full object-cover opacity-50 grayscale-25 object-center"
+            className="w-full h-full object-cover opacity-90 grayscale-25 object-center"
             alt="Background"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-bg-secondary via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black opacity-70 via-transparent to-transparent" />
         </div>
 
         <div className="relative z-10 text-center">
-          <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-text-primary uppercase leading-none">
+          <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white uppercase leading-none">
             [РХБЗ]
           </h1>
           <p className="mt-4 text-sm md:text-base uppercase tracking-[0.5em] text-text-primary-accent text-shadow-lg text-shadow-black font-black">
