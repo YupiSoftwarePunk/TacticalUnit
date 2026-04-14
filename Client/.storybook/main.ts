@@ -1,5 +1,9 @@
 import type { StorybookConfig } from '@storybook/nextjs-vite';
 import path from "path";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const config: StorybookConfig = {
   stories: [
@@ -7,6 +11,7 @@ const config: StorybookConfig = {
     "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   addons: [
+    "@storybook/addon-essentials",
     "@chromatic-com/storybook",
     "@storybook/addon-essentials",
     "@storybook/addon-vitest",
@@ -24,7 +29,7 @@ const config: StorybookConfig = {
     if (config.resolve) {
       config.resolve.alias = {
         ...config.resolve.alias,
-        "@": path.resolve(__dirname, "../src"),
+        "@": path.resolve(process.cwd(), "src"),
       };
     }
     return config;
