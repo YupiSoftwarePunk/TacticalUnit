@@ -54,7 +54,7 @@ jobs:
 
       - name: Build project
         working-directory: Client
-        run: npm run dev
+        run: npm run build
 
       - name: Upload build artifacts
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
