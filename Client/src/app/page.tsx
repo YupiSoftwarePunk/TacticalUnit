@@ -83,6 +83,7 @@ export default function LandingPage() {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setMounted(true);
   }, []);
 
@@ -199,12 +200,12 @@ export default function LandingPage() {
             {PRIDE_MEMBERS.map((m) => (
               <div key={m.id} className="min-w-[300px] bg-bg-primary border border-bg-secondary relative group/card snap-center">
                 <div className="h-64 bg-gradient-to-t from-bg-dark via-transparent to-transparent overflow-hidden">
-                  <img src={m.squadImage} className="w-full h-full object-cover object-top transition-all duration-500" />
+                  <img src={m.squadImage} className="w-full h-full object-cover object-top transition-all duration-500" alt=""/>
                 </div>
 
                 <div className="p-6">
                   <div className="flex items-center space-x-4 mb-6">
-                    <img src={m.discordAvatar} className="w-12 h-12 border border-bg-secondary" />
+                    <img src={m.discordAvatar} className="w-12 h-12 border border-bg-secondary" alt={`${m.nickname}'s avatar`}/>
                     <div>
                       <h3 className="font-stengazeta font-black text-text-primary uppercase text-lg leading-none">{m.nickname}</h3>
                       <p className="text-[12px] font-stengazeta uppercase tracking-widest text-text-secondary-accent font-bold">{m.rank}</p>
