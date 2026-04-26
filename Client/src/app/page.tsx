@@ -141,7 +141,7 @@ export default function LandingPage() {
               {isDark ? "☀️" : "🌙"}
             </button>
 
-            <Link href="#" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0">
+            <Link href="/profile" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0">
               👤
             </Link>
           </div>
