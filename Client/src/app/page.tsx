@@ -83,6 +83,7 @@ export default function LandingPage() {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     setMounted(true);
   }, []);
 
@@ -189,7 +190,6 @@ export default function LandingPage() {
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
             aria-label="Листать влево"
           >
-            &#10094;
           </button>
 
           <div 
@@ -199,12 +199,12 @@ export default function LandingPage() {
             {PRIDE_MEMBERS.map((m) => (
               <div key={m.id} className="min-w-[300px] bg-bg-primary border border-bg-secondary relative group/card snap-center">
                 <div className="h-64 bg-gradient-to-t from-bg-dark via-transparent to-transparent overflow-hidden">
-                  <img src={m.squadImage} className="w-full h-full object-cover object-top transition-all duration-500" />
+                  <img src={m.squadImage} className="w-full h-full object-cover object-top transition-all duration-500" alt=""/>
                 </div>
 
                 <div className="p-6">
                   <div className="flex items-center space-x-4 mb-6">
-                    <img src={m.discordAvatar} className="w-12 h-12 border border-bg-secondary" />
+                    <img src={m.discordAvatar} className="w-12 h-12 border border-bg-secondary" alt={`${m.nickname}'s avatar`}/>
                     <div>
                       <h3 className="font-text font-black text-text-primary leading-none">{m.nickname}</h3>
                       <p className="font-text text-text-secondary-accent">{m.rank}</p>
@@ -235,7 +235,6 @@ export default function LandingPage() {
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
             aria-label="Листать вправо"
           >
-            &#10095;
           </button>
         </div>
 
