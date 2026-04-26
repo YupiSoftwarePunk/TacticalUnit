@@ -119,21 +119,21 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="transition-all bg-bg-primary overflow-x-hidden font-sans">
+    <div className="transition-all bg-bg-primary overflow-x-hidden font-text">
       <header className="fixed top-0 z-50 w-full h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm">
         <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-xl flex items-center gap-2 font-black text-text-primary hover:text-text-secondary-accent tracking-tighter uppercase border-2 border-text-secondary px-2 py-0.5 transition-colors">
+            <Link href="/" className="text-xl flex items-center gap-2 text-text-primary hover:text-text-secondary-accent uppercase px-2 py-0.5 transition-colors">
               <img src="b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="" />
               РХБЗ
             </Link>
-            <Link href="#" className="text-2xl font-stengazeta uppercase tracking-wide text-text-primary hover:text-text-secondary-accent transition-colors mt-[5px]">
+            <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Обзор
             </Link>
           </div>
 
           <div className="flex items-center space-x-6">
-            <Link href="#" className="bg-accent hover:bg-accent-hover text-2xl text-black text-[18px] font-stengazeta uppercase font-black px-6 py-2 tracking-widest transition-all">
+            <Link href="#" className="bg-accent hover:bg-accent-hover text-black font-text-bold px-4 py-2 transition-all">
               Вступить
             </Link>
             
@@ -160,10 +160,10 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 text-center">
-          <h1 className="text-7xl md:text-9xl tracking-wide font-capture text-white uppercase leading-none">
+          <h1 className="text-7xl md:text-9xl font-header text-text-primary leading-none">
             [РХБЗ]
           </h1>
-          <p className="mt-4 text-sm md:text-lg font-stengazeta uppercase tracking-[0.5em] text-text-primary-accent text-shadow-lg text-shadow-black">
+          <p className="text-3xl mt-4 font-text-decorative text-text-primary-accent text-shadow-lg text-shadow-black">
             Клан в Squad с военным RP
           </p>
         </div>
@@ -171,8 +171,8 @@ export default function LandingPage() {
 
       {/* === DESCRIPTION === */}
       <section className="max-w-3xl mx-auto px-6 py-24 border-x border-black/5 dark:border-white/5">
-        <h2 className="text-xs font-stengazeta uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">О подразделении</h2>
-        <p className="text-xl md:text-2xl font-sans text-text-secondary font-light leading-relaxed">
+        <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">О подразделении</h2>
+        <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
           Мы фокусируемся на глубокой симуляции боевых действий. Дисциплина — это не ограничение, а инструмент победы. В [РХБЗ] каждый боец знает свой сектор, свою задачу и своего товарища.
         </p>
       </section>
@@ -180,7 +180,7 @@ export default function LandingPage() {
       {/* === GALLERY: ГОРДОСТЬ === */}
       <section className="py-24 bg-bg-secondary border-y border-black/10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-capture text-text-primary uppercase tracking-widest">Наша гордость</h2>
+          <h2 className="text-4xl font-header text-text-primary uppercase tracking-tighter">Наша гордость</h2>
           <span className="block w-12 h-1 bg-accent mx-auto mt-2"></span>
         </div>
 
@@ -190,7 +190,6 @@ export default function LandingPage() {
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
             aria-label="Листать влево"
           >
-            &#10094;
           </button>
 
           <div 
@@ -207,19 +206,19 @@ export default function LandingPage() {
                   <div className="flex items-center space-x-4 mb-6">
                     <img src={m.discordAvatar} className="w-12 h-12 border border-bg-secondary" alt={`${m.nickname}'s avatar`}/>
                     <div>
-                      <h3 className="font-stengazeta font-black text-text-primary uppercase text-lg leading-none">{m.nickname}</h3>
-                      <p className="text-[12px] font-stengazeta uppercase tracking-widest text-text-secondary-accent font-bold">{m.rank}</p>
+                      <h3 className="font-text font-black text-text-primary leading-none">{m.nickname}</h3>
+                      <p className="font-text text-text-secondary-accent">{m.rank}</p>
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <p className="text-[18px] font-stengazeta uppercase text-text-secondary font-bold mb-2">Назначение:</p>
+                    <p className="text-sm font-text text-text-secondary mb-2">Назначение:</p>
                     <div className="flex flex-wrap gap-2 ">
-                      {m.roles.map(r => <span key={r} className="text-[10px] font-sans text-text-secondary border border-bg-secondary bg-bg-accent px-2 py-0.5 uppercase">{r}</span>)}
+                      {m.roles.map(r => <span key={r} className="text-[10px] font-text text-text-secondary border border-bg-secondary bg-bg-accent px-2 py-0.5 uppercase">{r}</span>)}
                     </div>
                   </div>
 
-                  <p className="text-xs font-sans leading-relaxed text-text-secondary border-l-2 border-accent pl-3 w-70">
+                  <p className="text-xs font-text leading-relaxed text-text-secondary border-l-2 border-accent pl-3 w-70">
                     {m.reason}
                   </p>
 
@@ -236,12 +235,11 @@ export default function LandingPage() {
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
             aria-label="Листать вправо"
           >
-            &#10095;
           </button>
         </div>
 
         <div className="text-center mt-12">
-          <Link href="#" className="text-[20px] font-stengazeta text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
+          <Link href="#" className="text-[12px] font-text-bold text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
             Показать весь состав
           </Link>
         </div>
@@ -251,7 +249,7 @@ export default function LandingPage() {
       <section className="py-32 text-center">
         <Link href="#" className="inline-block relative group">
           <div className="absolute inset-0 bg-accent translate-x-2 translate-y-2 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
-          <div className="relative border-2 border-border-secondary bg-bg-accent px-12 py-6 text-2xl font-stengazeta font-black text-text-primary uppercase tracking-widest group-hover:bg-accent group-hover:text-black transition-colors">
+          <div className="relative border-2 border-border-secondary bg-bg-accent px-12 py-6 text-xl font-text-bold font-black text-text-primary uppercase tracking-widest group-hover:bg-accent group-hover:text-black transition-colors">
             Я хочу вступить
           </div>
         </Link>

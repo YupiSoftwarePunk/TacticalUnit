@@ -27,9 +27,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: var(--font-nunito), ui-sans-serif, system-ui;
-  --font-stengazeta: var(--font-stengazeta);
-  --font-capture: var(--font-capture);
+  --font-text: var(--font-text), ui-sans-serif, system-ui;
+  --font-text-bold: var(--font-text-bold);
+  --font-text-italic: var(--font-text-italic);
+  --font-text-bold-italic: var(--font-text-bold-italic);
+  --font-text-decorative: ver(--font-text-decorative);
+  --font-header: var(--font-header);
 
   --color-accent-click: #9F7801;
   --color-accent-hover: #B8962F;
