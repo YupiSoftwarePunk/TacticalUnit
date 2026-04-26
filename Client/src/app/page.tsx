@@ -83,8 +83,8 @@ export default function LandingPage() {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     setMounted(true);
+    applyTheme("dark");
   }, []);
 
   const scrollLeft = () => {
@@ -113,13 +113,16 @@ export default function LandingPage() {
 
   if (!mounted) return null;
 
-  const toggleColorTheme = () => {
-      const newTheme = isDark ? "light" : "dark";
-      applyTheme(newTheme);
+  const toggleTheme = () => {
+    setIsDark((prevIsDark) => {
+      const nextTheme = !prevIsDark;
+      applyTheme(nextTheme ? "dark" : "light");
+      return nextTheme;
+    });
   };
 
   return (
-    <div className="transition-all bg-bg-primary overflow-x-hidden font-text">
+    <div className="transition-colors duration-300 bg-bg-primary overflow-x-hidden font-text">
       <header className="fixed top-0 z-50 w-full h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm">
         <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
           <div className="flex items-center space-x-8">
@@ -137,11 +140,11 @@ export default function LandingPage() {
               Вступить
             </Link>
             
-            <button onClick={() => {setIsDark(!isDark); toggleColorTheme()}} className="hover:opacity-70">
+            <button onClick={toggleTheme} className="hover:opacity-70 text-xl transition-opacity">
               {isDark ? "☀️" : "🌙"}
             </button>
 
-            <Link href="/profile" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0">
+            <Link href="/profile" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
               👤
             </Link>
           </div>
@@ -190,40 +193,43 @@ export default function LandingPage() {
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
             aria-label="Листать влево"
           >
+            &#10094;
           </button>
 
           <div 
             ref={carouselRef} 
-            className="flex overflow-x-auto gap-1 px-4 scroll-smooth snap-x snap-mandatory"
+            className="flex overflow-x-auto gap-4 px-4 py-4 scroll-smooth snap-x snap-mandatory hide-scrollbar"
           >
             {PRIDE_MEMBERS.map((m) => (
-              <div key={m.id} className="min-w-[300px] bg-bg-primary border border-bg-secondary relative group/card snap-center">
-                <div className="h-64 bg-gradient-to-t from-bg-dark via-transparent to-transparent overflow-hidden">
+              <div key={m.id} className="w-[320px] shrink-0 bg-bg-primary border border-bg-secondary relative group/card snap-center flex flex-col shadow-md hover:shadow-lg transition-shadow">
+                <div className="h-64 bg-gradient-to-t from-bg-dark via-transparent to-transparent overflow-hidden shrink-0">
                   <img src={m.squadImage} className="w-full h-full object-cover object-top transition-all duration-500" alt=""/>
                 </div>
 
-                <div className="p-6">
+                <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-center space-x-4 mb-6">
                     <img src={m.discordAvatar} className="w-12 h-12 border border-bg-secondary" alt={`${m.nickname}'s avatar`}/>
                     <div>
-                      <h3 className="font-text font-black text-text-primary leading-none">{m.nickname}</h3>
-                      <p className="font-text text-text-secondary-accent">{m.rank}</p>
+                      <h3 className="font-text font-black text-text-primary leading-none text-lg">{m.nickname}</h3>
+                      <p className="font-text text-text-secondary-accent text-sm mt-1">{m.rank}</p>
                     </div>
                   </div>
 
                   <div className="mb-4">
                     <p className="text-sm font-text text-text-secondary mb-2">Назначение:</p>
-                    <div className="flex flex-wrap gap-2 ">
-                      {m.roles.map(r => <span key={r} className="text-[10px] font-text text-text-secondary border border-bg-secondary bg-bg-accent px-2 py-0.5 uppercase">{r}</span>)}
+                    <div className="flex flex-wrap gap-2">
+                      {m.roles.map(r => <span key={r} className="text-[10px] font-text text-text-secondary border border-bg-secondary bg-bg-accent px-2 py-0.5 uppercase whitespace-nowrap">{r}</span>)}
                     </div>
                   </div>
 
-                  <p className="text-xs font-text leading-relaxed text-text-secondary border-l-2 border-accent pl-3 w-70">
-                    {m.reason}
-                  </p>
+                  <div className="flex-1">
+                    <p className="text-xs font-text leading-relaxed text-text-secondary border-l-2 border-accent pl-3 w-full break-words">
+                      {m.reason}
+                    </p>
+                  </div>
 
-                  <div className="mt-6 flex gap-2 ">
-                    {m.awards.map((a, i) => <span key={i} className="cursor-help">{a}</span>)}
+                  <div className="mt-6 flex gap-2">
+                    {m.awards.map((a, i) => <span key={i} className="cursor-help text-lg">{a}</span>)}
                   </div>
                 </div>
               </div>
@@ -235,6 +241,7 @@ export default function LandingPage() {
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
             aria-label="Листать вправо"
           >
+            &#10095;
           </button>
         </div>
 
