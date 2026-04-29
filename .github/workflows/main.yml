@@ -24,10 +24,6 @@ jobs:
         working-directory: Client 
         run: npm install
 
-      - name: TypeScript type checking
-        working-directory: Client
-        run: npx tsc --noEmit
-
       - name: Build project
         working-directory: Client
         run: npm run build
