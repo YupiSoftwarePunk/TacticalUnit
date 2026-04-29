@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: Client 
-        run: npm ci
+        run: npm install
 
       - name: TypeScript type checking
         working-directory: Client
