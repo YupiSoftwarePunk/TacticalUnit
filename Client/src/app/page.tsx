@@ -163,7 +163,7 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 text-center">
-          <h1 className="text-7xl md:text-9xl font-header text-text-primary leading-none">
+          <h1 className="text-7xl md:text-9xl font-header text-text-white leading-none">
             [РХБЗ]
           </h1>
           <p className="text-3xl mt-4 font-text-decorative text-text-primary-accent text-shadow-lg text-shadow-black">
