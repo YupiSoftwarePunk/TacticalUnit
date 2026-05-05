@@ -246,7 +246,7 @@ export default function LandingPage() {
         </div>
 
         <div className="text-center mt-12">
-          <Link href="#" className="text-[12px] font-text-bold text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
+          <Link href="/members" className="text-[12px] font-text-bold text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
             Показать весь состав
           </Link>
         </div>
