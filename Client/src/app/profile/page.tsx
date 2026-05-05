@@ -4,7 +4,7 @@ import { MainHeader } from "@/components/Header/MainHeader";
 export default function Profile(){
     return(
         <div className="flex flex-col min-h-screen text-text-secondary">
-            <MainHeader></MainHeader>
+            {/* <MainHeader></MainHeader> */}
             <div className="flex min-h-[250px] h-[30vh] bg-black relative">
                 <img src="#" alt="Profile background image" className="flex object-top object-cover self-center size-full text-white"/>
                 <button className="absolute transform bg-bg-primary px-4 py-1 rounded-md transition-all hover:bg-bg-accent bottom-4 right-4">Заменить баннер</button>

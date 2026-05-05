@@ -5,6 +5,8 @@ import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { applyTheme } from "@/layouts/ThemeLayout";
 
+type ThemeMode = "dark" | "light" | "system";
+
 const PRIDE_MEMBERS = [
   {
     id: 1,
@@ -80,43 +82,49 @@ const PRIDE_MEMBERS = [
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>("system");
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const savedTheme = (localStorage.getItem("theme") as ThemeMode) || "system";
+    setTheme(savedTheme);
     setMounted(true);
   }, []);
 
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -350, behavior: "smooth" });
+  const toggleTheme = (newTheme: ThemeMode) => {
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    
+    const root = document.documentElement;
+    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (newTheme === "dark" || (newTheme === "system" && systemPrefersDark)) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
     }
   };
 
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 350, behavior: "smooth" });
-    }
-  };
+  const scrollLeft = () => carouselRef.current?.scrollBy({ left: -350, behavior: "smooth" });
+  const scrollRight = () => carouselRef.current?.scrollBy({ left: 350, behavior: "smooth" });
 
   useEffect(() => {
     if (!mounted) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") scrollLeft();
       if (e.key === "ArrowRight") scrollRight();
     };
-    
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mounted]);
 
-  if (!mounted) return null;
-
-  
+  if (!mounted) {
+    return <div className="bg-bg-primary min-h-screen" />; 
+  }
 
   return (
     <div className="transition-colors duration-300 bg-bg-primary overflow-x-hidden font-text">
-      <MainHeader></MainHeader>
+      <MainHeader currentTheme={theme} onThemeChange={toggleTheme} />
 
       {/* === HERO SECTION === */}
       <section className="relative h-[80vh] flex items-center justify-center pt-14">
@@ -128,14 +136,9 @@ export default function LandingPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black opacity-70 via-transparent to-transparent" />
         </div>
-
         <div className="relative z-10 text-center">
-          <h1 className="text-7xl md:text-9xl font-header text-text-white leading-none">
-            [РХБЗ]
-          </h1>
-          <p className="text-3xl mt-4 font-text-decorative text-text-primary-accent text-shadow-lg text-shadow-black">
-            Клан в Squad с военным RP
-          </p>
+          <h1 className="text-7xl md:text-9xl font-header text-text-white leading-none">[РХБЗ]</h1>
+          <p className="text-3xl mt-4 font-text-decorative text-text-primary-accent">Клан в Squad с военным RP</p>
         </div>
       </section>
 

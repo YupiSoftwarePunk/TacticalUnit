@@ -2,23 +2,21 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { applyTheme } from "@/layouts/ThemeLayout";
 
-export interface IHeader{
-    isDark: boolean,
-    changeThemeMethod: () => void
+export interface MainHeaderProps {
+  currentTheme: "dark" | "light" | "system";
+  onThemeChange: (newTheme: "dark" | "light" | "system") => void;
 }
 
-export const MainHeader = () => {
-    const [isDark, setIsDark] = useState(true);
-    useEffect(() => {
-        applyTheme("dark");
-      }, []);
-    const toggleTheme = () => {
-        setIsDark((prevIsDark) => {
-          const nextTheme = !prevIsDark;
-          applyTheme(nextTheme ? "dark" : "light");
-          return nextTheme;
-        });
-    };
+export const MainHeader = ({ currentTheme, onThemeChange }: MainHeaderProps) => {
+    const handleToggle = () => {
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    onThemeChange(nextTheme);
+  };
+
+  const isVisualDark = typeof document !== 'undefined' 
+    ? document.documentElement.classList.contains('dark') 
+    : currentTheme === "dark";
+    
     return(
         <header className="fixed top-0 z-50 w-full h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm">
         <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
@@ -37,8 +35,8 @@ export const MainHeader = () => {
               Вступить
             </Link>
             
-            <button onClick={toggleTheme} className="hover:opacity-70 text-xl transition-opacity">
-              {isDark ? "☀️" : "🌙"}
+            <button onClick={handleToggle} className="hover:opacity-70 text-xl transition-opacity">
+              {isVisualDark ? "☀️" : "🌙"}
             </button>
 
             <Link href="/profile" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
