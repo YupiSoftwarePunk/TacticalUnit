@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { MainHeader } from "@/components/Header/MainHeader";
 import { applyTheme } from "@/layouts/ThemeLayout";
 
 const PRIDE_MEMBERS = [
@@ -78,13 +79,11 @@ const PRIDE_MEMBERS = [
 ];
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(true);
   const [mounted, setMounted] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    applyTheme("dark");
   }, []);
 
   const scrollLeft = () => {
@@ -113,43 +112,11 @@ export default function LandingPage() {
 
   if (!mounted) return null;
 
-  const toggleTheme = () => {
-    setIsDark((prevIsDark) => {
-      const nextTheme = !prevIsDark;
-      applyTheme(nextTheme ? "dark" : "light");
-      return nextTheme;
-    });
-  };
+  
 
   return (
     <div className="transition-colors duration-300 bg-bg-primary overflow-x-hidden font-text">
-      <header className="fixed top-0 z-50 w-full h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm">
-        <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
-          <div className="flex items-center space-x-8">
-            <Link href="/" className="text-xl flex items-center gap-2 text-text-primary hover:text-text-secondary-accent uppercase px-2 py-0.5 transition-colors">
-              <img src="b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="" />
-              РХБЗ
-            </Link>
-            <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
-              Обзор
-            </Link>
-          </div>
-
-          <div className="flex items-center space-x-6">
-            <Link href="#" className="bg-accent hover:bg-accent-hover text-black font-text-bold px-4 py-2 transition-all">
-              Вступить
-            </Link>
-            
-            <button onClick={toggleTheme} className="hover:opacity-70 text-xl transition-opacity">
-              {isDark ? "☀️" : "🌙"}
-            </button>
-
-            <Link href="/profile" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
-              👤
-            </Link>
-          </div>
-        </div>
-      </header>
+      <MainHeader></MainHeader>
 
       {/* === HERO SECTION === */}
       <section className="relative h-[80vh] flex items-center justify-center pt-14">
@@ -173,7 +140,7 @@ export default function LandingPage() {
       </section>
 
       {/* === DESCRIPTION === */}
-      <section className="max-w-3xl mx-auto px-6 py-24 border-x border-black/5 dark:border-white/5">
+      <section className="max-w-3xl mx-auto px-6 py-24 dark:border-white/5">
         <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">О подразделении</h2>
         <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
           Мы фокусируемся на глубокой симуляции боевых действий. Дисциплина — это не ограничение, а инструмент победы. В [РХБЗ] каждый боец знает свой сектор, свою задачу и своего товарища.
