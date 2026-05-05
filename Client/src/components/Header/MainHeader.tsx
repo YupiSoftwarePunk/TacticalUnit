@@ -1,0 +1,51 @@
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { applyTheme } from "@/layouts/ThemeLayout";
+
+export interface IHeader{
+    isDark: boolean,
+    changeThemeMethod: () => void
+}
+
+export const MainHeader = () => {
+    const [isDark, setIsDark] = useState(true);
+    useEffect(() => {
+        applyTheme("dark");
+      }, []);
+    const toggleTheme = () => {
+        setIsDark((prevIsDark) => {
+          const nextTheme = !prevIsDark;
+          applyTheme(nextTheme ? "dark" : "light");
+          return nextTheme;
+        });
+    };
+    return(
+        <header className="fixed top-0 z-50 w-full h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm">
+        <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
+          <div className="flex items-center space-x-8">
+            <Link href="/" className="text-xl flex items-center gap-2 text-text-primary hover:text-text-secondary-accent uppercase px-2 py-0.5 transition-colors">
+              <img src="b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="" />
+              РХБЗ
+            </Link>
+            <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+              Обзор
+            </Link>
+          </div>
+
+          <div className="flex items-center space-x-6">
+            <Link href="#" className="bg-accent hover:bg-accent-hover text-black font-text-bold px-4 py-2 transition-all">
+              Вступить
+            </Link>
+            
+            <button onClick={toggleTheme} className="hover:opacity-70 text-xl transition-opacity">
+              {isDark ? "☀️" : "🌙"}
+            </button>
+
+            <Link href="/profile" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
+              👤
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
+}
