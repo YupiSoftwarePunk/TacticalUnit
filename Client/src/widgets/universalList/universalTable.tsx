@@ -94,14 +94,8 @@ const UniversalTable: React.FC<UniversalTableProps> = ({
             </div>
             
             <div className="flex gap-4 items-center">
-            <button 
-                onClick={() => onExport(filteredData)}
-                className="text-text-secondary hover:text-text-primary transition-all text-sm uppercase font-black"
-            >
-                Экспортировать
-            </button>
             <button className="bg-transparent text-accent border-b-2 border-accent hover:text-white hover:border-white transition-all px-2 py-1 uppercase font-black text-lg">
-                Сформировать
+                Экспортировать
             </button>
             </div>
         </div>
