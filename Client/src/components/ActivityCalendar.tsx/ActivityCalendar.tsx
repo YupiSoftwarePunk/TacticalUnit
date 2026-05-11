@@ -1,7 +1,7 @@
 import { act, useEffect, useState } from "react"
 import { ActivityCalendarCell } from "./ActivityCalendarCell";
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
-import { ActivityCalendarPillar } from "./ActivityCalendarPillar";
+import { ActivityCalendarPillar, IActivityCalendarPillar } from "./ActivityCalendarPillar";
 
 interface activityCell {
     id : number,
@@ -9,14 +9,7 @@ interface activityCell {
     isCurrentMonth: boolean,
     isChecked: boolean
 }
-interface monthsMatrix {
-    id : number,
-    filling : number,
-    isSelected : boolean,
-    monthName : string,
-    year : number,
-    monthId : number
-}
+
 const monthsStr = [
         "Январь", "Февраль", "Март", 
         "Апрель","Май","Июнь",
@@ -24,9 +17,26 @@ const monthsStr = [
         "Октябрь","Ноябрь","Декабрь"
     ];
 
+const BlankMonths : IActivityCalendarPillar[] = [
+        {
+            Id : 0,
+            monthName : "Май",
+            year : 2026,
+            isSelected : false,
+            filling : 50
+        },
+        {
+            Id : 1,
+            monthName : "Май",
+            year : 2026,
+            isSelected : true,
+            filling : 80
+        }
+    ];
+
 export const ActivityCalendar = () =>{
     const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
-    const [monthsMatrix, setMonthsMatrix] = useState<monthsMatrix[]>([])
+    const [monthsMatrix, setMonthsMatrix] = useState<IActivityCalendarPillar[]>([])
     const [selectedMonthDisplay, setSelectedMonthDisplay] = useState<string>();
 
     const today = new Date();
@@ -57,7 +67,15 @@ export const ActivityCalendar = () =>{
             isChecked : false
         };
         activityMatrixFilled.push(newCell);
-        console.log("Element added!");
+    }
+    
+    if(monthsMatrix != BlankMonths){
+        
+        // for(let i = 0; i < 13; i++){
+        //     let month : IActivityCalendarPillar = {
+        //     }
+        // }
+        setMonthsMatrix(BlankMonths);
     }
 
     useEffect(()=>{
@@ -94,6 +112,15 @@ export const ActivityCalendar = () =>{
         setActivityMatrix(activityMatrixFilled);
     }
 
+
+
+
+    const setActiveMonthById = (monthId : number) => {
+        monthsMatrix.find(x => x.isSelected === true)!.isSelected = false;
+        monthsMatrix.find(x => x.Id === monthId)!.isSelected = true;
+        setMonthsMatrix([...monthsMatrix]);
+    }
+
     return(
         <div className="flex size-full flex-col gap-5">
             <div className="flex gap-2">
@@ -119,15 +146,8 @@ export const ActivityCalendar = () =>{
                     <div className="flex flex-1">
                         <div className="grid flex-1 gap-1 grid-cols-5">
                             {monthsMatrix.map((item)=>(
-                                <div key={item.id} className="flex size-10">
-
-                                </div>
+                                <ActivityCalendarPillar switchMonthMethod={setActiveMonthById} key={item.Id} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
                             ))}
-                            <ActivityCalendarPillar isSelected={false} filling={10}></ActivityCalendarPillar>
-                            <ActivityCalendarPillar isSelected={false} filling={23}></ActivityCalendarPillar>
-                            <ActivityCalendarPillar isSelected={false} filling={40}></ActivityCalendarPillar>
-                            <ActivityCalendarPillar isSelected={true} filling={10}></ActivityCalendarPillar>
-                            <ActivityCalendarPillar isSelected={false} filling={80}></ActivityCalendarPillar>
                         </div>
                     </div>
                     <div className="flex h-1 w-full border-b"/>
