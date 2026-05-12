@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import UniversalTable from "@/widgets/universalList/universalTable";
+import { Pencil } from "lucide-react";
 
 const MEMBERS_DATA = [
     {
@@ -52,49 +53,46 @@ export const AwardDetailsPage = ({ slug }: { slug: string }) => {
 
     return (
         <div className="max-w-[1200px] mx-auto pt-10 px-6 animate-in fade-in duration-500">
-        <div className="flex flex-col md:flex-row gap-8 mb-12">
-
-            <div className="w-full md:w-[350px] shrink-0">
-            <div className="relative aspect-square bg-[#1a1a1a] border border-white/5 flex items-center justify-center group">
-                <img 
-                src="/-_-.jpg"
-                alt="Award" 
-                className="w-4/5 h-4/5 object-contain"
-                />
-                {canEdit && (
-                <button className="absolute bottom-2 right-2 p-2 bg-black/50 hover:bg-accent hover:text-black transition-colors border border-white/10">
-                    🖉
+        <div className="flex flex-col md:flex-row gap-8 mb-12 items-stretch md:h-[300px]">
+            <div className="w-full md:w-[200px] shrink-0 flex flex-col">
+                <div className="relative aspect-square bg-[#1a1a1a] border border-white/5 flex items-center justify-center group">
+                    <img 
+                    src="/-_-.jpg"
+                    alt="Award" 
+                    className="w-4/5 h-4/5 object-contain"/>
+                    {canEdit && (
+                    <button className="absolute bottom-2 right-2 p-2 bg-black/50 hover:bg-accent hover:text-black transition-colors border border-white/10">
+                        <Pencil/>
+                    </button>
+                    )}
+                </div>
+                <button 
+                    onClick={copyDiscordId}
+                    className="mt-2 text-[11px] font-text text-text-secondary border-b border-text-secondary hover:text-accent hover:border-accent transition-all uppercase tracking-tighter">
+                    Скопировать ID роли
                 </button>
-                )}
-            </div>
-            <button 
-                onClick={copyDiscordId}
-                className="mt-2 text-[11px] font-text text-text-secondary border-b border-text-secondary hover:text-accent hover:border-accent transition-all uppercase tracking-tighter"
-            >
-                Скопировать ID роли
-            </button>
             </div>
 
-            <div className="flex-1 space-y-4">
+            <div className="flex-1 flex flex-col gap-4">
             <div className="relative border border-white/5 bg-[#1a1a1a] p-4 group">
                 <h1 className="text-accent font-text-bold uppercase tracking-wider text-lg pr-8">
                 Орден "Мастер документооборота III степени"
                 </h1>
-                {canEdit && <span className="absolute top-4 right-4 opacity-40 group-hover:opacity-100 cursor-pointer transition-opacity">🖉</span>}
+                {canEdit && <span className="absolute top-4 right-4 opacity-40 group-hover:opacity-100 cursor-pointer transition-opacity"><Pencil/></span>}
             </div>
 
             <div className="relative border border-white/5 bg-[#1a1a1a] p-4 min-h-[120px] group">
                 <p className="text-text-primary font-text text-sm leading-relaxed pr-8">
                 Выдается личному составу отдела кадров за безупречную службу и оформление документации клана в течении месяца.
                 </p>
-                {canEdit && <span className="absolute top-4 right-4 opacity-40 group-hover:opacity-100 cursor-pointer transition-opacity">🖉</span>}
+                {canEdit && <span className="absolute top-4 right-4 opacity-40 group-hover:opacity-100 cursor-pointer transition-opacity"><Pencil/></span>}
             </div>
 
-            <div className="relative border border-white/5 bg-[#1a1a1a] p-4 min-h-[100px] group">
+            <div className="relative border border-white/5 bg-[#1a1a1a] p-4 min-h-[100px] group flex-1">
                 <p className="text-text-primary font-text text-sm leading-relaxed pr-8">
                 Привилегии
                 </p>
-                {canEdit && <span className="absolute top-4 right-4 opacity-40 group-hover:opacity-100 cursor-pointer transition-opacity">🖉</span>}
+                {canEdit && <span className="absolute top-4 right-4 opacity-40 group-hover:opacity-100 cursor-pointer transition-opacity"><Pencil/></span>}
             </div>
             </div>
         </div>
@@ -115,7 +113,7 @@ export const AwardDetailsPage = ({ slug }: { slug: string }) => {
             )}
             </div>
 
-            <div className="border border-white/5">
+            <div className="border border-white/5 overflow-hidden">
             <UniversalTable 
                 data={MEMBERS_DATA} 
                 columns={COLUMNS_CONFIG} 
