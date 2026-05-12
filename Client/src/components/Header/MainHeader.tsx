@@ -26,7 +26,13 @@ export const MainHeader = ({ currentTheme, onThemeChange }: MainHeaderProps) => 
               РХБЗ
             </Link>
             <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
-              Обзор
+              Состав
+            </Link>
+            <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+              Структура
+            </Link>
+            <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+              Награды
             </Link>
           </div>
 
