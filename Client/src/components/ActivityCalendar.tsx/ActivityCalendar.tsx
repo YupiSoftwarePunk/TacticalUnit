@@ -205,7 +205,7 @@ export const ActivityCalendar = () =>{
                         ))}
                     </div>
                 </div>
-                <div className="flex flex-col flex-2 max-w-60">
+                <div className="flex flex-col flex-2 w-60">
                     <div className="flex flex-1">
                         <div className="grid flex-1 gap-1 grid-cols-5">
                             {monthsMatrix.map((item)=>(
