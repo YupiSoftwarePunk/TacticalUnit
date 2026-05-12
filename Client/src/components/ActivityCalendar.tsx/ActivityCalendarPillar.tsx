@@ -3,16 +3,17 @@ import { useState } from "react";
 export interface IActivityCalendarPillar{
     filling? : number,
     isSelected : boolean,
+    isBlank : boolean,
     monthName? : string,
     year? : number,
-    Id : number,
+    Id? : number,
     switchMonthMethod?: (Id : number) => void
 }
-export const ActivityCalendarPillar: React.FC<IActivityCalendarPillar> = ({filling = 50, isSelected = false, monthName = "[BLANK MONTH]", year = new Date().getFullYear(),Id, switchMonthMethod = null}) =>{
+export const ActivityCalendarPillar: React.FC<IActivityCalendarPillar> = ({filling = 50, isSelected = false, monthName = "[BLANK MONTH]", year = new Date().getFullYear(),Id, switchMonthMethod = null, isBlank = false}) =>{
     const [highlight, setHighlight] = useState<boolean>(false);
 
     function onClickDo(){
-        if (switchMonthMethod) switchMonthMethod(Id);
+        if (switchMonthMethod && Id != null && isBlank == false) switchMonthMethod(Id);
     }
 
 

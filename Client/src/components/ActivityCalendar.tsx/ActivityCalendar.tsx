@@ -20,9 +20,10 @@ const monthsStr = [
 const BlankMonths : IActivityCalendarPillar[] = [
         {
             Id : 0,
-            monthName : "Май",
+            monthName : "Апрель",
             year : 2026,
             isSelected : false,
+            isBlank : false,
             filling : 50
         },
         {
@@ -30,6 +31,7 @@ const BlankMonths : IActivityCalendarPillar[] = [
             monthName : "Май",
             year : 2026,
             isSelected : true,
+            isBlank : false,
             filling : 80
         }
     ];
@@ -70,11 +72,19 @@ export const ActivityCalendar = () =>{
     }
     
     if(monthsMatrix != BlankMonths){
-        
-        // for(let i = 0; i < 13; i++){
-        //     let month : IActivityCalendarPillar = {
-        //     }
-        // }
+        let monthsToSet = BlankMonths;
+        if (monthsToSet.length < 5){
+            while (monthsToSet.length < 5){
+                let blank : IActivityCalendarPillar = {
+                    isBlank : true,
+                    filling : 0,
+                    Id : monthsToSet.length + 100,
+                    isSelected : false,
+
+                }
+                monthsToSet.unshift(blank);
+            }
+        }
         setMonthsMatrix(BlankMonths);
     }
 
@@ -84,26 +94,58 @@ export const ActivityCalendar = () =>{
     }, [])
 
     function lowerSelectedMonth(){
-        if (selectedMonth-1 <= -1){
-            setSelectedMonth(11);
-            setSelectedYearDisplay(selectedYearDisplay-1);
-            setSelectedMonthDisplay(monthsStr[11]);
-        }else{
-            setSelectedMonth(selectedMonth-1);
-            setSelectedMonthDisplay(monthsStr[selectedMonth-1]);
+        let currentMonth = monthsMatrix.find(x => x.isSelected === true);
+        if(currentMonth){
+            console.warn("Found month");
+            let currentMonthId = monthsMatrix.indexOf(currentMonth);
+            if(currentMonthId != null){
+                console.warn("Found month Id, index: "+ currentMonthId+ " month: "+ currentMonth.monthName);
+                console.warn(monthsMatrix[currentMonthId-1].isBlank);
+                if(currentMonthId -1 >= 0){
+                    if(monthsMatrix[currentMonthId-1].isBlank != true){
+                        setActiveMonthByListIndex(currentMonthId-1);
+
+                    }
+                }
+            }
         }
+
+        // if (selectedMonth-1 <= -1){
+        //     setSelectedMonth(11);
+        //     setSelectedYearDisplay(selectedYearDisplay-1);
+        //     setSelectedMonthDisplay(monthsStr[11]);
+        // }else{
+        //     setSelectedMonth(selectedMonth-1);
+        //     setSelectedMonthDisplay(monthsStr[selectedMonth-1]);
+        // }
     }
     
     function enlargeSelectedMonth(){
-        if (selectedMonth+1 >= 12){            
-            setSelectedMonth(0);
-            setSelectedYearDisplay(selectedYearDisplay+1);
-            setSelectedMonthDisplay(monthsStr[0]);
 
-        }else{
-            setSelectedMonth(selectedMonth+1);
-            setSelectedMonthDisplay(monthsStr[selectedMonth+1]);
+        let currentMonth = monthsMatrix.find(x => x.isSelected === true);
+        if(currentMonth){
+            console.warn("Found month");
+            let currentMonthId = monthsMatrix.indexOf(currentMonth);
+            if(currentMonthId != null){
+                console.warn("Found month Id, index: "+ currentMonthId+ " month: "+ currentMonth.monthName);
+                console.warn(monthsMatrix[currentMonthId-1].isBlank);
+                if(currentMonthId +1 < monthsMatrix.length ){
+                    if(monthsMatrix[currentMonthId+1].isBlank != true){
+                        setActiveMonthByListIndex(currentMonthId+1);
+
+                    }
+                }
+            }
         }
+        // if (selectedMonth+1 >= 12){            
+        //     setSelectedMonth(0);
+        //     setSelectedYearDisplay(selectedYearDisplay+1);
+        //     setSelectedMonthDisplay(monthsStr[0]);
+
+        // }else{
+        //     setSelectedMonth(selectedMonth+1);
+        //     setSelectedMonthDisplay(monthsStr[selectedMonth+1]);
+        // }
     }
 
 
@@ -117,8 +159,29 @@ export const ActivityCalendar = () =>{
 
     const setActiveMonthById = (monthId : number) => {
         monthsMatrix.find(x => x.isSelected === true)!.isSelected = false;
-        monthsMatrix.find(x => x.Id === monthId)!.isSelected = true;
+        let electedMonth = monthsMatrix.find(x => x.Id === monthId);
+        
         setMonthsMatrix([...monthsMatrix]);
+        if (electedMonth != null){
+            electedMonth.isSelected = true;
+            if (electedMonth?.year) setSelectedYearDisplay(electedMonth?.year);
+            if (electedMonth?.monthName) setSelectedMonthDisplay(electedMonth?.monthName);
+            
+        }
+        console.warn("switched to " + monthId)
+    }
+    const setActiveMonthByListIndex = (monthId : number) => {
+        monthsMatrix.find(x => x.isSelected === true)!.isSelected = false;
+        let electedMonth = monthsMatrix[monthId];
+        
+        setMonthsMatrix([...monthsMatrix]);
+        if (electedMonth != null){
+            electedMonth.isSelected = true;
+            if (electedMonth?.year) setSelectedYearDisplay(electedMonth?.year);
+            if (electedMonth?.monthName) setSelectedMonthDisplay(electedMonth?.monthName);
+            
+        }
+        console.warn("switched to " + monthId)
     }
 
     return(
@@ -142,11 +205,11 @@ export const ActivityCalendar = () =>{
                         ))}
                     </div>
                 </div>
-                <div className="flex flex-col flex-2">
+                <div className="flex flex-col flex-2 max-w-60">
                     <div className="flex flex-1">
                         <div className="grid flex-1 gap-1 grid-cols-5">
                             {monthsMatrix.map((item)=>(
-                                <ActivityCalendarPillar switchMonthMethod={setActiveMonthById} key={item.Id} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
+                                <ActivityCalendarPillar isBlank={item.isBlank} switchMonthMethod={setActiveMonthById} key={item.Id} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
                             ))}
                         </div>
                     </div>
