@@ -74,7 +74,7 @@ export default function AwardsPage() {
                     {hasAwardPermission && (
                     <div className="overflow-hidden h-0 group-hover:h-10 transition-all duration-300 ease-in-out">
                         <Link 
-                        href={`/awards/grant/${award.slug}`}
+                        href={`/awards/${award.slug}`}
                         className="inline-block mt-2 text-[10px] font-black text-accent uppercase tracking-widest border-b border-accent hover:text-text-primary hover:border-text-primary transition-all"
                         >
                         Наградить бойцов
