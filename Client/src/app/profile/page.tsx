@@ -1,8 +1,40 @@
 'use client'
 import { ActivityCalendar } from "@/components/ActivityCalendar.tsx/ActivityCalendar";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { useState } from "react";
+
+interface IActionMenuOption{
+    name : string,
+    accessOnRoles : string[],
+    url : string
+}
+
+
+
+
+
+
 
 export default function Profile(){
+    const [accessRoles, setAccessRoles] = useState<string[]>([]);
+    const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([
+    {
+        name : "Заменить баннер",
+        url : "/",
+        accessOnRoles : ["host", "admin"]
+    },
+    {
+        name : "Какая-то опция",
+        url : "/",
+        accessOnRoles : ["any"]
+    }
+    ]);
+
+    
+
+
+
+
     return(
         <div className="flex flex-col min-h-screen text-text-secondary font-text">
             <MainHeader></MainHeader>
@@ -17,8 +49,9 @@ export default function Profile(){
                             <img src="#" alt="Profile image" className="object-top object-cover self-center size-full text-white"/>
                         </div>
                         <ul className="flex flex-col gap-1 pr-4 items-end">
-                            <button className=" hover:text-accent transition-all">Заменить баннер</button>
-                            <button className=" hover:text-accent transition-all">Какая-то опция</button>
+                            {menuOptions.map((item)=>(
+                                <a href={item.url} key={menuOptions.indexOf(item)} className=" hover:text-accent transition-all">{item.name}</a>
+                            ))}
                         </ul>
                     </div>
                 </div>
@@ -29,7 +62,12 @@ export default function Profile(){
 
                                 <div className="flex flex-col gap-2">
                                     <div className="flex flex-col">
-                                        <p >Звание</p>
+                                        <div className="flex justify-items-center gap-3">
+                                            <div className="bg-bg-dark size-8">
+                                                <img src="#" alt="" />
+                                            </div>
+                                            <p className="text-text-secondary self-center">Звание</p>
+                                        </div>
                                         <p className="text-text-secondary-accent text-3xl">Никнейм</p>
                                     </div>
                                     <ul className="flex flex-col"> 
@@ -37,21 +75,10 @@ export default function Profile(){
                                         <p>Должность 2</p>
                                     </ul>
                                     <div className="flex flex-col">
-                                        <p>
-                                            Статусы:
-                                        </p>
                                         <ul className="flex gap-2">
                                             <p className="flex ">Статус 1</p>
                                             <p className="flex ">Статус 2</p>
                                         </ul>
-                                    </div>
-                                    <div className="flex flex-col justify-items-center">
-                                        <p className="text-text-primary">Счётчик до повышения</p>
-                                        <div className="flex self-center text-text-secondary">
-                                            <p>32</p>
-                                            <p>/</p>
-                                            <p>100</p>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -66,11 +93,15 @@ export default function Profile(){
 
 
                             <div className="flex flex-col flex-3 justify-start gap-4">
-                                <div className="flex size-80 border-b border-border-primary">
-                                    <img src="AK-74__163.png" alt="Soldier of heaven" className="object-top object-cover self-center size-full text-white"/>
-                                </div>
                                 <div className="flex flex-col">
-                                    <p className="text-text-secondary-accent">Командир отряда</p>
+                                    <div className="flex size-80 border-b border-border-primary">
+                                        <img src="AK-74__163.png" alt="Soldier of heaven" className="object-top object-cover self-center size-full text-white"/>
+                                    </div>
+                                    <p className="text-text-secondary">Избранный кит :</p>
+                                    <p className="text-text-secondary-accent mt-[-8px]">Командир отряда</p>
+                                </div>
+                                
+                                <div className="flex flex-col">
                                     <div className="flex flex-wrap max-w-77 gap-1">
                                         <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
                                         <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
