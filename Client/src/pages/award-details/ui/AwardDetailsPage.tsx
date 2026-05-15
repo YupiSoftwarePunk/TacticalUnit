@@ -42,7 +42,7 @@ const COLUMNS_CONFIG = [
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true },
 ];
 
-export const AwardDetailsPage = ({ slug }: { slug: string }) => {
+export default function AwardDetailsPage({ slug }: { slug: string }) {
     const [canEdit] = useState(true);
     const [canGrant] = useState(true);
 
