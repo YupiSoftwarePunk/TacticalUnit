@@ -8,7 +8,7 @@
 Данная платформа разделена на два независимых репозитория:
 * **Frontend (текущий)**: Интерфейс пользователя на TypeScript + Next.js.
 * **Backend**: API на .NET 10, управление базой данных и бизнес-логика. 
-    * 👉 [Ссылка на репозиторий бэкенда](https://github.com/NekichNet/ACCS)
+    * [Ссылка на репозиторий бэкенда](https://github.com/NekichNet/ACCS)
 
 ---
 
@@ -22,7 +22,7 @@
 
 ---
 
-## Frontend (Client)
+## Frontend
 
 Стек: **Next + TypeScript + Vite + Tailwind CSS 3**.
 Архитектура: **Feature-Sliced Design (FSD)**.
