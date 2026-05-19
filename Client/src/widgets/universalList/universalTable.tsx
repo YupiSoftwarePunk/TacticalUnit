@@ -14,10 +14,13 @@ interface SortConfig {
     direction: "asc" | "desc";
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type UniversalItem = Record<string, any>;
+
 interface UniversalTableProps {
-    data: any[];
+    data: UniversalItem[];
     columns: ColumnConfig[];
-    onExport: (data: any[]) => void;
+    onExport: (data: UniversalItem[]) => void;
     defaultSort?: SortConfig;
 }
 

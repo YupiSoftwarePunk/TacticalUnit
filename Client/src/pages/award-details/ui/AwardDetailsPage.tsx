@@ -76,7 +76,7 @@ export default function AwardDetailsPage({ slug }: { slug: string }) {
             <div className="flex-1 flex flex-col gap-4">
             <div className="relative border border-white/5 bg-[#1a1a1a] p-4 group">
                 <h1 className="text-accent font-text-bold uppercase tracking-wider text-lg pr-8">
-                Орден "Мастер документооборота III степени"
+                {`Орден "Мастер документооборота III степени"`}
                 </h1>
                 {canEdit && <span className="absolute top-4 right-4 opacity-40 group-hover:opacity-100 cursor-pointer transition-opacity"><Pencil/></span>}
             </div>

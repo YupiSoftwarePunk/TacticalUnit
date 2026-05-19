@@ -94,7 +94,10 @@ export default function LandingPage() {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMounted(true);
+    const handle = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
 
   const toggleTheme = (newTheme: ThemeMode) => {
