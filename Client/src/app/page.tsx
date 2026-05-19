@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { applyTheme } from "@/layouts/ThemeLayout";
+import Image from "next/image";
 
 type ThemeMode = "dark" | "light" | "system";
 
@@ -82,12 +83,17 @@ const PRIDE_MEMBERS = [
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState<ThemeMode>("system");
+
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("theme") as ThemeMode) || "system";
+    }
+    return "system";
+  });
+
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const savedTheme = (localStorage.getItem("theme") as ThemeMode) || "system";
-    setTheme(savedTheme);
     setMounted(true);
   }, []);
 

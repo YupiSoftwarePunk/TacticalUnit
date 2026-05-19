@@ -46,13 +46,13 @@ export const ActivityCalendar = () =>{
     const currentMonth = today.getMonth();
     
     const startDayOfMonth = new Date(currentYear, currentMonth, 1);
-    let startDayOfWeek = startDayOfMonth.getDay();
-    let activityMatrixFilled : activityCell[] = [];
+    const startDayOfWeek = startDayOfMonth.getDay();
+    const activityMatrixFilled : activityCell[] = [];
     const [selectedYearDisplay, setSelectedYearDisplay] = useState<number>(currentYear);
     const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
 
     for(let i = 0; i < startDayOfWeek-1; i++){
-        let newCell: activityCell = {
+        const newCell: activityCell = {
             id : i,
             date : new Date(),
             isCurrentMonth : false,
@@ -62,7 +62,7 @@ export const ActivityCalendar = () =>{
     }
     for(let i = 0; i < new Date(currentYear, currentMonth+1, 0).getDate(); i++){
 
-        let newCell: activityCell = {
+        const newCell: activityCell = {
             id : i + activityMatrixFilled.length,
             date : new Date(),
             isCurrentMonth : true,
@@ -72,10 +72,10 @@ export const ActivityCalendar = () =>{
     }
     
     if(monthsMatrix != BlankMonths){
-        let monthsToSet = BlankMonths;
+        const monthsToSet = BlankMonths;
         if (monthsToSet.length < 5){
             while (monthsToSet.length < 5){
-                let blank : IActivityCalendarPillar = {
+                const blank : IActivityCalendarPillar = {
                     isBlank : true,
                     filling : 0,
                     Id : monthsToSet.length + 100,
@@ -94,10 +94,10 @@ export const ActivityCalendar = () =>{
     }, [])
 
     function lowerSelectedMonth(){
-        let currentMonth = monthsMatrix.find(x => x.isSelected === true);
+        const currentMonth = monthsMatrix.find(x => x.isSelected === true);
         if(currentMonth){
             console.warn("Found month");
-            let currentMonthId = monthsMatrix.indexOf(currentMonth);
+            const currentMonthId = monthsMatrix.indexOf(currentMonth);
             if(currentMonthId != null){
                 console.warn("Found month Id, index: "+ currentMonthId+ " month: "+ currentMonth.monthName);
                 console.warn(monthsMatrix[currentMonthId-1].isBlank);
@@ -122,10 +122,10 @@ export const ActivityCalendar = () =>{
     
     function enlargeSelectedMonth(){
 
-        let currentMonth = monthsMatrix.find(x => x.isSelected === true);
+        const currentMonth = monthsMatrix.find(x => x.isSelected === true);
         if(currentMonth){
             console.warn("Found month");
-            let currentMonthId = monthsMatrix.indexOf(currentMonth);
+            const currentMonthId = monthsMatrix.indexOf(currentMonth);
             if(currentMonthId != null){
                 console.warn("Found month Id, index: "+ currentMonthId+ " month: "+ currentMonth.monthName);
                 console.warn(monthsMatrix[currentMonthId-1].isBlank);
@@ -159,7 +159,7 @@ export const ActivityCalendar = () =>{
 
     const setActiveMonthById = (monthId : number) => {
         monthsMatrix.find(x => x.isSelected === true)!.isSelected = false;
-        let electedMonth = monthsMatrix.find(x => x.Id === monthId);
+        const electedMonth = monthsMatrix.find(x => x.Id === monthId);
         
         setMonthsMatrix([...monthsMatrix]);
         if (electedMonth != null){
@@ -172,7 +172,7 @@ export const ActivityCalendar = () =>{
     }
     const setActiveMonthByListIndex = (monthId : number) => {
         monthsMatrix.find(x => x.isSelected === true)!.isSelected = false;
-        let electedMonth = monthsMatrix[monthId];
+        const electedMonth = monthsMatrix[monthId];
         
         setMonthsMatrix([...monthsMatrix]);
         if (electedMonth != null){
