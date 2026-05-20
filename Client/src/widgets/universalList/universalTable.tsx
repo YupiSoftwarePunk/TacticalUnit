@@ -21,6 +21,7 @@ interface UniversalTableProps<T> {
     defaultSort?: SortConfig;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const UniversalTable = <T extends Record<string, any>> ({ 
     data, 
     columns, 
