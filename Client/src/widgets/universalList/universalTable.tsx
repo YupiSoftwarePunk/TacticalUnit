@@ -14,22 +14,19 @@ interface SortConfig {
     direction: "asc" | "desc";
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type UniversalItem = Record<string, any>;
-
-interface UniversalTableProps {
-    data: UniversalItem[];
+interface UniversalTableProps<T> {
+    data: T[];
     columns: ColumnConfig[];
-    onExport: (data: UniversalItem[]) => void;
+    onExport: (data: T[]) => void;
     defaultSort?: SortConfig;
 }
 
-const UniversalTable: React.FC<UniversalTableProps> = ({ 
+const UniversalTable = <T extends Record<string, any>> ({ 
     data, 
     columns, 
     onExport, 
     defaultSort = { key: "rank", direction: "desc" } 
-}) => {
+} : UniversalTableProps<T>) => {
     const [sortConfig, setSortConfig] = useState<SortConfig>(defaultSort);
     const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
     const [isFilterOpen, setIsFilterOpen] = useState(false);
