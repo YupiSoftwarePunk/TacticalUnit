@@ -92,6 +92,8 @@ export default function LandingPage() {
   });
 
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   useEffect(() => {
     const handle = requestAnimationFrame(() => {
@@ -117,14 +119,30 @@ export default function LandingPage() {
   const scrollLeft = () => carouselRef.current?.scrollBy({ left: -350, behavior: "smooth" });
   const scrollRight = () => carouselRef.current?.scrollBy({ left: 350, behavior: "smooth" });
 
+  const checkScroll = () => {
+    if (!carouselRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth);
+  };
+
   useEffect(() => {
     if (!mounted) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") scrollLeft();
-      if (e.key === "ArrowRight") scrollRight();
+    checkScroll();
+    
+    const carousel = carouselRef.current;
+    if (carousel) {
+      carousel.addEventListener("scroll", checkScroll);
+    }
+    window.addEventListener("resize", checkScroll);
+    
+    return () => {
+      if (carousel) {
+        carousel.removeEventListener("scroll", checkScroll);
+      }
+      window.removeEventListener("resize", checkScroll);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mounted]);
 
   if (!mounted) {
@@ -167,6 +185,7 @@ export default function LandingPage() {
         </div>
 
         <div className="relative group max-w-[1600px] mx-auto">
+          {canScrollLeft && (
           <button 
             onClick={scrollLeft} 
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
@@ -174,6 +193,7 @@ export default function LandingPage() {
           >
             &#10094;
           </button>
+          )}
 
           <div 
             ref={carouselRef} 
@@ -215,6 +235,7 @@ export default function LandingPage() {
             ))}
           </div>
 
+          {canScrollRight && (
           <button 
             onClick={scrollRight} 
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
@@ -222,7 +243,9 @@ export default function LandingPage() {
           >
             &#10095;
           </button>
+          )}
         </div>
+          
 
         <div className="text-center mt-12">
           <Link href="/members" className="text-[12px] font-text-bold text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
