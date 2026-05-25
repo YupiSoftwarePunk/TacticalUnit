@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, MouseEvent } from "react";
 import Link from "next/link";
+import { MainHeader } from "@/components/Header/MainHeader";
 
 const MOCK_ROLES_DATA = {
     "Командир клана": {
@@ -332,6 +333,7 @@ export default function ClanStructurePage() {
 
     return (
         <div className="w-full min-h-screen bg-bg-primary transition-colors duration-300 font-text pb-20 overflow-hidden flex flex-col">
+            <MainHeader></MainHeader>
             <style>{`
                 .org-tree {
                     --line-color: rgba(128, 128, 128, 0.4);
