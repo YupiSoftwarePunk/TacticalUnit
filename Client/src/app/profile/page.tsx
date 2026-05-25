@@ -9,12 +9,6 @@ interface IActionMenuOption{
     url : string
 }
 
-
-
-
-
-
-
 export default function Profile(){
     const [accessRoles, setAccessRoles] = useState<string[]>([]);
     const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([
@@ -29,11 +23,6 @@ export default function Profile(){
         accessOnRoles : ["any"]
     }
     ]);
-
-    
-
-
-
 
     return(
         <div className="flex flex-col min-h-screen text-text-secondary font-text">
@@ -88,10 +77,6 @@ export default function Profile(){
                         </div>
                         <div className="flex">
 
-
-
-
-
                             <div className="flex flex-col flex-3 justify-start gap-4">
                                 <div className="flex flex-col">
                                     <div className="flex size-80 border-b border-border-primary">
@@ -118,18 +103,9 @@ export default function Profile(){
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-
-
-
-
                         </div>
                     </div>
                     
-
                 </div>
                 
             </div>

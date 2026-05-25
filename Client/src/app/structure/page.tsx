@@ -139,6 +139,7 @@ interface StructureNode {
     members: string[];
     subdivisionId: number | null;
     subdivisionName?: string;
+    subdivisionColor?: string;
     children: StructureNode[];
 }
 
@@ -180,6 +181,7 @@ class ClanStructureTransformer {
             members: data.People || [],
             subdivisionId,
             subdivisionName: subdivisionInfo?.name,
+            subdivisionColor: subdivisionInfo?.color,
             children
         };
     }
@@ -208,73 +210,114 @@ class ClanStructureFilter {
     }
 }
 
-const TreeNode = ({ node, showVacant }: { node: StructureNode; showVacant: boolean }) => {
+const SingleCard = ({ roleNode }: { roleNode: StructureNode }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const membersCount = node.members.length;
+    const membersCount = roleNode.members.length;
     const isVacant = membersCount === 0;
+
+    return (
+        <div 
+            className="relative bg-bg-primary border-2 p-2.5 w-[180px] group transition-all duration-300 hover:shadow-sm select-none flex-shrink-0"
+            style={{ borderColor: roleNode.color }}
+        >
+            <Link 
+                href={`/structure/roles/${encodeURIComponent(roleNode.title.toLowerCase().replace(/ /g, "-"))}`}
+                className="block text-center font-text uppercase tracking-wider text-text-primary hover:text-accent transition-colors mb-1 mt-0.5 text-[11px] md:text-xs break-words"
+            >
+                {roleNode.title}
+            </Link>
+
+            <div className="border-t border-black/10 dark:border-white/10 pt-1 flex flex-col items-center">
+                <button 
+                    onClick={() => !isVacant && setIsExpanded(!isExpanded)}
+                    className={`flex items-center gap-1 text-[10px] font-text uppercase tracking-widest transition-colors ${
+                        isVacant 
+                            ? "text-white bg-red-600 px-1 py-0.2 font-text-bold cursor-default" 
+                            : "text-text-secondary hover:text-text-primary cursor-pointer"
+                    }`}
+                >
+                    <span>{isVacant ? "Вакантно" : `${membersCount} чел.`}</span>
+                    {!isVacant && (
+                        <svg 
+                            className={`w-3 h-3 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} 
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                    )}
+                </button>
+                <div 
+                    className={`w-full overflow-hidden transition-all duration-300 ease-in-out ${
+                        isExpanded && !isVacant ? "max-h-[500px] mt-1.5 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                >
+                    <ul className="member-list flex flex-col gap-1 w-full text-[11px] font-text text-text-primary bg-black/5 dark:bg-white/5 p-1.5 border-l-2 border-accent">
+                        {roleNode.members.map((person, idx) => (
+                            <li key={idx} className="member-item py-0.5 border-b border-black/5 dark:border-white/5 last:border-0 text-left w-full flex items-center">
+                                <span>{person}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const TreeNode = ({ node, showVacant }: { node: StructureNode; showVacant: boolean }) => {
+    const { chain, externalChildren } = useMemo(() => {
+        const subId = node.subdivisionId;
+        if (subId === null || subId === undefined) {
+            return { chain: [node], externalChildren: node.children };
+        }
+
+        let collectedChain: StructureNode[] = [node];
+        let collectedExternal: StructureNode[] = [];
+
+        const traverse = (currentNode: StructureNode) => {
+            currentNode.children.forEach(child => {
+                if (child.subdivisionId === subId) {
+                    collectedChain.push(child);
+                    traverse(child);
+                } else {
+                    collectedExternal.push(child);
+                }
+            });
+        };
+
+        traverse(node);
+        return { chain: collectedChain, externalChildren: collectedExternal };
+    }, [node]);
+
+    const hasSubdivision = node.subdivisionId !== null && node.subdivisionId !== undefined;
+    const frameColor = node.subdivisionColor || "#4b5563";
 
     return (
         <li>
             <div className="flex flex-col items-center">
-                <div 
-                    className="relative bg-bg-primary border-2 p-4 min-w-[260px] max-w-[340px] group transition-all duration-300 hover:shadow-md select-none"
-                    style={{ borderColor: node.color }}
-                >
-                    {node.subdivisionName && (
+                {hasSubdivision ? (
+                    <div 
+                        className="relative border-2 p-3 pt-5 flex flex-col gap-2.5 items-center bg-bg-primary transition-all duration-300"
+                        style={{ borderColor: frameColor }}
+                    >
                         <div 
-                            className="absolute -top-3 left-4 bg-black dark:bg-white text-white dark:text-black text-[9px] font-text-bold uppercase tracking-widest px-2 py-0.5 border" 
-                            style={{ borderColor: node.color }}
+                            className="absolute -top-2 left-2 bg-black dark:bg-white text-white dark:text-black text-[8px] font-text-bold uppercase tracking-widest px-1 py-0.5 border" 
+                            style={{ borderColor: frameColor }}
                         >
                             {node.subdivisionName}
                         </div>
-                    )}
-
-                    <Link 
-                        href={`/structure/roles/${encodeURIComponent(node.title.toLowerCase().replace(/ /g, "-"))}`}
-                        className="block text-center font-header uppercase tracking-wider text-text-primary hover:text-accent transition-colors mb-2 mt-1 text-sm md:text-base"
-                    >
-                        {node.title}
-                    </Link>
-
-                    <div className="border-t border-black/10 dark:border-white/10 pt-2 flex flex-col items-center">
-                        <button 
-                            onClick={() => !isVacant && setIsExpanded(!isExpanded)}
-                            className={`flex items-center gap-2 text-xs font-text uppercase tracking-widest transition-colors ${
-                                isVacant 
-                                    ? "text-white bg-red-600 px-2 py-0.5 font-text-bold cursor-default" 
-                                    : "text-text-secondary hover:text-text-primary cursor-pointer"
-                            }`}
-                        >
-                            <span>{isVacant ? "Вакантно" : `${membersCount} человек`}</span>
-                            {!isVacant && (
-                                <svg 
-                                    className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} 
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            )}
-                        </button>
-                        <div 
-                            className={`w-full overflow-hidden transition-all duration-300 ease-in-out ${
-                                isExpanded && !isVacant ? "max-h-[500px] mt-3 opacity-100" : "max-h-0 opacity-0"
-                            }`}
-                        >
-                            <ul className="member-list flex flex-col gap-1 w-full text-xs font-text text-text-primary bg-black/5 dark:bg-white/5 p-2 border-l-2 border-accent">
-                                {node.members.map((person, idx) => (
-                                    <li key={idx} className="member-item py-1 border-b border-black/5 dark:border-white/5 last:border-0 text-left w-full flex items-center">
-                                        <span>{person}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        {chain.map(roleNode => (
+                            <SingleCard key={roleNode.id} roleNode={roleNode} />
+                        ))}
                     </div>
-                </div>
+                ) : (
+                    <SingleCard roleNode={node} />
+                )}
 
-                {node.children.length > 0 && (
+                {externalChildren.length > 0 && (
                     <ul>
-                        {node.children.map(child => (
+                        {externalChildren.map(child => (
                             <TreeNode key={child.id} node={child} showVacant={showVacant} />
                         ))}
                     </ul>
@@ -301,7 +344,7 @@ export default function ClanStructurePage() {
         return filterer.filter(fullTree, showVacant);
     }, [fullTree, showVacant]);
 
-const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         if (!viewportRef.current) return;
         setDragState({
             isDragging: true,
@@ -341,7 +384,7 @@ const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
                 .org-tree ul {
                     display: flex;
                     justify-content: center;
-                    padding-top: 30px;
+                    padding-top: 16px;
                     position: relative;
                 }
                 .org-tree li {
@@ -349,14 +392,14 @@ const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
                     flex-direction: column;
                     align-items: center;
                     position: relative;
-                    padding: 30px 20px 0 20px;
+                    padding: 16px 12px 0 12px;
                 }
                 .org-tree li::before, .org-tree li::after {
                     content: '';
                     position: absolute;
                     top: 0;
                     width: 50%;
-                    height: 30px;
+                    height: 16px;
                     border-top: 2px solid var(--line-color);
                 }
                 .org-tree li::before {
@@ -371,7 +414,7 @@ const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
                     display: none;
                 }
                 .org-tree li:only-child {
-                    padding: 0 20px 0 20px;
+                    padding: 0 12px 0 12px;
                 }
                 .org-tree li:first-child::before, .org-tree li:last-child::after {
                     border: 0 none;
@@ -390,16 +433,15 @@ const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
                     transform: translateX(-50%);
                     border-left: 2px solid var(--line-color);
                     width: 0;
-                    height: 30px;
+                    height: 16px;
                 }
 
-                /* Изоляция и сброс стилей дерева для корректного отображения списка участников */
                 .org-tree ul.member-list {
                     display: flex !important;
                     flex-direction: column !important;
                     justify-content: flex-start !important;
-                    padding: 8px !important;
-                    gap: 4px !important;
+                    padding: 6px !important;
+                    gap: 2px !important;
                 }
                 .org-tree ul.member-list::before {
                     display: none !important;
@@ -409,20 +451,20 @@ const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
                     flex-direction: row !important;
                     align-items: center !important;
                     justify-content: flex-start !important;
-                    padding: 4px 8px !important;
+                    padding: 2px 4px !important;
                 }
                 .org-tree li.member-item::before, .org-tree li.member-item::after {
                     display: none !important;
                 }
             `}</style>
 
-            <main className="max-w-[1400px] w-full mx-auto pt-32 px-6 flex-shrink-0">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <main className="max-w-[1400px] w-full mx-auto pt-28 px-6 flex-shrink-0">
+                <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
                     <div>
-                        <h1 className="text-5xl font-header text-text-primary uppercase tracking-wider">
+                        <h1 className="text-4xl font-header text-text-primary uppercase tracking-wider">
                             Структура клана
                         </h1>
-                        <span className="block w-20 h-1 bg-accent mt-2"></span>
+                        <span className="block w-16 h-1 bg-accent mt-2"></span>
                     </div>
 
                     <div className="flex flex-col items-end gap-4">
@@ -437,7 +479,7 @@ const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
                                 <div className={`w-10 h-6 border-2 border-text-primary transition-colors ${showVacant ? 'bg-accent border-accent' : 'bg-transparent'}`}></div>
                                 <div className={`absolute top-1 w-3 h-3 bg-text-primary transition-transform duration-300 ${showVacant ? 'translate-x-5 bg-black' : 'translate-x-1'}`}></div>
                             </div>
-                            <span className="text-sm font-text uppercase tracking-widest text-text-primary group-hover:text-accent transition-colors selection:bg-transparent">
+                            <span className="text-xs font-text uppercase tracking-widest text-text-primary group-hover:text-accent transition-colors selection:bg-transparent">
                                 Показывать вакантные должности
                             </span>
                         </label>
@@ -446,13 +488,13 @@ const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
                             <div className="flex gap-4">
                                 <button className="relative group inline-block">
                                     <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
-                                    <div className="relative border border-border-secondary bg-bg-primary px-4 py-2 text-xs font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
+                                    <div className="relative border border-border-secondary bg-bg-primary px-3 py-1.5 text-[10px] font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
                                         Создать подразделение
                                     </div>
                                 </button>
                                 <button className="relative group inline-block">
                                     <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
-                                    <div className="relative border border-border-secondary bg-bg-primary px-4 py-2 text-xs font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
+                                    <div className="relative border border-border-secondary bg-bg-primary px-3 py-1.5 text-[10px] font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
                                         Создать должность
                                     </div>
                                 </button>
@@ -468,7 +510,7 @@ const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
                 onMouseLeave={handleMouseLeave}
                 onMouseUp={handleMouseUp}
                 onMouseMove={handleMouseMove}
-                className={`w-full flex-grow overflow-auto px-12 py-8 cursor-grab active:cursor-grabbing scroll-auto border-t border-black/5 dark:border-white/5 ${
+                className={`w-full flex-grow overflow-auto px-12 py-6 cursor-grab active:cursor-grabbing scroll-auto border-t border-black/5 dark:border-white/5 ${
                     dragState.isDragging ? "select-none" : ""
                 }`}
             >
