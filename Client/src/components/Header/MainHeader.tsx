@@ -28,7 +28,7 @@ export const MainHeader = ({ currentTheme, onThemeChange }: MainHeaderProps) => 
             <Link href="/members" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Состав
             </Link>
-            <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+            <Link href="/structure" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Структура
             </Link>
             <Link href="/awards" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
