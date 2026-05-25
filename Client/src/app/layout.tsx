@@ -33,7 +33,7 @@ const headerFont = localFont({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`
+    <html lang="ru" suppressHydrationWarning className={`
       ${textFont.variable}
       ${textFontBold.variable}
       ${textFontItalic.variable}
@@ -41,6 +41,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       ${textDecorative.variable}
       ${headerFont.variable}
     `}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const savedTheme = localStorage.getItem('theme');
+                  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  
+                  // Если выбор есть — ставим его, если нет — смотрим систему
+                  const theme = savedTheme || 'system';
+                  
+                  if (theme === 'dark' || (theme === 'system' && systemPrefersDark)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="font-sans">
         {children}
       </body>

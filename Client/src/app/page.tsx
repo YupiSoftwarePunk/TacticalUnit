@@ -4,6 +4,9 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { applyTheme } from "@/layouts/ThemeLayout";
+import Image from "next/image";
+
+type ThemeMode = "dark" | "light" | "system";
 
 const PRIDE_MEMBERS = [
   {
@@ -80,43 +83,75 @@ const PRIDE_MEMBERS = [
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
+
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("theme") as ThemeMode) || "system";
+    }
+    return "system";
+  });
+
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   useEffect(() => {
-    setMounted(true);
+    const handle = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
 
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -350, behavior: "smooth" });
+  const toggleTheme = (newTheme: ThemeMode) => {
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    
+    const root = document.documentElement;
+    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (newTheme === "dark" || (newTheme === "system" && systemPrefersDark)) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
     }
   };
 
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 350, behavior: "smooth" });
-    }
+  const scrollLeft = () => carouselRef.current?.scrollBy({ left: -350, behavior: "smooth" });
+  const scrollRight = () => carouselRef.current?.scrollBy({ left: 350, behavior: "smooth" });
+
+  const checkScroll = () => {
+    if (!carouselRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth);
   };
 
   useEffect(() => {
     if (!mounted) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") scrollLeft();
-      if (e.key === "ArrowRight") scrollRight();
-    };
+    checkScroll();
     
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    const carousel = carouselRef.current;
+    if (carousel) {
+      carousel.addEventListener("scroll", checkScroll);
+    }
+    window.addEventListener("resize", checkScroll);
+    
+    return () => {
+      if (carousel) {
+        carousel.removeEventListener("scroll", checkScroll);
+      }
+      window.removeEventListener("resize", checkScroll);
+    };
   }, [mounted]);
 
-  if (!mounted) return null;
-
-  
+  if (!mounted) {
+    return <div className="bg-bg-primary min-h-screen" />; 
+  }
 
   return (
     <div className="transition-colors duration-300 bg-bg-primary overflow-x-hidden font-text">
-      <MainHeader></MainHeader>
+      <MainHeader currentTheme={theme} onThemeChange={toggleTheme} />
 
       {/* === HERO SECTION === */}
       <section className="relative h-[80vh] flex items-center justify-center pt-14">
@@ -128,14 +163,9 @@ export default function LandingPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black opacity-70 via-transparent to-transparent" />
         </div>
-
         <div className="relative z-10 text-center">
-          <h1 className="text-7xl md:text-9xl font-header text-text-white leading-none">
-            [РХБЗ]
-          </h1>
-          <p className="text-3xl mt-4 font-text-decorative text-text-primary-accent text-shadow-lg text-shadow-black">
-            Клан в Squad с военным RP
-          </p>
+          <h1 className="text-7xl md:text-9xl font-header text-text-white leading-none">[РХБЗ]</h1>
+          <p className="text-3xl mt-4 font-text-decorative text-text-primary-accent">Клан в Squad с военным RP</p>
         </div>
       </section>
 
@@ -155,6 +185,7 @@ export default function LandingPage() {
         </div>
 
         <div className="relative group max-w-[1600px] mx-auto">
+          {canScrollLeft && (
           <button 
             onClick={scrollLeft} 
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
@@ -162,6 +193,7 @@ export default function LandingPage() {
           >
             &#10094;
           </button>
+          )}
 
           <div 
             ref={carouselRef} 
@@ -203,6 +235,7 @@ export default function LandingPage() {
             ))}
           </div>
 
+          {canScrollRight && (
           <button 
             onClick={scrollRight} 
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-bg-primary border-2 border-accent text-text-primary hover:bg-accent hover:text-black font-black text-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-lg"
@@ -210,10 +243,12 @@ export default function LandingPage() {
           >
             &#10095;
           </button>
+          )}
         </div>
+          
 
         <div className="text-center mt-12">
-          <Link href="#" className="text-[12px] font-text-bold text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
+          <Link href="/members" className="text-[12px] font-text-bold text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
             Показать весь состав
           </Link>
         </div>
