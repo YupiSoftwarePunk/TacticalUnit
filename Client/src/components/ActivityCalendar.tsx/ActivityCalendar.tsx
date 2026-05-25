@@ -41,7 +41,7 @@ const BlankMonths : IActivityCalendarPillar[] = [
         },
         {
             Id : 2,
-            monthName : "Май",
+            monthName : "Июнь",
             year : 2026,
             isSelected : false,
             isBlank : false,
@@ -50,7 +50,7 @@ const BlankMonths : IActivityCalendarPillar[] = [
         },
         {
             Id : 3,
-            monthName : "Май",
+            monthName : "Август",
             year : 2026,
             isSelected : false,
             isBlank : false,
@@ -59,7 +59,7 @@ const BlankMonths : IActivityCalendarPillar[] = [
         },
         {
             Id : 4,
-            monthName : "Май",
+            monthName : "Огрызок",
             year : 2026,
             isSelected : false,
             isBlank : false,
@@ -68,7 +68,7 @@ const BlankMonths : IActivityCalendarPillar[] = [
         },
         {
             Id : 5,
-            monthName : "Май",
+            monthName : "Огузок",
             year : 2026,
             isSelected : false,
             isBlank : false,
@@ -89,7 +89,10 @@ export const ActivityCalendar = () =>{
     const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
     const [monthsMatrix, setMonthsMatrix] = useState<IActivityCalendarPillar[]>([])
     const [selectedMonthDisplay, setSelectedMonthDisplay] = useState<string>();
+    const [pillarsOffset, setPillarsOffset] = useState<number>(0);
+    const [pillarsTransitionStatus, setPillarsTransitionStatus] = useState<boolean> (false);
     let preparedMonths : IActivityCalendarPillar[] = [];
+    
 
 
     const today = new Date();
@@ -101,6 +104,8 @@ export const ActivityCalendar = () =>{
     let activityMatrixFilled : activityCell[] = [];
     const [selectedYearDisplay, setSelectedYearDisplay] = useState<number>(currentYear);
     const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
+
+    let previouslySelectedMonthIndexOffset = -1;
 
     for(let i = 0; i < startDayOfWeek-1; i++){
         let newCell: activityCell = {
@@ -125,62 +130,80 @@ export const ActivityCalendar = () =>{
         const monthsToSet = BlankMonths;
         let selectedMonthIndex = monthsToSet.findIndex(x=>x.isSelected == true);
 
-        const amountOfMonthsToDisplay = 5;
-        const amountOfMonthsToTheRight = 2;
-
-
-        if(selectedMonthIndex != undefined){
+            const monthsMargin = 4; //both directions
+            const amountOfMonthsToDisplay = 5;
+            const amountOfMonthsToTheRight = 2;
+            const calculatedPillarOffset = previouslySelectedMonthIndexOffset - amountOfMonthsToDisplay + 1;
+            //console.warn(calculatedPillarOffset);
+            const refresh = () => {if(selectedMonthIndex != undefined){
             preparedMonths = [];
 
             let monthsToTheRight = 0;
             let testIndex = selectedMonthIndex + 1;
             while (monthsToTheRight != amountOfMonthsToTheRight && monthsToSet.length != testIndex){
-                monthsToTheRight = monthsToTheRight + 1;
+                monthsToTheRight = monthsToTheRight + 1 ;
                 testIndex = testIndex + 1;
             }
             //console.warn(monthsToTheRight);
             
-            for(let i = 0; i < amountOfMonthsToDisplay; i++){
-                let currentIndex = ( i+(-amountOfMonthsToDisplay + monthsToTheRight + 1))
+            for(let i = 0; i < amountOfMonthsToDisplay + monthsMargin ; i++){
+                let currentIndex = ( i+(-amountOfMonthsToDisplay + monthsToTheRight - 1))
                 if (selectedMonthIndex + currentIndex >= 0 && selectedMonthIndex + currentIndex < monthsToSet.length){
                     //console.warn(monthsToSet[selectedMonthIndex + currentIndex].Id);
-                    
                     preparedMonths.push(monthsToSet[selectedMonthIndex + currentIndex]);
                 }
-                else if (selectedMonthIndex + currentIndex < 0){
+                else if (selectedMonthIndex + currentIndex < 0 || selectedMonthIndex + currentIndex >= monthsToSet.length){
                     //console.warn(`${selectedMonthIndex + currentIndex} : BLANK`);
 
                     let blank : IActivityCalendarPillar = {
                         isBlank : true,
-                        filling : 0,
+                        filling : 2,
                         isSelected : false,
                     }
                     preparedMonths.push(blank);
 
                 }
+                
+                setMonthsMatrix(preparedMonths);
+            }}
+        }
+
+        if (calculatedPillarOffset <= 2 && calculatedPillarOffset >= -2 && selectedMonthIndex + calculatedPillarOffset != monthsToSet.length+1){
+            if (calculatedPillarOffset == 2 && selectedMonthIndex == monthsToSet.length-2){
+                setPillarsTransitionStatus(false);
+                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset+1));
+            }else if(selectedMonthIndex >= monthsToSet.length-2){
 
             }
-
+            else{
+                setPillarsTransitionStatus(false);
+                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset));
+            }
+            
+            let interval = setTimeout(()=>{ setPillarsOffset(0); refresh(); },50);
+        }else{
+            refresh();
         }
+        setTimeout(()=>{setPillarsTransitionStatus(true);}, 1);
+
+
         setMonthsMatrix(preparedMonths);
         //if (preparedMonths != monthsMatrix){setMonthsMatrix(preparedMonths);}
                 
     }
 
-
-    if (monthsMatrix.length == 0){
+    if(monthsMatrix.length == 0){
         refreshMonthsDisplay();
     }
-
     
     useEffect(()=>{
         setSelectedMonthDisplay(monthsStr[selectedMonth]);
+        setMonthsMatrix(preparedMonths);
 
     }, [])
 
     function lowerSelectedMonth(){
         let currentMonth = monthsMatrix.find(x => x.isSelected === true);
-            refreshMonthsDisplay();
         if(currentMonth){
             //console.warn("Found month");
             let currentMonthId = monthsMatrix.indexOf(currentMonth);
@@ -195,21 +218,11 @@ export const ActivityCalendar = () =>{
                 }
             }
         }
-
-        // if (selectedMonth-1 <= -1){
-        //     setSelectedMonth(11);
-        //     setSelectedYearDisplay(selectedYearDisplay-1);
-        //     setSelectedMonthDisplay(monthsStr[11]);
-        // }else{
-        //     setSelectedMonth(selectedMonth-1);
-        //     setSelectedMonthDisplay(monthsStr[selectedMonth-1]);
-        // }
     }
     
     function enlargeSelectedMonth(){
 
         let currentMonth = monthsMatrix.find(x => x.isSelected === true);
-            refreshMonthsDisplay();
         if(currentMonth){
             //console.warn("Found month");
             let currentMonthId = monthsMatrix.indexOf(currentMonth);
@@ -224,15 +237,6 @@ export const ActivityCalendar = () =>{
                 }
             }
         }
-        // if (selectedMonth+1 >= 12){            
-        //     setSelectedMonth(0);
-        //     setSelectedYearDisplay(selectedYearDisplay+1);
-        //     setSelectedMonthDisplay(monthsStr[0]);
-
-        // }else{
-        //     setSelectedMonth(selectedMonth+1);
-        //     setSelectedMonthDisplay(monthsStr[selectedMonth+1]);
-        // }
     }
 
 
@@ -244,8 +248,10 @@ export const ActivityCalendar = () =>{
 
 
     const setActiveMonthById = (monthId : number) => {
-        monthsMatrix.find(x => x.isSelected === true)!.isSelected = false;
+        let m = monthsMatrix.find(x => x.isSelected === true);
+        m!.isSelected = false;
         let electedMonth = monthsMatrix.find(x => x.Id === monthId);
+        previouslySelectedMonthIndexOffset = monthsMatrix.indexOf(electedMonth!);
         
         setMonthsMatrix([...monthsMatrix]);
         if (electedMonth != null){
@@ -255,12 +261,15 @@ export const ActivityCalendar = () =>{
             
         }
         refreshMonthsDisplay();
+
         //console.warn("switched to " + monthId)
     }
     const setActiveMonthByListIndex = (monthId : number) => {
-        monthsMatrix.find(x => x.isSelected === true)!.isSelected = false;
+        let m = monthsMatrix.find(x => x.isSelected === true);
+        m!.isSelected = false;
+        previouslySelectedMonthIndexOffset = monthsMatrix.indexOf(m!);
         let electedMonth = monthsMatrix[monthId];
-        
+        previouslySelectedMonthIndexOffset = monthsMatrix.indexOf(electedMonth!);
         setMonthsMatrix([...monthsMatrix]);
         if (electedMonth != null){
             electedMonth.isSelected = true;
@@ -269,8 +278,12 @@ export const ActivityCalendar = () =>{
             
         }
         refreshMonthsDisplay();
+
         //console.warn("switched to " + monthId)
     }
+
+
+    
 
     return(
         <div className="flex size-full flex-col gap-5">
@@ -294,8 +307,8 @@ export const ActivityCalendar = () =>{
                     </div>
                 </div>
                 <div className="flex flex-col flex-2 w-60">
-                    <div className="flex flex-1">
-                        <div className="grid flex-1 gap-1 grid-cols-5">
+                    <div className="flex flex-1 overflow-clip ">
+                        <div className={`grid flex-1 gap-1 grid-cols-9 transition-all`} style={{marginLeft:`${-40 - pillarsOffset}%`, marginRight:`${-40 + pillarsOffset}%`, transitionProperty: `${pillarsTransitionStatus? "all" : "none"}`}}>
                             {monthsMatrix.map((item)=>(
                                 <ActivityCalendarPillar isBlank={item.isBlank} key={monthsMatrix.indexOf(item)}  switchMonthMethod={setActiveMonthById} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
                             ))}
