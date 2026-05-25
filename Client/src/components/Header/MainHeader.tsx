@@ -1,3 +1,4 @@
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,16 +11,28 @@ export interface IHeader{
 
 export const MainHeader = () => {
     const [isDark, setIsDark] = useState(true);
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
-        applyTheme("dark");
-      }, []);
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "light") {
+            setIsDark(false);
+            applyTheme("light");
+        } else {
+            applyTheme("dark");
+        }
+        setMounted(true);
+    }, []);
+
     const toggleTheme = () => {
         setIsDark((prevIsDark) => {
           const nextTheme = !prevIsDark;
           applyTheme(nextTheme ? "dark" : "light");
+          localStorage.setItem("theme", nextTheme ? "dark" : "light");
           return nextTheme;
         });
     };
+
     return(
       <div>
         <div className="h-14"></div>
@@ -27,7 +40,7 @@ export const MainHeader = () => {
         <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-xl flex items-center gap-2 text-text-primary hover:text-text-secondary-accent uppercase px-2 py-0.5 transition-colors">
-              <img src="b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="РХБЗ" />
+              <img src="/b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="РХБЗ" />
               РХБЗ
             </Link>
             <Link href="/members" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
@@ -46,8 +59,10 @@ export const MainHeader = () => {
               Вступить
             </Link>
             
-            <button onClick={toggleTheme} className="hover:opacity-70 text-xl transition-opacity">
-              {isDark ? "☀️" : "🌙"}
+            <button onClick={toggleTheme} className="hover:opacity-70 text-xl transition-all w-6 h-6 flex items-center justify-center">
+              <span className={mounted ? "opacity-100" : "opacity-0"}>
+                {isDark ? "☀️" : "🌙"}
+              </span>
             </button>
 
             <Link href="/profile" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
