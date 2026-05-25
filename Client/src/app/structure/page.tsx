@@ -301,12 +301,12 @@ export default function ClanStructurePage() {
         return filterer.filter(fullTree, showVacant);
     }, [fullTree, showVacant]);
 
-    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         if (!viewportRef.current) return;
         setDragState({
             isDragging: true,
-            startX: e.pageX - viewportRef.current.offsetLeft,
-            startY: e.pageY - viewportRef.current.offsetTop,
+            startX: e.clientX,
+            startY: e.clientY,
             scrollLeft: viewportRef.current.scrollLeft,
             scrollTop: viewportRef.current.scrollTop
         });
@@ -323,10 +323,10 @@ export default function ClanStructurePage() {
     const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
         if (!dragState.isDragging || !viewportRef.current) return;
         e.preventDefault();
-        const x = e.pageX - viewportRef.current.offsetLeft;
-        const y = e.pageY - viewportRef.current.offsetTop;
-        const walkX = (x - dragState.startX) * 1.5;
-        const walkY = (y - dragState.startY) * 1.5;
+
+        const walkX = (e.clientX - dragState.startX) * 1.5;
+        const walkY = (e.clientY - dragState.startY) * 1.5;
+        
         viewportRef.current.scrollLeft = dragState.scrollLeft - walkX;
         viewportRef.current.scrollTop = dragState.scrollTop - walkY;
     };
@@ -468,11 +468,11 @@ export default function ClanStructurePage() {
                 onMouseLeave={handleMouseLeave}
                 onMouseUp={handleMouseUp}
                 onMouseMove={handleMouseMove}
-                className={`w-full flex-grow overflow-auto px-12 py-8 cursor-grab active:cursor-grabbing scroll-smooth border-t border-black/5 dark:border-white/5 ${
+                className={`w-full flex-grow overflow-auto px-12 py-8 cursor-grab active:cursor-grabbing scroll-auto border-t border-black/5 dark:border-white/5 ${
                     dragState.isDragging ? "select-none" : ""
                 }`}
             >
-                <div className="org-tree min-w-max flex justify-center items-start h-full">
+                <div className="org-tree min-w-max flex justify-center items-start min-h-full">
                     {filteredData ? (
                         <ul className="!pt-0">
                             <TreeNode node={filteredData} showVacant={showVacant} />
