@@ -182,6 +182,7 @@ export const ActivityCalendar = () =>{
 
     function lowerSelectedMonth(){
         let currentMonth = monthsMatrix.find(x => x.isSelected === true);
+            refreshMonthsDisplay();
         if(currentMonth){
             //console.warn("Found month");
             let currentMonthId = monthsMatrix.indexOf(currentMonth);
@@ -195,7 +196,6 @@ export const ActivityCalendar = () =>{
                     }
                 }
             }
-            refreshMonthsDisplay();
         }
 
         // if (selectedMonth-1 <= -1){
@@ -211,6 +211,7 @@ export const ActivityCalendar = () =>{
     function enlargeSelectedMonth(){
 
         let currentMonth = monthsMatrix.find(x => x.isSelected === true);
+            refreshMonthsDisplay();
         if(currentMonth){
             //console.warn("Found month");
             let currentMonthId = monthsMatrix.indexOf(currentMonth);
@@ -224,7 +225,6 @@ export const ActivityCalendar = () =>{
                     }
                 }
             }
-            refreshMonthsDisplay();
         }
         // if (selectedMonth+1 >= 12){            
         //     setSelectedMonth(0);
@@ -300,7 +300,7 @@ export const ActivityCalendar = () =>{
                     <div className="flex flex-1">
                         <div className="grid flex-1 gap-1 grid-cols-5">
                             {monthsMatrix.map((item)=>(
-                                <ActivityCalendarPillar isBlank={item.isBlank} switchMonthMethod={setActiveMonthById} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
+                                <ActivityCalendarPillar isBlank={item.isBlank}  switchMonthMethod={setActiveMonthById} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
                             ))}
                         </div>
                     </div>
