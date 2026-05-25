@@ -85,7 +85,6 @@ const BlankMonths : IActivityCalendarPillar[] = [
             Date : new Date(_currentYear, _currentMonth-7, 1 )
         }
     ];
-let startupSequencePassed = false;
 export const ActivityCalendar = () =>{
     const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
     const [monthsMatrix, setMonthsMatrix] = useState<IActivityCalendarPillar[]>([])
@@ -169,8 +168,7 @@ export const ActivityCalendar = () =>{
     }
 
 
-    if (!startupSequencePassed){
-        startupSequencePassed = true;
+    if (monthsMatrix.length == 0){
         refreshMonthsDisplay();
     }
 
@@ -238,7 +236,6 @@ export const ActivityCalendar = () =>{
     }
 
 
-
     if (activityMatrix.length == 0 || activityMatrix.length!= activityMatrixFilled.length){
         setActivityMatrix(activityMatrixFilled);
     }
@@ -300,7 +297,7 @@ export const ActivityCalendar = () =>{
                     <div className="flex flex-1">
                         <div className="grid flex-1 gap-1 grid-cols-5">
                             {monthsMatrix.map((item)=>(
-                                <ActivityCalendarPillar isBlank={item.isBlank}  switchMonthMethod={setActiveMonthById} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
+                                <ActivityCalendarPillar isBlank={item.isBlank} key={item.Date?.getTime()}  switchMonthMethod={setActiveMonthById} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
                             ))}
                         </div>
                     </div>
