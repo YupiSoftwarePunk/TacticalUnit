@@ -25,7 +25,6 @@ export default function AwardsPage() {
     const [hasAdminPermission] = useState(true);
     const [hasAwardPermission] = useState(true);
 
-    const [theme, setTheme] = useState<"dark" | "light" | "system">("system");
 
     return (
         <div className="flex flex-col h-full">

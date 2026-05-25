@@ -5,7 +5,6 @@ import Link from "next/link";
 import UniversalTable from "@/widgets/universalList/universalTable";
 import { Pencil } from "lucide-react";
 
-type ThemeMode = "dark" | "light" | "system";
 
 const MEMBERS_DATA = [
     {
@@ -48,31 +47,13 @@ export default function AwardDetailsPage({ slug }: { slug: string }) {
     const [canEdit] = useState(true);
     const [canGrant] = useState(true);
 
-    const [theme, setTheme] = useState<ThemeMode>(() => {
-        if (typeof window !== "undefined") {
-            return (localStorage.getItem("theme") as ThemeMode) || "system";
-        }
-        return "system";
-    });
-
-    useEffect(() => {
-        const root = document.documentElement;
-        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-        if (theme === "dark" || (theme === "system" && systemPrefersDark)) {
-            root.classList.add("dark");
-        } else {
-            root.classList.remove("dark");
-        }
-    }, [theme]);
-
     const copyDiscordId = () => {
         navigator.clipboard.writeText("ROLE_ID_12345");
         alert("ID роли скопирован");
     };
 
     return (
-        <div className="w-full min-h-screen bg-bg-primary transition-colors duration-300">
+        <div className="flex flex-1 w-full bg-bg-primary transition-colors duration-300">
         <div className="max-w-[1200px] mx-auto pt-10 px-6 animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row gap-8 mb-12 items-stretch md:h-[300px]">
                 <div className="w-full md:w-[200px] shrink-0 flex flex-col">

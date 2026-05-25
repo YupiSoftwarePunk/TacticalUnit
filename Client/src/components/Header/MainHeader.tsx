@@ -1,4 +1,3 @@
-"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -22,17 +21,19 @@ export const MainHeader = () => {
         });
     };
     return(
+      <div>
+        <div className="h-14"></div>
         <header className="fixed top-0 z-50 w-full h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm font-text">
         <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-xl flex items-center gap-2 text-text-primary hover:text-text-secondary-accent uppercase px-2 py-0.5 transition-colors">
-              <img src="b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="" />
+              <img src="b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="РХБЗ" />
               РХБЗ
             </Link>
             <Link href="/members" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Состав
             </Link>
-            <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+            <Link href="/structure" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Структура
             </Link>
             <Link href="/awards" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
@@ -55,5 +56,6 @@ export const MainHeader = () => {
           </div>
         </div>
       </header>
+      </div>
     );
 }
