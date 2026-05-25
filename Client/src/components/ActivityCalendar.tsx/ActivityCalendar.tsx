@@ -297,7 +297,7 @@ export const ActivityCalendar = () =>{
                     <div className="flex flex-1">
                         <div className="grid flex-1 gap-1 grid-cols-5">
                             {monthsMatrix.map((item)=>(
-                                <ActivityCalendarPillar isBlank={item.isBlank} key={item.Date?.getTime()}  switchMonthMethod={setActiveMonthById} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
+                                <ActivityCalendarPillar isBlank={item.isBlank} key={monthsMatrix.indexOf(item)}  switchMonthMethod={setActiveMonthById} Id={item.Id} monthName={item.monthName} year={item.year} isSelected={item.isSelected} filling={item.filling}></ActivityCalendarPillar>
                             ))}
                         </div>
                     </div>

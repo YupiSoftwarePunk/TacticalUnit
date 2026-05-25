@@ -151,7 +151,7 @@ export default function LandingPage() {
 
   return (
     <div className="transition-colors duration-300 bg-bg-primary overflow-x-hidden font-text">
-      <MainHeader currentTheme={theme} onThemeChange={toggleTheme} />
+      <MainHeader />
 
       {/* === HERO SECTION === */}
       <section className="relative h-[80vh] flex items-center justify-center pt-14">
