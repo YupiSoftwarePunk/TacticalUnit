@@ -84,12 +84,7 @@ const PRIDE_MEMBERS = [
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
 
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("theme") as ThemeMode) || "system";
-    }
-    return "system";
-  });
+  
 
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -102,19 +97,6 @@ export default function LandingPage() {
     return () => cancelAnimationFrame(handle);
   }, []);
 
-  const toggleTheme = (newTheme: ThemeMode) => {
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    
-    const root = document.documentElement;
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    if (newTheme === "dark" || (newTheme === "system" && systemPrefersDark)) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  };
 
   const scrollLeft = () => carouselRef.current?.scrollBy({ left: -350, behavior: "smooth" });
   const scrollRight = () => carouselRef.current?.scrollBy({ left: 350, behavior: "smooth" });
@@ -151,7 +133,7 @@ export default function LandingPage() {
 
   return (
     <div className="transition-colors duration-300 bg-bg-primary overflow-x-hidden font-text">
-      <MainHeader currentTheme={theme} onThemeChange={toggleTheme} />
+      <MainHeader />
 
       {/* === HERO SECTION === */}
       <section className="relative h-[80vh] flex items-center justify-center pt-14">
