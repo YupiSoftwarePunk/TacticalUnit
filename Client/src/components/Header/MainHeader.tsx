@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { applyTheme } from "@/layouts/ThemeLayout";
@@ -27,8 +29,14 @@ export const MainHeader = () => {
               <img src="b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="" />
               РХБЗ
             </Link>
+            <Link href="/members" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+              Состав
+            </Link>
             <Link href="#" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
-              Обзор
+              Структура
+            </Link>
+            <Link href="/awards" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+              Награды
             </Link>
           </div>
 

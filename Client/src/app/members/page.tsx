@@ -2,6 +2,7 @@
 
 import React from "react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
+import { MainHeader } from "@/components/Header/MainHeader";
 
 interface Member {
     rank: string;
@@ -84,26 +85,29 @@ export default function MembersPage() {
     };
 
     return (
-        <main className="min-h-screen bg-bg-primary pt-24 pb-12 px-8">
-            <div className="max-w-[1400px] mx-auto">
-                <header className="mb-12">
-                    <h1 className="text-5xl font-header text-text-primary uppercase tracking-normal mb-2">
-                        Личный состав
-                    </h1>
-                    <p className="text-text-secondary font-text-regular text-lg">
-                        Реестр зарегистрированных бойцов подразделения [РХБЗ]
-                    </p>
-                </header>
+        <div className="flex flex-col h-full">
+            <MainHeader></MainHeader>
+            <main className="min-h-screen bg-bg-primary pt-24 pb-12 px-8">
+                <div className="max-w-[1400px] mx-auto">
+                    <header className="mb-12">
+                        <h1 className="text-5xl font-header text-text-primary uppercase tracking-normal mb-2">
+                            Личный состав
+                        </h1>
+                        <p className="text-text-secondary font-text-regular text-lg">
+                            Реестр зарегистрированных бойцов подразделения [РХБЗ]
+                        </p>
+                    </header>
 
-                <section className="bg-bg-primary border border-bg-secondary p-8 shadow-2xl">
-                    <UniversalTable 
-                        data={MEMBERS_DATA} 
-                        columns={COLUMNS_CONFIG} 
-                        onExport={handleExport}
-                        defaultSort={{ key: "rank", direction: "desc" }}
-                    />
-                </section>
-            </div>
-        </main>
+                    <section className="bg-bg-primary border border-bg-secondary p-8 shadow-2xl">
+                        <UniversalTable 
+                            data={MEMBERS_DATA} 
+                            columns={COLUMNS_CONFIG} 
+                            onExport={handleExport}
+                            defaultSort={{ key: "rank", direction: "desc" }}
+                        />
+                    </section>
+                </div>
+            </main>
+        </div>
     );
 }
