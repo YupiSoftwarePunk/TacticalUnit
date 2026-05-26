@@ -388,6 +388,7 @@ export default function ClanStructurePage() {
                     position: relative;
                 }
                 .org-tree li {
+                    flex: 1;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -447,6 +448,7 @@ export default function ClanStructurePage() {
                     display: none !important;
                 }
                 .org-tree li.member-item {
+                    flex: none !important;
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: center !important;
