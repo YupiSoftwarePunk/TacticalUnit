@@ -4,6 +4,6 @@ export default function PostsPage(){
     
     
     return(
-        <div>страница постов</div>
+        <div>Ветка должностей</div>
     );
 }
