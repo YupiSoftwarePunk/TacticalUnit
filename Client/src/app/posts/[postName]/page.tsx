@@ -118,6 +118,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     const [divisionIsFocused, setDivisionIsFocused] = useState(false);
     const [postIsFocused, setPostIsFocused] = useState(false);
     const [permissionsExtended, setPermissionExtended] = useState(false);
+    const [isNotSaved, setIsNotSaved] = useState(false);
 
     const [savedPost, setSavedPost] = useState<IPost>({
         hexColor: "#ffffff",
@@ -131,12 +132,17 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     const [post, setPost] = useState<IPost>(savedPost);
 
     let edit = false;
+    let wasEditing = false;
 
     function checkEditMode(){
         setTimeout(()=>{setEditMode(edit); 
             if (!edit) {
                 setDivisionIsFocused(false); 
                 setPostIsFocused(false);
+                if (wasEditing){
+                    
+                    setIsNotSaved(true);
+                }
             }
             edit = false}, 5)
     }
@@ -144,16 +150,25 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
         if(canEdit){
             
             edit = true;
+            wasEditing = true;
         }
     }
     function saveChanges(){
-        setSavedPost(post);
+        let midPost : IPost = {
+            hexColor: post.hexColor,
+            division: savedPost.division,
+            postName: post.postName,
+            showDivisionName: post.showDivisionName,
+            postDescription: post.postDescription,
+            permissions: post.permissions,
+            DiscordId: post.DiscordId,
+            higherPost: savedPost.higherPost,
+        }
+        setSavedPost(midPost);
+        setIsNotSaved(false);
+
     }
 
-    const copyDiscordId = () => {
-        navigator.clipboard.writeText("ROLE_ID_12345");
-        alert("ID роли скопирован");
-    };
 
 
     const changeDivisionFocus = (focus : boolean) =>{
@@ -196,6 +211,9 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     
     return (
         <div className="flex flex-col h-screen" >
+            {canEdit&&
+            <button onClick={saveChanges} className={`fixed bottom-10 self-center text-text-primary bg-bg-primary border border-accent px-10 py-3 text-2xl hover:bg-accent hover:text-black cursor-pointer transition-all `} style={{bottom: `${isNotSaved?  "40px" : "-80px"}`}}>Сохранить изменения</button>
+            }
             <div className="flex">
                 <MainHeader></MainHeader>
             </div>
@@ -230,7 +248,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                     <div  className={`absolute flex font-text-bold p-2 gap-2 flex-col mt-2 z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${divisionIsFocused? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${divisionIsFocused? "" :"0px"}`}}>
                                         {
                                         getDivisions(post.division!).map((item)=>(
-                                            <div key={item.actualName} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" onClick={()=>{setDivision(item.actualName); changeDivisionFocus(false);}}>{item.displayName}</div>
+                                            <div key={item.actualName} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" onClick={()=>{setDivision(item.actualName); setDivisionIsFocused(false);}}>{item.displayName}</div>
                                         ))
                                         }
                                     </div>
@@ -261,7 +279,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                             <input value={post.postName} type="text" onChange={e=>{setPost(post=>({...post,postName: e.target.value}));}} className={`flex ${editMode? "" : " opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold uppercase tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                                             
                                             
-                                            <button onClick={()=>{setPost(post=>({...post, showDivisionName: !post.showDivisionName}))}} name="showDivisionButton" className={`flex hover:bg-bg-accent px-3 self-end right-0 gap-2 ${editMode? "mt-1 " : "-mt-5"} transition-all`}>
+                                            <button onClick={()=>{setPost(post=>({...post, showDivisionName: !post.showDivisionName}));}} name="showDivisionButton" className={`flex hover:bg-bg-accent px-3 self-end right-0 gap-2 ${editMode? "mt-1 " : "-mt-5"} transition-all`}>
                                                 <label htmlFor="showDivisionButton" className="self-center" itemID="">дополнять названием подразделения</label>
                                                 <div className=" m-1 bg-bg-secondary border border-border-secondary">
 
@@ -305,7 +323,8 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                                 postDescription : "",
                                                 permissions : [],
                                                 hexColor : "",
-                                                showDivisionName : false
+                                                showDivisionName : false,
+                                                DiscordId: ""
                                             };
                                         
                                         if(post.higherPost != undefined) {
@@ -322,7 +341,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                             onClick={()=>{
                                                 setPost(post=>({...post, higherPost: item}));
                                                 setSavedPost(post=>({...post, higherPost: item}));
-                                                changePostFocus(false);
+                                                setPostIsFocused(false);
                                             }}
                                                 >{item.postName}</div>
                                         ))
@@ -357,10 +376,10 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                             <div key={item} className="flex">
                                                 <button className="hover:bg-bg-secondary gap-3 flex flex-1 ">
                                                     <ToolTip tooltipText="Выдать разрешение" className="flex">
-                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item)}}> <Check className={`${post.permissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item); setIsNotSaved(true)}}> <Check className={`${post.permissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                                                     </ToolTip>
                                                     <ToolTip tooltipText="Наследовать разраешение">
-                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item)}}> <Check className={`${post.permissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item); setIsNotSaved(true)}}> <Check className={`${post.permissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                                                     </ToolTip>
                                                     <p className="text-text-primary font-text-bold">{item}</p>
                                                 </button>
