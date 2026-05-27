@@ -205,18 +205,36 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
             <div className="flex flex-1 w-full bg-bg-primary transition-colors duration-300" onClick={()=>{checkEditMode()}}>
                 <div className=" flex flex-col max-w-[1200px] mx-auto pt-10 px-6 animate-in fade-in duration-500">
                     <div className="flex flex-col  gap-8 mb-12 items-stretch">
-                        <Tooltip tooltipText="Поле цвета в формате HEX" className="flex flex-col self-stretch size-full">
-                            <div className="flex relative border border-border-secondary min-w-10 h-full"  onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`, background: `${rank.hexColor}`}}>
+                        <div className="flex">
+                            <Tooltip tooltipText="Шеврон" className="flex">
+                                <div className=" flex flex-col">
+                                    <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group">
+                                        <img 
+                                        src="/-_-.jpg"
+                                        alt="Award" 
+                                        className="flex object-cover max-h-30"/>
+                                        {canEdit && (
+                                        <button className="absolute bottom-2 right-2 p-2 bg-black/10 dark:bg-black/50 hover:bg-accent opacity-0 hover:opacity-100 transition-all border border-black/20 dark:border-white/10">
+                                            <Pencil className="text-text-primary" />
+                                        </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </Tooltip>
+                            <Tooltip tooltipText="Поле цвета в формате HEX" className="flex flex-col flex-1 self-stretch size-full">
+                                <div className="flex relative border border-border-secondary min-w-10 h-full"  onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`, background: `${rank.hexColor}`}}>
 
-                                <h1 className={`flex text-text-primary text-shadow-lg  text-shadow-text-inverted font-text-bold tracking-wider text-lg inset-2 transition-all m-2 ${editMode? "absolute pointer-events-none opacity-0" : " opacity-50"}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-                                {`${rank.hexColor}`}
-                                </h1>
-                                {canEdit&&
+                                    <h1 className={`flex text-text-primary text-shadow-lg  text-shadow-text-inverted font-text-bold tracking-wider text-lg inset-2 transition-all m-2 ${editMode? "absolute pointer-events-none opacity-0" : " opacity-50"}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
+                                    {`${rank.hexColor}`}
+                                    </h1>
+                                    {canEdit&&
 
-                                <textarea value={rank.hexColor} onChange={e=>{e.target.value.length <=7? setRank(post=>({...post,hexColor: e.target.value})) : e.target.value}} className={`${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-2 flex flex-1 w-fit text-text-primary text-shadow-lg text-shadow-text-inverted font-text-bold text-lg resize-none py-2 transition-all`} style={{padding: `${editMode? "24" : "0"}px`}} rows={1} cols={7}/>
-                                }
-                            </div>
-                        </Tooltip>
+                                    <textarea value={rank.hexColor} onChange={e=>{e.target.value.length <=7? setRank(post=>({...post,hexColor: e.target.value})) : e.target.value}} className={`${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-2 flex flex-1 w-fit text-text-primary text-shadow-lg text-shadow-text-inverted font-text-bold text-lg resize-none py-2 transition-all`} style={{padding: `${editMode? "24" : "0"}px`}} rows={1} cols={7}/>
+                                    }
+                                </div>
+                            </Tooltip>
+                            
+                        </div>
                         
                         <div className="flex-1 flex flex-col gap-4">
                             <Tooltip tooltipText="Наименование должности">
