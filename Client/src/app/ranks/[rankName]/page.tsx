@@ -134,17 +134,17 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
         }
     }
     function saveChanges(){
-        let midPost : IRank = {
-            hexColor: rank.hexColor,
-            division: savedRank.division,
-            rankName: rank.rankName,
-            showDivisionName: rank.showDivisionName,
-            postDescription: rank.postDescription,
-            permissions: rank.permissions,
-            DiscordId: rank.DiscordId,
-            lowerRank: savedRank.lowerRank,
-        }
-        setSavedRank(midPost);
+        // let midPost : IRank = {
+        //     hexColor: rank.hexColor,
+        //     division: savedRank.division,
+        //     rankName: rank.rankName,
+        //     showDivisionName: rank.showDivisionName,
+        //     postDescription: rank.postDescription,
+        //     permissions: rank.permissions,
+        //     DiscordId: rank.DiscordId,
+        //     lowerRank: savedRank.lowerRank,
+        // }
+        // setSavedRank(midPost);
         setIsNotSaved(false);
 
     }
@@ -364,7 +364,7 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                     <div className="mt-16">
                         <div className="flex justify-between items-end mb-6">
                         <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
-                            Бойцы стоящие на данной должности
+                            Бойцы носящие это звание
                         </h2>
                         
                         {canGrant && (
