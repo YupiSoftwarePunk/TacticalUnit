@@ -1,7 +1,10 @@
 'use client'
 import { ActivityCalendar } from "@/components/ActivityCalendar.tsx/ActivityCalendar";
 import { MainHeader } from "@/components/Header/MainHeader";
-import { useState } from "react";
+import {LoadingScreen, ErrorScreen} from "@/components/StatusScreens/Screens";
+import { getBaseVariables } from "@/typescript/variables";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface IActionMenuOption{
     name : string,
@@ -9,7 +12,36 @@ interface IActionMenuOption{
     url : string
 }
 
+
+interface IUnit {
+
+}
+
+
+
+
 export default function Profile(){
+    const params = useSearchParams();
+    const id = params?.get("id"); 
+    if (!id) {
+        return (<LoadingScreen></LoadingScreen>);
+    }
+    
+
+    const [jsonData, setJsonData] = useState<IUnit>();
+    const dom : string = getBaseVariables().dom;
+    useEffect(()=>{
+        // var r = fetch(`${dom}/api/unit/${id}`).then((response)=>response.json()).then((data)=>setJsonData(data)).catch(error=>{
+        //     console.warn("fail to fetch: "+ error)
+        // })
+        
+    }, [])
+    if (jsonData == undefined){
+        return (<ErrorScreen error="Не удалось получить данные профиля"></ErrorScreen>);
+    }
+    
+    const [unitData, setUnitData] = useState<IUnit>();
+
     const [accessRoles, setAccessRoles] = useState<string[]>([]);
     const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([
     {
@@ -23,7 +55,6 @@ export default function Profile(){
         accessOnRoles : ["any"]
     }
     ]);
-
     return(
         <div className="flex flex-col min-h-screen text-text-secondary font-text">
             <MainHeader></MainHeader>
