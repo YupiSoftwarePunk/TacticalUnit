@@ -192,14 +192,13 @@ export const ActivityCalendar = () =>{
                 
     }
 
-    if(monthsMatrix.length == 0){
-        refreshMonthsDisplay();
-    }
+    
     
     useEffect(()=>{
         setSelectedMonthDisplay(monthsStr[selectedMonth]);
         setMonthsMatrix(preparedMonths);
         setActivityMatrix(activityMatrixFilled);
+        refreshMonthsDisplay();
 
     }, [])
 

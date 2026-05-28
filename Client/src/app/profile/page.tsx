@@ -1,6 +1,9 @@
 'use client'
 import { ActivityCalendar } from "@/components/ActivityCalendar.tsx/ActivityCalendar";
 import { MainHeader } from "@/components/Header/MainHeader";
+import LoadingScreen from "@/components/LoadingScreen/LoadingScreen";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 interface IActionMenuOption{
@@ -16,6 +19,16 @@ interface IActionMenuOption{
 
 
 export default function Profile(){
+    const params = useSearchParams();
+    const id = params?.get("id"); 
+    
+
+    
+
+    if (!id) {
+        return (<LoadingScreen></LoadingScreen>);
+    }
+
     const [accessRoles, setAccessRoles] = useState<string[]>([]);
     const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([
     {
@@ -29,12 +42,6 @@ export default function Profile(){
         accessOnRoles : ["any"]
     }
     ]);
-
-    
-
-
-
-
     return(
         <div className="flex flex-col min-h-screen text-text-secondary font-text">
             <MainHeader></MainHeader>
