@@ -1,10 +1,10 @@
 'use client'
 import { ActivityCalendar } from "@/components/ActivityCalendar.tsx/ActivityCalendar";
 import { MainHeader } from "@/components/Header/MainHeader";
-import LoadingScreen from "@/components/LoadingScreen/LoadingScreen";
+import {LoadingScreen, ErrorScreen} from "@/components/StatusScreens/Screens";
+import { getBaseVariables } from "@/typescript/variables";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface IActionMenuOption{
     name : string,
@@ -13,7 +13,9 @@ interface IActionMenuOption{
 }
 
 
+interface IUnit {
 
+}
 
 
 
@@ -21,13 +23,24 @@ interface IActionMenuOption{
 export default function Profile(){
     const params = useSearchParams();
     const id = params?.get("id"); 
-    
-
-    
-
     if (!id) {
         return (<LoadingScreen></LoadingScreen>);
     }
+    
+
+    const [jsonData, setJsonData] = useState<IUnit>();
+    const dom : string = getBaseVariables().dom;
+    useEffect(()=>{
+        // var r = fetch(`${dom}/api/unit/${id}`).then((response)=>response.json()).then((data)=>setJsonData(data)).catch(error=>{
+        //     console.warn("fail to fetch: "+ error)
+        // })
+        
+    }, [])
+    if (jsonData == undefined){
+        return (<ErrorScreen error="Не удалось получить данные профиля"></ErrorScreen>);
+    }
+    
+    const [unitData, setUnitData] = useState<IUnit>();
 
     const [accessRoles, setAccessRoles] = useState<string[]>([]);
     const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([
