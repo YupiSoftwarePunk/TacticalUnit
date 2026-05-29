@@ -1,5 +1,6 @@
 "use client";
 
+import { BaseContainer, MultiroleInputField } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { MainHeader } from "@/components/Header/MainHeader";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import ToolTip from "@/components/ToolTip/ToolTip";
@@ -182,7 +183,6 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
         list.unshift({rank: undefined})
         return list;
     }
-
     function setPermission(permissionName :string){
         if(rank.permissions.includes(permissionName)){
             setRank(post=>({...post, permissions: post.permissions.filter(x=>x != permissionName)}))
@@ -208,7 +208,7 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                         <div className="flex">
                             <Tooltip tooltipText="Шеврон" className="flex">
                                 <div className=" flex flex-col">
-                                    <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group">
+                                    <div className="relative bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group">
                                         <img 
                                         src="/-_-.jpg"
                                         alt="Award" 
@@ -237,52 +237,13 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                         </div>
                         
                         <div className="flex-1 flex flex-col gap-4">
-                            <Tooltip tooltipText="Наименование должности">
-                            <div className="flex gap-5 relative border border-black/10 dark:border-white/5 bg-gray-100 dark:bg-[#1a1a1a] p-4 group pointer-events-auto" onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
-                                
-                                <div className="flex gap-5 flex-1">
-                                
-                                        <div className="flex flex-1 gap-5 ">
-                                            <div className={`flex text-accent font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-
-                                            <h1 className={`flex text-accent font-text-bold uppercase tracking-wider text-lg transition-all ${editMode? "opacity-0" : ""}`} >
-                                            {`${rank.rankName}`}
-                                            </h1>
-                                            </div>
-                                            {canEdit&&
-                                                <div className={`flex flex-col ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex-1 transition-all`}>
-                                                    <input value={rank.rankName} type="text" onChange={e=>{setRank(rank=>({...rank,rankName: e.target.value}));}} className={`flex ${editMode? "" : " opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold uppercase tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
-                                                    
-                                                </div>
-                                            }
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                            </Tooltip>
-                            <Tooltip tooltipText="Кол-во активности до повышения">
-                                <div className="flex gap-5 relative border border-black/10 dark:border-white/5 bg-gray-100 dark:bg-[#1a1a1a] p-4 group pointer-events-auto" onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
-                                        
-                                        <div className="flex gap-5 flex-1">
-                                        
-                                        <div className="flex flex-1 gap-5 ">
-                                            <div className={`flex text-accent font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-
-                                            <h1 className={`flex text-accent font-text-bold uppercase tracking-wider text-lg transition-all ${editMode? "opacity-0" : ""}`} >
-                                            {`${rank.activityUntilPromotion}`}
-                                            </h1>
-                                            </div>
-                                            {canEdit&&
-                                                <div className={`flex flex-col ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex-1 transition-all`}>
-                                                    <input value={rank.activityUntilPromotion} type="number" onChange={e=>{setRank(rank=>({...rank, activityUntilPromotion: (e.target.value as unknown as number)}));}} className={`flex ${editMode? "" : " opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold uppercase tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
-                                                    
-                                                </div>
-                                            }
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                            </Tooltip>
+                            <BaseContainer onClick={attemptToEdit} tooltip="Наименование должности" style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
+                                <MultiroleInputField type="text" editable={canEdit} editMode={editMode} value={rank.rankName} onChange={e=>{setRank(rank=>({...rank,rankName: e.target.value}));}}></MultiroleInputField>
+                            </BaseContainer>
+                            <BaseContainer onClick={attemptToEdit} tooltip="Наименование должности" style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
+                                <MultiroleInputField type="num" editable={canEdit} editMode={editMode} value={rank.activityUntilPromotion} onChange={e=>{setRank(rank=>({...rank, activityUntilPromotion: Math.abs(Math.max(e.target.value as unknown as number, 1))}));}}></MultiroleInputField>
+                            </BaseContainer>
+                            
 
                             
                             <div className="flex flex-col relative border border-black/10 dark:border-white/5 bg-gray-100 dark:bg-[#1a1a1a] p-4 group pointer-events-auto" onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
