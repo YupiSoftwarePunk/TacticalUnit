@@ -23,9 +23,9 @@ interface IUnit {
 export default function Profile(){
     const params = useSearchParams();
     const id = params?.get("id"); 
-    if (!id) {
-        return (<LoadingScreen></LoadingScreen>);
-    }
+    // if (!id) {
+    //     return (<LoadingScreen></LoadingScreen>);
+    // }
     
 
     const [jsonData, setJsonData] = useState<IUnit>();
