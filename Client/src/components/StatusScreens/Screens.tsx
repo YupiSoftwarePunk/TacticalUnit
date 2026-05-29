@@ -59,6 +59,12 @@ export const ErrorScreen = ({error} : IErrorScreen) =>{
                 Текст ошибки: {error}
             </div>
         }
+        
+        </div>
+        <div className="bg-bg-secondary bottom-5 flex self-center absolute text-xl px-6 py-2 gap-0 text-text-primary">
+            <button className="hover:bg-accent px-5 hover:text-black transition-all cursor-pointer" onClick={()=>{navigation.back()}}>Назад</button>
+            <div className="flex border-r"/>
+            <a href="/" className="hover:bg-accent px-5 hover:text-black transition-all" >Главная страница</a>
         </div>
     </div>
 );
