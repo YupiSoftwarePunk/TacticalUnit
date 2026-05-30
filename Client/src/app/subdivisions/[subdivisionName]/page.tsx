@@ -1,12 +1,14 @@
 "use client";
 
 import { MainHeader } from "@/components/Header/MainHeader";
+import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import ToolTip from "@/components/ToolTip/ToolTip";
+import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import UniversalTable from "@/widgets/universalList/universalTable";
 import { Check, ChevronDown, Cross, Pencil, X } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 
 const MEMBERS_DATA = [
@@ -63,8 +65,8 @@ const COLUMNS_CONFIG = [
 const mockDivisions : ISubdivision[] = []
 const mockPermissions : IGivedPermission[] = []
 
-export default function PostPage({params}: {params: Promise<{subdivisionName: string}>}) {
-    const { subdivisionName: postName } = React.use(params);
+export default function PostPage({params}: {params: Promise<{subdivisionId: string}>}) {
+    const { subdivisionId: subdivisionId } = React.use(params);
     const [canEdit, setCanEdit] = useState(true);
     const [editMode, setEditMode] = useState(false);
     const [canGrant, setCanGrant] = useState(true);
@@ -87,10 +89,23 @@ export default function PostPage({params}: {params: Promise<{subdivisionName: st
         DiscordRoleId : "-1"
     });
     const [subdivision, setSubdivision] = useState<ISubdivision>(savedSubdivision);
+    // const [subdivision, setSubdivision] = useState<ISubdivision>();
+
+    const [loadingError, setLoadingError] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    useEffect(()=>{
+        SubdivisionService.getById(subdivisionId as unknown as number).then(data =>{ setSubdivision(data); setLoading(false)}).catch(()=>{setLoadingError(true)})
+    }, [])
+
+    if (loadingError) {return <ErrorScreen error="Не удалось получить данные с сервера. Проверьте правильность адреса и перезагрузите страницу"></ErrorScreen>}
+    if (loading) {return <LoadingScreen></LoadingScreen>}
+    
+
 
     let edit = false;
     let wasEditing = false;
 
+    
     function checkEditMode(){
         setTimeout(()=>{setEditMode(edit); 
             if (!edit) {
@@ -354,7 +369,7 @@ export default function PostPage({params}: {params: Promise<{subdivisionName: st
                         
                         {canGrant && (
                             <Link 
-                            href={`/awards/grant/${postName}`}
+                            href={`/awards/grant/${subdivisionId}`}
                             className="text-accent font-text uppercase text-sm border-b-2 border-accent hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1"
                             >
                             Назначить бойца

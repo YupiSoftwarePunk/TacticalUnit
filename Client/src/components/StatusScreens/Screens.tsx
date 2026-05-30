@@ -56,7 +56,7 @@ export const ErrorScreen = ({error} : IErrorScreen) =>{
                     {
                         error &&
                         <div className="flex top-50 absolute justify-center w-screen px-20 text-center self-center z-10 text-xl cursor-copy" onClick={()=>{navigator.clipboard.writeText(error)}}>
-                            Текст ошибки: {error}
+                            Текст ошибки:<br/>{error}
                         </div>
                     }
                 </div>
