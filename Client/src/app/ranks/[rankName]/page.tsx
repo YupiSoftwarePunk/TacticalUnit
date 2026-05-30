@@ -51,22 +51,6 @@ interface IRankWrapper{
     rank?: IRank
 }
 
-interface IRank{
-    hexColor : string,
-    rankName : string,
-    activityUntilPromotion : number,
-    rankChevronURL? : string,
-    lowerRank? : IRank,
-    permissions : string[],
-    DiscordId : string
-}
-
-interface IDivision{
-    displayName : string,
-    actualName : string
-}
-
-
 const mockRanks : IRank[] = [
     {
         hexColor: "#ffffff",
