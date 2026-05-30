@@ -2,6 +2,7 @@
 
 import { BaseContainer, MultiroleInputField } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import ToolTip from "@/components/ToolTip/ToolTip";
 import UniversalTable from "@/widgets/universalList/universalTable";
@@ -51,30 +52,10 @@ interface IRankWrapper{
     rank?: IRank
 }
 
-const mockRanks : IRank[] = [
-    {
-        Color: "#ffffff",
-        Name: "рядовой райан",
-        CounterToReach : 10,
-        GivedPermissions: ["разр1", "разр2"],
-        DiscordRoleId: "124234512351345135"
-    },
-    {
-        Color: "#ffffff",
-        Name: "не рядовой",
-        CounterToReach : 15,
-        GivedPermissions: ["разр1", "разр2"],
-        DiscordRoleId: "124234512351345135"
-    },
-]
+const mockRanks : IRank[] = []
 
 
-const mockPermissions : string[] = [
-    "разр1", 
-    "разр2",
-    "разр3",
-    "разр4"
-]
+const mockPermissions : IGivedPermission[] = []
 
 export default function PostPage({params}: {params: Promise<{rankName: string}>}) {
     const { rankName } = React.use(params);
@@ -88,13 +69,26 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
 
     const [savedRank, setSavedRank] = useState<IRank>(
     {
-        Color: "#ffffff",
-        Name: "Название звания",
-        CounterToReach : 15,
-        GivedPermissions: ["разр1", "разр2"],
-        DiscordRoleId: "124234512351345135"
+        Id : 0,
+        CounterToReach : 10,
+        PreviousId : undefined,
+        Previous : undefined,
+        NextId : undefined,
+        Next : undefined,
+        Units : [],
+        Color : "#f3f3f3",
+        Name : "Имя загружается...",
+        RankChevronURL : "#",
+        GivedPermissions : [],
+        DiscordRoleId : -1
     });
     const [rank, setRank] = useState<IRank>(savedRank);
+
+    if(!rank){return <LoadingScreen></LoadingScreen>}
+
+
+
+    const [rankPrompt, setRankPrompt] = useState<string>(rank.Previous? rank.Previous.Name : "");
 
     let edit = false;
     let wasEditing = false;
@@ -167,12 +161,12 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
         list.unshift({rank: undefined})
         return list;
     }
-    function setPermission(permissionName :string){
-        if(rank.GivedPermissions.includes(permissionName)){
-            setRank(post=>({...post, GivedPermissions: post.GivedPermissions.filter(x=>x != permissionName)}))
+    function setPermission(prompt : string){
+        if(rank.GivedPermissions.find(x=>x.Permission.Name == prompt)){
+            setRank(post=>({...post, GivedPermissions: post.GivedPermissions.filter(x=>x.Permission.Name != prompt)}))
         }else{
-            let modList : string[] = rank.GivedPermissions;
-            modList.push(permissionName);
+            let modList : IGivedPermission[] = rank.GivedPermissions;
+            //modList.push(prompt);
             setRank(post=>({...post, GivedPermissions: modList}))
         }
     }
@@ -240,22 +234,9 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
 
                                 {canEdit&&
                                 <div className={`relative flex ${editMode? "" : "absolute opacity-0 pointer-events-none"}`} onClick={attemptToEdit} >
-                                    <input value={rank.Previous?.Name? rank.Previous?.Name :""} type="text" onFocus={()=>{changePostFocus(true)}}  
+                                    <input value={rankPrompt} type="text" onFocus={()=>{changePostFocus(true)}}  
                                     onChange={e=>{
-                                        let newHP : IRank = {
-                                                Name : "",
-                                                GivedPermissions : [],
-                                                Color : "",
-                                                DiscordRoleId: "",
-                                                CounterToReach: 10
-                                            };
-                                        
-                                        if(rank.Previous != undefined) {
-                                            newHP.Name = rank.Previous.Name;
-                                        }
-                                        
-                                        newHP.Name = e.target.value;
-                                        setRank(post=>({...post, Previous: newHP}));
+                                        setRankPrompt(e.target.value);
                                         }} className={`flex ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                                     <div  className={`absolute flex font-text-bold p-2 gap-2 flex-col mt-2 z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${previousRankIsFocused? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${previousRankIsFocused? "" :"0px"}`}}>
                                         {
@@ -289,22 +270,22 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                                     <div  className={`flex flex-1  font-text-bold min-h-0 p-2 gap-2 flex-col mt-2 z-1 top-full  max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${permissionsExtended? "" :"h-0 pointer-events-none"}`} style={{minHeight: `${permissionsExtended? "" :"0px"}`}}>
                                         {!canEdit && 
                                             rank.GivedPermissions.map((item)=>(
-                                            <div key={item} className="flex">
-                                                <p className="hover:bg-bg-secondary gap-3 flex flex-1">{item}</p>
+                                            <div key={item.Permission.Name} className="flex">
+                                                <p className="hover:bg-bg-secondary gap-3 flex flex-1">{item.Permission.Name}</p>
                                             </div>
                                         ))
                                         }
                                         {canEdit &&
                                         mockPermissions.map((item)=>(
-                                            <div key={item} className="flex">
+                                            <div key={item.Permission.Name} className="flex">
                                                 <button className="hover:bg-bg-secondary gap-3 flex flex-1 ">
                                                     <ToolTip tooltipText="Выдать разрешение" className="flex">
-                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item); setIsNotSaved(true)}}> <Check className={`${rank.GivedPermissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Permission.Name); setIsNotSaved(true)}}> <Check className={`${rank.GivedPermissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                                                     </ToolTip>
                                                     <ToolTip tooltipText="Наследовать разраешение">
-                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item); setIsNotSaved(true)}}> <Check className={`${rank.GivedPermissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Permission.Name); setIsNotSaved(true)}}> <Check className={`${rank.GivedPermissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                                                     </ToolTip>
-                                                    <p className="text-text-primary font-text-bold">{item}</p>
+                                                    <p className="text-text-primary font-text-bold">{item.Permission.Name}</p>
                                                 </button>
                                                 
                                             </div>
@@ -319,7 +300,7 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                           
                         
                         </div>
-                        <div className="flex self-center font-text-bold hover:text-accent cursor-copy transition-all" onClick={()=>{navigator.clipboard.writeText(rank.DiscordRoleId)}}>
+                        <div className="flex self-center font-text-bold hover:text-accent cursor-copy transition-all" onClick={()=>{navigator.clipboard.writeText(`${rank.DiscordRoleId}`)}}>
                             <p>ID Discord роли: {rank.DiscordRoleId}</p>
                         </div>
                     </div>

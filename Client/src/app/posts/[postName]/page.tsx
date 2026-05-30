@@ -246,7 +246,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                 <Tooltip tooltipText="Подразделение"> 
 
                                 <h1 className={`flex text-accent font-text-bold tracking-wider text-lg py-2 transition-all ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-                                {`${savedPost.Subdivision?.Name.length == 0 ? "[ Без подразделения ]" : savedPost.Subdivision?.Name}`}
+                                {`${savedPost.Subdivision? savedPost.Subdivision.Name : "[ Без подразделения ]"}`}
                                 </h1>                                
                                 </Tooltip>
 

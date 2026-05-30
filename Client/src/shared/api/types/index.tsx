@@ -27,7 +27,7 @@ interface ISubdivision{
     HeadId? : number,
     Head? : ISubdivision,
     Subordinates : ISubdivision[],
-    GivedPermissions : IPermission[],
+    GivedPermissions : IGivedPermission[],
     Color : string,
     Name : string,
     DiscordRoleId : string
