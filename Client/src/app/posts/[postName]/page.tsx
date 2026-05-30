@@ -82,20 +82,8 @@ interface IDivision{
 
 
 
-const mockDivisions : IDivision[] = [
-    {
-        actualName : "подразд1",
-        displayName :"подразд1"
-    }, 
-    {
-        actualName : "подз2",
-        displayName :"подз2"
-    }, 
-     
-    {
-        actualName : "моторчик",
-        displayName :"моторчик"
-    }]
+const mockDivisions : ISubdivision[] = []
+const mockPosts : IPost[] = []
 const mockPermissions : string[] = [
     "разр1", 
     "разр2",
@@ -113,12 +101,43 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     const [permissionsExtended, setPermissionExtended] = useState(false);
     const [isNotSaved, setIsNotSaved] = useState(false);
 
-    const [savedPost, setSavedPost] = useState<IPost>();
-    const [post, setPost] = useState<IPost>();
+    
+
+    const [savedPost, setSavedPost] = useState<IPost>({
+        Id : 0,
+        Description : "Загрузка описания...",
+        SubdivisionId : undefined,
+        Subdivision : undefined,
+        AppendSubdivisionName : false,
+        HeadId : undefined,
+        Head : undefined,
+        MaxRank : {
+            Id : 0,
+            CounterToReach : 10,
+            PreviousId : undefined,
+            Previous : undefined,
+            NextId : undefined,
+            Next : undefined,
+            Units : [],
+            Color : "#f6f6f6",
+            Name : "Загрузка названия звания",
+            RankChevronURL : "#",
+            GivedPermissions : [],
+            DiscordRoleId : -1
+        },
+        Units : [],
+        Color : "#b4b4b4",
+        Name : "Загрузка названия должности...",
+        GivedPermission : [],
+        DiscordRoleId : ""
+    });
+    const [post, setPost] = useState<IPost>(savedPost);
 
     if (!post){
         return (<LoadingScreen></LoadingScreen>)
     }
+    const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>(post.Subdivision? post.Subdivision.Name : "");
+    const [postPrompt, setPostPrompt] = useState<string>(post.Head? post.Head.Name : "");
 
     let edit = false;
     let wasEditing = false;
@@ -169,17 +188,18 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
         setPostIsFocused(focus);
     }
 
-    const setDivision = (division : string) => {
+    const setDivision = (division? : ISubdivision) => {
         setPost(post=>({...post, Subdivision: division}) )
         setSavedPost(savedPost=>({...savedPost, Subdivision: division}) )
     }
 
-    function getDivisions (prompt:string) : IDivision[]{
-        let list = mockDivisions.filter(post.Subdivision?.length == 0? (x=>x == x):(x=>!x.displayName.search(post.Subdivision!)));
-        list.unshift({
-            actualName: "",
-            displayName: "[ Без подразделения ]"
-        })
+    function getDivisions (prompt:string) : ISubdivision[]{
+        // let list = mockDivisions.filter(post.Subdivision?.length == 0? (x=>x == x):(x=>!x.displayName.search(post.Subdivision!)));
+        // list.unshift({
+            //     actualName: "",
+            //     displayName: "[ Без подразделения ]"
+            // })
+        let list = mockDivisions.filter(post.Subdivision?.Name.length == 0? (x=>x == x):(x=>!x.Name.search(post.Subdivision?.Name!)));
         return list;
     }
     function getPosts (prompt:string) : IPost[]{
@@ -226,18 +246,19 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                 <Tooltip tooltipText="Подразделение"> 
 
                                 <h1 className={`flex text-accent font-text-bold tracking-wider text-lg py-2 transition-all ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-                                {`${savedPost.Subdivision?.length == 0 ? "[ Без подразделения ]" : savedPost.Subdivision}`}
+                                {`${savedPost.Subdivision?.Name.length == 0 ? "[ Без подразделения ]" : savedPost.Subdivision?.Name}`}
                                 </h1>                                
                                 </Tooltip>
 
 
                                 {canEdit&&
                                 <div className={`relative flex ${editMode? "" : "absolute opacity-0 pointer-events-none"}`} onClick={attemptToEdit} >
-                                    <input value={post.Subdivision} type="text" onFocus={()=>{changeDivisionFocus(true)}}  onChange={e=>{setPost(post=>({...post, Subdivision: e.target.value}));}} className={`flex ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
+                                    <input value={subdivisionPrompt} type="text" onFocus={()=>{changeDivisionFocus(true)}}  onChange={e=>{setSubdivisionPrompt(e.target.value);}} className={`flex ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                                     <div  className={`absolute flex font-text-bold p-2 gap-2 flex-col mt-2 z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${divisionIsFocused? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${divisionIsFocused? "" :"0px"}`}}>
+                                        <div className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" onClick={()=>{setDivision(undefined); setDivisionIsFocused(false);}}>{"[ Пусто ]"}</div>
                                         {
-                                        getDivisions(post.Subdivision!).map((item)=>(
-                                            <div key={item.actualName} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" onClick={()=>{setDivision(item.actualName); setDivisionIsFocused(false);}}>{item.displayName}</div>
+                                        getDivisions(subdivisionPrompt).map((item)=>(
+                                            <div key={item.Name!} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" onClick={()=>{setDivision(item); setDivisionIsFocused(false);}}>{item.Name}</div>
                                         ))
                                         }
                                     </div>
@@ -248,7 +269,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                             <div className="flex gap-5 relative border border-black/10 dark:border-white/5 bg-gray-100 dark:bg-[#1a1a1a] p-4 group pointer-events-auto" onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
                                 
                                 <div className="flex gap-5 flex-1">
-                                {post.AppendSubdivisionName&& savedPost.Subdivision?.length != 0 &&
+                                {post.AppendSubdivisionName&& savedPost.Subdivision?.Name.length != 0 &&
                                 
                                 <h1 className={`flex text-accent font-text-bold tracking-wider text-lg py-2 transition-all `}>
                                 {`${ savedPost.Subdivision}`}
@@ -306,25 +327,26 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                 <div className={`relative flex ${editMode? "" : "absolute opacity-0 pointer-events-none"}`} onClick={attemptToEdit} >
                                     <input value={post.Head?.Name? post.Head?.Name :""} type="text" onFocus={()=>{changePostFocus(true)}}  
                                     onChange={e=>{
-                                        let newHP : IPost = {
-                                                Name : "",
-                                                Description : "",
-                                                GivedPermission : [],
-                                                Color : "",
-                                                AppendSubdivisionName : false,
-                                                DiscordRoleId: ""
-                                            };
+                                        // let newHP : IPost = {
+                                        //         Name : "",
+                                        //         Description : "",
+                                        //         GivedPermission : [],
+                                        //         Color : "",
+                                        //         AppendSubdivisionName : false,
+                                        //         DiscordRoleId: ""
+                                        //     };
                                         
-                                        if(post.Head != undefined) {
-                                            newHP.Name = post.Head.Name;
-                                        }
+                                        // if(post.Head != undefined) {
+                                        //     newHP.Name = post.Head.Name;
+                                        // }
                                         
-                                        newHP.Name = e.target.value;
-                                        setPost(post=>({...post, Head: newHP}));
+                                        // newHP.Name = e.target.value;
+                                        // setPost(post=>({...post, Head: newHP}));
+                                        setPostPrompt(e.target.value);
                                         }} className={`flex ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                                     <div  className={`absolute flex font-text-bold p-2 gap-2 flex-col mt-2 z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${postIsFocused? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${postIsFocused? "" :"0px"}`}}>
                                         {
-                                        getPosts(post.Subdivision!).map((item)=>(
+                                        getPosts(postPrompt).map((item)=>(
                                             <div key={item.Name} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" 
                                             onClick={()=>{
                                                 setPost(post=>({...post, Head: item}));

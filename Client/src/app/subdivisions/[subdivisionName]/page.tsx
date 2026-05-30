@@ -61,7 +61,7 @@ const mockPosts : ISubdivision[] = [
         division: "divis",
         postName: "Крутая должность",
         showDivisionName: false,
-        postDescription: "Описание должносттиии",
+        Description: "Описание должносттиии",
         permissions: ["разр1", "разр2"],
         DiscordId: "124234512351345135"
     },
@@ -71,7 +71,7 @@ const mockPosts : ISubdivision[] = [
         division: "divis",
         postName: "олух",
         showDivisionName: false,
-        postDescription: "Описание должносттиии",
+        Description: "Описание должносттиии",
         permissions: ["разр1", "разр2"],
         DiscordId: "124234512351345135"
     }
@@ -116,7 +116,7 @@ export default function PostPage({params}: {params: Promise<{subdivisionName: st
         division: "divis",
         postName: "Название подразделения",
         showDivisionName: false,
-        postDescription: "Описание подразделения",
+        Description: "Описание подразделения",
         permissions: ["разр1", "разр2"],
         DiscordId: "124234512351345135"
     });
@@ -150,7 +150,7 @@ export default function PostPage({params}: {params: Promise<{subdivisionName: st
             division: savedSubdivision.division,
             postName: subdivision.postName,
             showDivisionName: subdivision.showDivisionName,
-            postDescription: subdivision.postDescription,
+            Description: subdivision.Description,
             permissions: subdivision.permissions,
             DiscordId: subdivision.DiscordId,
             higherPost: savedSubdivision.higherPost,
@@ -288,12 +288,12 @@ export default function PostPage({params}: {params: Promise<{subdivisionName: st
                                 <Tooltip tooltipText="Описание" className="flex size-full">
 
                                 <p className={`flex absolute text-black dark:text-text-primary font-text text-sm leading-relaxed pr-8 transition-all  py-2 ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-                                {`${subdivision.postDescription}`}
+                                {`${subdivision.Description}`}
                                 </p>
                                 </Tooltip>
                                 {canEdit&&
 
-                                <textarea value={subdivision.postDescription} spellCheck="false"  onChange={e=>{setSubdivision(post=>({...post,postDescription: e.target.value}));}} className={`flex inset-4 ${editMode? "" : "absolute opacity-0 pointer-events-none"} resize-none flex absolute flex-1 text-black dark:text-text-primary font-text text-sm leading-relaxed py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
+                                <textarea value={subdivision.Description} spellCheck="false"  onChange={e=>{setSubdivision(post=>({...post,Description: e.target.value}));}} className={`flex inset-4 ${editMode? "" : "absolute opacity-0 pointer-events-none"} resize-none flex absolute flex-1 text-black dark:text-text-primary font-text text-sm leading-relaxed py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                                 }
                             </div>
                             
@@ -311,7 +311,7 @@ export default function PostPage({params}: {params: Promise<{subdivisionName: st
                                     onChange={e=>{
                                         let newHP : ISubdivision = {
                                                 postName : "",
-                                                postDescription : "",
+                                                Description : "",
                                                 permissions : [],
                                                 hexColor : "",
                                                 showDivisionName : false,

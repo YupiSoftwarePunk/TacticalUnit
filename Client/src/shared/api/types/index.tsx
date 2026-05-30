@@ -20,14 +20,17 @@ enum PermissionType{
 }
 
 interface ISubdivision{
-    hexColor : string,
-    division? : string,
-    postName : string,
-    showDivisionName : boolean,
-    postDescription : string,
-    higherPost? : ISubdivision,
-    permissions : string[],
-    DiscordId : string
+    Id : number,
+    Description : string,
+    AppendHeadName : boolean,
+    Posts : IPost[],
+    HeadId? : number,
+    Head? : ISubdivision,
+    Subordinates : ISubdivision[],
+    GivedPermissions : IPermission[],
+    Color : string,
+    Name : string,
+    DiscordRoleId : string
 }
 
 interface IRank{
@@ -36,7 +39,7 @@ interface IRank{
     PreviousId? : number,
     Previous? : IRank,
     NextId? : number,
-    Next : IRank,
+    Next? : IRank,
     Units : IUnit[],
     Color : string,
     Name : string,
