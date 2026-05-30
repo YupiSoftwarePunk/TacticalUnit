@@ -47,21 +47,12 @@ const COLUMNS_CONFIG = [
 ];
 
 
-interface ISubdivision{
-    hexColor : string,
-    division? : string,
-    postName : string,
-    showDivisionName : boolean,
-    postDescription : string,
-    higherPost? : ISubdivision,
-    permissions : string[],
-    DiscordId : string
-}
 
-interface IDivision{
-    displayName : string,
-    actualName : string
-}
+
+// interface IDivision{
+//     displayName : string,
+//     actualName : string
+// }
 
 
 const mockPosts : ISubdivision[] = [
@@ -89,20 +80,20 @@ const mockPosts : ISubdivision[] = [
 
 
 
-const mockDivisions : IDivision[] = [
-    {
-        actualName : "подразд1",
-        displayName :"подразд1"
-    }, 
-    {
-        actualName : "подз2",
-        displayName :"подз2"
-    }, 
+// const mockDivisions : ISubdivision[] = [
+//     {
+//         actualName : "подразд1",
+//         displayName :"подразд1"
+//     }, 
+//     {
+//         actualName : "подз2",
+//         displayName :"подз2"
+//     }, 
      
-    {
-        actualName : "моторчик",
-        displayName :"моторчик"
-    }]
+//     {
+//         actualName : "моторчик",
+//         displayName :"моторчик"
+//     }]
 const mockPermissions : string[] = [
     "разр1", 
     "разр2",

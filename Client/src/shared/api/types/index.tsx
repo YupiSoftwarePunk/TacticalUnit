@@ -31,13 +31,18 @@ interface ISubdivision{
 }
 
 interface IRank{
-    hexColor : string,
-    rankName : string,
-    activityUntilPromotion : number,
-    rankChevronURL? : string,
-    lowerRank? : IRank,
-    permissions : string[],
-    DiscordId : string
+    Id : number,
+    CounterToReach : number,
+    PreviousId? : number,
+    Previous? : IRank,
+    NextId? : number,
+    Next : IRank,
+    Units : IUnit[],
+    Color : string,
+    Name : string,
+    RankChevronURL? : string,
+    GivedPermissions : IGivedPermission[],
+    DiscordRoleId : number
 }
 
 interface IPost{
