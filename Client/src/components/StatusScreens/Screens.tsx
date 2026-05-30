@@ -1,7 +1,7 @@
 import { CircleX, Cog, RefreshCw } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 export const LoadingScreen = () =>{
-    
 
 
 
@@ -40,8 +40,7 @@ interface IErrorScreen{
     error? : string
 }
 export const ErrorScreen = ({error} : IErrorScreen) =>{
-    
-
+    const router = useRouter();
 
 
     return(
@@ -62,7 +61,7 @@ export const ErrorScreen = ({error} : IErrorScreen) =>{
         
         </div>
         <div className="bg-bg-secondary bottom-5 flex self-center absolute text-xl px-6 py-2 gap-0 text-text-primary">
-            <button className="hover:bg-accent px-5 hover:text-black transition-all cursor-pointer" onClick={()=>{navigation.back()}}>Назад</button>
+            <button className="hover:bg-accent px-5 hover:text-black transition-all cursor-pointer" onClick={()=>{router.back()}}>Назад</button>
             <div className="flex border-r"/>
             <a href="/" className="hover:bg-accent px-5 hover:text-black transition-all" >Главная страница</a>
         </div>

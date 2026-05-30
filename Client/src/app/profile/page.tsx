@@ -23,9 +23,9 @@ interface IUnit {
 export default function Profile(){
     const params = useSearchParams();
     const id = params?.get("id"); 
-    if (!id) {
-        return (<LoadingScreen></LoadingScreen>);
-    }
+    // if (!id) {
+    //     return (<LoadingScreen></LoadingScreen>);
+    // }
     
 
     const [jsonData, setJsonData] = useState<IUnit>();
@@ -108,10 +108,6 @@ export default function Profile(){
                         </div>
                         <div className="flex">
 
-
-
-
-
                             <div className="flex flex-col flex-3 justify-start gap-4">
                                 <div className="flex flex-col">
                                     <div className="flex size-80 border-b border-border-primary">
@@ -138,18 +134,9 @@ export default function Profile(){
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-
-
-
-
                         </div>
                     </div>
                     
-
                 </div>
                 
             </div>
