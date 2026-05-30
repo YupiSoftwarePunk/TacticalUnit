@@ -1,5 +1,6 @@
 "use client";
 
+import { BaseContainer, DescriptionInputField } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { MainHeader } from "@/components/Header/MainHeader";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import ToolTip from "@/components/ToolTip/ToolTip";
@@ -292,7 +293,6 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
                                 </div>
                             </div>
                             </div>
-
                             <div className="flex relative border border-black/10 dark:border-white/5 bg-gray-100 dark:bg-[#1a1a1a] p-4 min-h-[120px] group" onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
                                 <Tooltip tooltipText="Описание" className="flex size-full">
 
