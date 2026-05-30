@@ -1,7 +1,13 @@
+import { apiClient } from "../api";
 
 
 export const PostService = {
-    // getAll: () => apiClient<Post[]>("/post"),
-    // getById: (id: number) => apiClient<Post>(`/post/${id}`),
-    // это тут для примера, как обращаться с ендпоинтами
+    add: (options: RequestInit) => apiClient<IPost[]>("/post", options),
+    getAll: () => apiClient<IPost[]>("/post"),
+    getById: (id: number) => apiClient<IPost>(`/post/${id}`),
+    patchById: (id: number, options : RequestInit) => apiClient<IPost>(`/post/${id}`, options),
+    getPermissions: (id: number) => apiClient<IPermission>(`/post/${id}/permission`),
+    getDiscordRoleOf: (id: number) => apiClient<IPost>(`/post/${id}/discord-role`),
+    patchDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IPost>(`/post/${id}/discord-role`, options),
+
 };
