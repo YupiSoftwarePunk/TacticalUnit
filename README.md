@@ -17,7 +17,7 @@
 
   * **Framework:** [Next.js](https://nextjs.org/) (App Router) — для SSR и оптимизации.
   * **Language:** [TypeScript](https://www.typescriptlang.org/) — строгая типизация для минимизации ошибок.
-  * **Styling:** [Tailwind CSS 3](https://tailwindcss.com/) — современный подход к верстке через утилитарные классы.
+  * **Styling:** [Tailwind CSS 4](https://tailwindcss.com/) — современный подход к верстке через утилитарные классы.
   * **Architecture:** [Feature-Sliced Design (FSD)](https://feature-sliced.design/) — для масштабируемости и чистоты кода.
 
 -----
