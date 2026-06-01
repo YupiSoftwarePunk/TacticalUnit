@@ -27,7 +27,6 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const [isNotSaved, setIsNotSaved] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
-
     const [imageVersion, setImageVersion] = useState<number>(0);
 
     const [rank, setRank] = useState<IRank>({
@@ -45,7 +44,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
 
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
     const [availableHeadRanks, setAvailableHeadRanks] = useState<IListedInputItem[]>([])
-        
+
     useEffect(()=>{
         RankService.getAll().then((postList) => {
             let preparedPosts : IListedInputItem[] = [];
@@ -72,7 +71,6 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
             setIsLoading(false);
             return;
         }
-
         setIsLoading(true);
 
         Promise.all([
@@ -113,7 +111,6 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
             const file = e.target.files[0];
             const formData = new FormData();
             formData.append("file", file);
-
             try {
                 await ImageService.uploadRank(numericRankId, {
                     method: "POST",
@@ -138,15 +135,15 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
 
     return (
         <RRForm>
-            <div className="flex flex-1 gap-3">
-                <Tooltip tooltipText="Погон" className="flex flex-1 max-w-50" innerClassName="flex">
+            <div className="flex flex-col md:flex-row flex-1 gap-6 md:gap-3">
+                <Tooltip tooltipText="Погон" className="flex w-full md:flex-1 max-w-full md:max-w-50" innerClassName="flex w-full">
                     <div className="flex flex-col flex-1 h-full">
                         <div className="relative bg-bg-secondary border border-black/10 dark:border-white/5 flex items-center justify-center group min-h-[160px] w-full">
                             <StaticImage
                                 type="rank"
                                 entityId={rank.id?.toString() || ""}
                                 alt={rank.name}
-                                className="w-full h-full object-contain p-6 transition-all duration-500"
+                                className="mx-auto max-h-[300px] object-contain p-6 transition-all duration-500"
                             />
                             {canEdit && (
                                 <>
@@ -168,7 +165,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                         </div>
                     </div>
                 </Tooltip>
-                <div className="flex flex-col flex-4">
+                <div className="flex flex-col flex-4 w-full">
                     <BaseContainer>
                         <ColorInputField 
                             editable={canEdit} 
@@ -224,11 +221,10 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                         />
                         <PermissionRollDownList />
                     </BaseContainer>
-                    <div className="flex opacity-50">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 opacity-50 w-full">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={rank.discordRoleId}></CopyField>
                         <StyledButton title={"обновить роль"}></StyledButton>
                     </div>
-                    
                 </div>
             </div>
             <AccordingUnitsTable 
