@@ -50,9 +50,10 @@ export default function createSubdivPage(){
     const [subdivisionName, setSubdivisionName] = useState<string>("");
     const [subdivisionDescription, setSubdivisionDescription] = useState<string>("");
 
+    const [availableHeads, setAvailableHead] = useState<ISubdivision[]>([]);
     const [head, setHead] = useState<ISubdivision>();
     const [headPrompt, setHeadPrompt] = useState<string>();
-    const [headList, setHeadList] = useState<IListedInputItem[]>();
+    const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
     const [color, setColor] = useState<string>("#ffffff");
 
@@ -113,7 +114,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{console.warn(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setHead(availableHeads?.find(x=>x.Id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>

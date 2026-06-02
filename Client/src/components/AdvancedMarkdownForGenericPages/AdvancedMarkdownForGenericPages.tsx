@@ -164,6 +164,7 @@ interface IListedInputField{
 export function ListedInputField({className, editingClassName, editable, onClick, onChange, value, editMode, list = [], style, tooltip, onChoice} : IListedInputField){
     //const [editMode, setEditMode] = useState<boolean>();
     const [isFocused, setIsFocused] = useState<boolean>(false);
+    const [isOverMenu, setIsOverMenu] = useState<boolean>(false);
     return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
 
 
@@ -174,14 +175,15 @@ export function ListedInputField({className, editingClassName, editable, onClick
 
             {editable&&
             <div className={`relative flex ${editMode? "" : "absolute opacity-0 pointer-events-none"}`} onClick={onClick} >
-                <input value={value? value :""} type="text"  onFocus={()=>{setIsFocused(true)}}  
-                onChange={onChange} className={`flex ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
-                    <div  className={`absolute flex font-text-bold p-2 gap-2 flex-col mt-2 z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${isFocused? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${isFocused? "" :"0px"}`}}>
+                <input value={value? value :""} type="text"  onFocus={()=>{setIsFocused(true)}} onBlur={()=>{setIsFocused(false)}}  
+                onChange={onChange}  className={`flex ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
+                    <div onMouseEnter={()=>{setIsOverMenu(true)}} onMouseLeave={()=>{setIsOverMenu(false)}} className={`cursor-pointer absolute flex font-text-bold p-2 gap-2 flex-col mt-2 z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${isFocused || isOverMenu ? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${isFocused || isOverMenu? "" :"0px"}`}}>
                 {
                 list.map((item)=>(
                     <div key={list.findIndex(x=>x.Id == item.Id)} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" 
                     onClick={()=>{
                     setIsFocused(false)
+                    setIsOverMenu(false)
                     onChoice!(item)
                     }}
             >{`${item.Name? item.Name : "[ Пусто ]"}`}</div>
