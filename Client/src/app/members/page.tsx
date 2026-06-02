@@ -17,6 +17,7 @@ interface Member {
     kit: string;
     steamId: string;
     discordId: string;
+    joinDate: string;
 }
 
 const MEMBERS_DATA: Member[] = [
@@ -32,7 +33,8 @@ const MEMBERS_DATA: Member[] = [
         activity_total: 1200,
         kit: "Стрелок",
         steamId: "632641236412378",
-        discordId: "00000000000000000"
+        discordId: "00000000000000000",
+        joinDate: "12.04.2024"
     },
     {
         rank: "Ст. Лейтенант",
@@ -47,6 +49,7 @@ const MEMBERS_DATA: Member[] = [
         kit: "Марксмен",
         steamId: "76561198000000002",
         discordId: "345678901234567890",
+        joinDate: "01.09.2024"
     },
     {
         rank: "Полковник",
@@ -61,21 +64,30 @@ const MEMBERS_DATA: Member[] = [
         kit: "Пилот",
         steamId: "76561198000000003",
         discordId: "456789012345678901",
+        joinDate: "24.11.2023"
     }
 ];
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
-    { key: "rank", label: "Звание", sortable: true, filterable: true },
-    { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false },
-    { key: "roles", label: "Должность", sortable: false, filterable: true },
-    { key: "unit", label: "Подразделение", sortable: false, filterable: true },
-    { key: "kit", label: "Избранный кит", sortable: false, filterable: true },
-    { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
-
-    { key: "activity_week", label: "Активность за неделю", sortable: true, filterable: false },
-    { key: "activity_month", label: "Активность за месяц", sortable: true, filterable: false },
-    { key: "activity_year", label: "Активность за год", sortable: true, filterable: false },
-    { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false },
+    { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
+    { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
+    { 
+        key: "roles", 
+        label: "Должность", 
+        sortable: false, 
+        filterable: true, 
+        className: "text-text-secondary text-sm italic",
+        render: (value) => Array.isArray(value) ? value.join(", ") : value
+    },
+    { key: "unit", label: "Подразделение", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
+    { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
+    { key: "nickname", label: "Никнейм", sortable: false, filterable: true, className: "text-accent font-bold" },
+    
+    { key: "activity_week", label: "Активность за неделю", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
+    { key: "activity_month", label: "Активность за месяц", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
+    { key: "activity_year", label: "Активность за год", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
+    { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
+    { key: "joinDate", label: "Дата вступления", sortable: true, filterable: true, className: "text-text-secondary text-sm font-mono" }
 ];
 
 export default function MembersPage() {
@@ -84,9 +96,15 @@ export default function MembersPage() {
         alert("Модальное окно выбора полей для экспорта");
     };
 
+    const copyToClipboard = (text: string) => {
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+        alert("Скопировано: " + text);
+    };
+
     return (
         <div className="flex flex-col h-full">
-            <MainHeader></MainHeader>
+            <MainHeader />
             <main className="min-h-screen bg-bg-primary pt-24 pb-12 px-8">
                 <div className="max-w-[1400px] mx-auto">
                     <header className="mb-12">
@@ -104,6 +122,22 @@ export default function MembersPage() {
                             columns={COLUMNS_CONFIG} 
                             onExport={handleExport}
                             defaultSort={{ key: "rank", direction: "desc" }}
+                            renderActions={(item: Member) => (
+                                <>
+                                    <button 
+                                        onClick={() => copyToClipboard(item.steamId)}
+                                        className="p-1 border border-bg-secondary hover:border-accent text-[10px] uppercase"
+                                    >
+                                        Steam_ID
+                                    </button>
+                                    <button 
+                                        onClick={() => copyToClipboard(item.discordId)}
+                                        className="p-1 border border-bg-secondary hover:border-accent text-[10px] uppercase"
+                                    >
+                                        Discord_ID
+                                    </button>
+                                </>
+                            )}
                         />
                     </section>
                 </div>

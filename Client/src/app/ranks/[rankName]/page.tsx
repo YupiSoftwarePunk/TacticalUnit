@@ -2,6 +2,7 @@
 
 import { BaseContainer, MultiroleInputField } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import ToolTip from "@/components/ToolTip/ToolTip";
 import UniversalTable from "@/widgets/universalList/universalTable";
@@ -51,46 +52,10 @@ interface IRankWrapper{
     rank?: IRank
 }
 
-interface IRank{
-    hexColor : string,
-    rankName : string,
-    activityUntilPromotion : number,
-    rankChevronURL? : string,
-    lowerRank? : IRank,
-    permissions : string[],
-    DiscordId : string
-}
-
-interface IDivision{
-    displayName : string,
-    actualName : string
-}
+const mockRanks : IRank[] = []
 
 
-const mockRanks : IRank[] = [
-    {
-        hexColor: "#ffffff",
-        rankName: "рядовой райан",
-        activityUntilPromotion : 10,
-        permissions: ["разр1", "разр2"],
-        DiscordId: "124234512351345135"
-    },
-    {
-        hexColor: "#ffffff",
-        rankName: "не рядовой",
-        activityUntilPromotion : 15,
-        permissions: ["разр1", "разр2"],
-        DiscordId: "124234512351345135"
-    },
-]
-
-
-const mockPermissions : string[] = [
-    "разр1", 
-    "разр2",
-    "разр3",
-    "разр4"
-]
+const mockPermissions : IGivedPermission[] = []
 
 export default function PostPage({params}: {params: Promise<{rankName: string}>}) {
     const { rankName } = React.use(params);
@@ -104,13 +69,26 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
 
     const [savedRank, setSavedRank] = useState<IRank>(
     {
-        hexColor: "#ffffff",
-        rankName: "Название звания",
-        activityUntilPromotion : 15,
-        permissions: ["разр1", "разр2"],
-        DiscordId: "124234512351345135"
+        Id : 0,
+        CounterToReach : 10,
+        PreviousId : undefined,
+        Previous : undefined,
+        NextId : undefined,
+        Next : undefined,
+        Units : [],
+        Color : "#f3f3f3",
+        Name : "Имя загружается...",
+        RankChevronURL : "#",
+        GivedPermissions : [],
+        DiscordRoleId : -1
     });
     const [rank, setRank] = useState<IRank>(savedRank);
+
+    if(!rank){return <LoadingScreen></LoadingScreen>}
+
+
+
+    const [rankPrompt, setRankPrompt] = useState<string>(rank.Previous? rank.Previous.Name : "");
 
     let edit = false;
     let wasEditing = false;
@@ -175,7 +153,7 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
     //     return list;
     // }
     function getRanks (prompt:string) : IRankWrapper[]{
-        let rankList = mockRanks.filter(rank.lowerRank?.rankName.length == 0? (x=>x == x):(x=>!x.rankName.search(rank.lowerRank?.rankName!)));
+        let rankList = mockRanks.filter(rank.Previous?.Name.length == 0? (x=>x == x):(x=>!x.Name.search(rank.Previous?.Name!)));
         let list : IRankWrapper[] = []
         rankList.forEach(element => {
             list.push({rank: element})
@@ -183,13 +161,13 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
         list.unshift({rank: undefined})
         return list;
     }
-    function setPermission(permissionName :string){
-        if(rank.permissions.includes(permissionName)){
-            setRank(post=>({...post, permissions: post.permissions.filter(x=>x != permissionName)}))
+    function setPermission(prompt : string){
+        if(rank.GivedPermissions.find(x=>x.Permission.Name == prompt)){
+            setRank(post=>({...post, GivedPermissions: post.GivedPermissions.filter(x=>x.Permission.Name != prompt)}))
         }else{
-            let modList : string[] = rank.permissions;
-            modList.push(permissionName);
-            setRank(post=>({...post, permissions: modList}))
+            let modList : IGivedPermission[] = rank.GivedPermissions;
+            //modList.push(prompt);
+            setRank(post=>({...post, GivedPermissions: modList}))
         }
     }
     
@@ -222,14 +200,14 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                                 </div>
                             </Tooltip>
                             <Tooltip tooltipText="Поле цвета в формате HEX" className="flex flex-col flex-1 self-stretch size-full">
-                                <div className="flex relative border border-border-secondary min-w-10 h-full"  onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`, background: `${rank.hexColor}`}}>
+                                <div className="flex relative border border-border-secondary min-w-10 h-full"  onClick={attemptToEdit} style={{cursor: `${canEdit? "pointer" : "auto"}`, background: `${rank.Color}`}}>
 
                                     <h1 className={`flex text-text-primary text-shadow-lg  text-shadow-text-inverted font-text-bold tracking-wider text-lg inset-2 transition-all m-2 ${editMode? "absolute pointer-events-none opacity-0" : " opacity-50"}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-                                    {`${rank.hexColor}`}
+                                    {`${rank.Color}`}
                                     </h1>
                                     {canEdit&&
 
-                                    <textarea value={rank.hexColor} onChange={e=>{e.target.value.length <=7? setRank(post=>({...post,hexColor: e.target.value})) : e.target.value}} className={`${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-2 flex flex-1 w-fit text-text-primary text-shadow-lg text-shadow-text-inverted font-text-bold text-lg resize-none py-2 transition-all`} style={{padding: `${editMode? "24" : "0"}px`}} rows={1} cols={7}/>
+                                    <textarea value={rank.Color} onChange={e=>{e.target.value.length <=7? setRank(post=>({...post,Color: e.target.value})) : e.target.value}} className={`${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-2 flex flex-1 w-fit text-text-primary text-shadow-lg text-shadow-text-inverted font-text-bold text-lg resize-none py-2 transition-all`} style={{padding: `${editMode? "24" : "0"}px`}} rows={1} cols={7}/>
                                     }
                                 </div>
                             </Tooltip>
@@ -238,10 +216,10 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                         
                         <div className="flex-1 flex flex-col gap-4">
                             <BaseContainer onClick={attemptToEdit} tooltip="Наименование должности" style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
-                                <MultiroleInputField type="text" editable={canEdit} editMode={editMode} value={rank.rankName} onChange={e=>{setRank(rank=>({...rank,rankName: e.target.value}));}}></MultiroleInputField>
+                                <MultiroleInputField type="text" editable={canEdit} editMode={editMode} value={rank.Name} onChange={e=>{setRank(rank=>({...rank,Name: e.target.value}));}}></MultiroleInputField>
                             </BaseContainer>
                             <BaseContainer onClick={attemptToEdit} tooltip="Наименование должности" style={{cursor: `${canEdit? "pointer" : "auto"}`}}>
-                                <MultiroleInputField type="num" editable={canEdit} editMode={editMode} value={rank.activityUntilPromotion} onChange={e=>{setRank(rank=>({...rank, activityUntilPromotion: Math.abs(Math.max(e.target.value as unknown as number, 1))}));}}></MultiroleInputField>
+                                <MultiroleInputField type="num" editable={canEdit} editMode={editMode} value={rank.CounterToReach} onChange={e=>{setRank(rank=>({...rank, CounterToReach: Math.abs(Math.max(e.target.value as unknown as number, 1))}));}}></MultiroleInputField>
                             </BaseContainer>
                             
 
@@ -250,39 +228,26 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                                 <Tooltip tooltipText="Вышестоящая должность">
 
                                 <h1 className={`flex text-accent font-text-bold tracking-wider text-lg py-2 transition-all ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-                                {`${savedRank.lowerRank == undefined? "[ Нижестоящее звание не указано ]" : savedRank.lowerRank?.rankName}`}
+                                {`${savedRank.Previous == undefined? "[ Нижестоящее звание не указано ]" : savedRank.Previous?.Name}`}
                                 </h1>
                                 </Tooltip>
 
                                 {canEdit&&
                                 <div className={`relative flex ${editMode? "" : "absolute opacity-0 pointer-events-none"}`} onClick={attemptToEdit} >
-                                    <input value={rank.lowerRank?.rankName? rank.lowerRank?.rankName :""} type="text" onFocus={()=>{changePostFocus(true)}}  
+                                    <input value={rankPrompt} type="text" onFocus={()=>{changePostFocus(true)}}  
                                     onChange={e=>{
-                                        let newHP : IRank = {
-                                                rankName : "",
-                                                permissions : [],
-                                                hexColor : "",
-                                                DiscordId: "",
-                                                activityUntilPromotion: 10
-                                            };
-                                        
-                                        if(rank.lowerRank != undefined) {
-                                            newHP.rankName = rank.lowerRank.rankName;
-                                        }
-                                        
-                                        newHP.rankName = e.target.value;
-                                        setRank(post=>({...post, lowerRank: newHP}));
+                                        setRankPrompt(e.target.value);
                                         }} className={`flex ${editMode? "" : "absolute opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                                     <div  className={`absolute flex font-text-bold p-2 gap-2 flex-col mt-2 z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${previousRankIsFocused? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${previousRankIsFocused? "" :"0px"}`}}>
                                         {
-                                        getRanks(rank.rankName!).map((item)=>(
-                                            <div key={getRanks(rank.rankName!).findIndex(X=>X.rank == item.rank)} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" 
+                                        getRanks(rank.Name!).map((item)=>(
+                                            <div key={getRanks(rank.Name!).findIndex(X=>X.rank == item.rank)} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" 
                                             onClick={()=>{
-                                                setRank(rank=>({...rank, lowerRank: item.rank}));
-                                                setSavedRank(rank=>({...rank, lowerRank: item.rank}));
+                                                setRank(rank=>({...rank, Previous: item.rank}));
+                                                setSavedRank(rank=>({...rank, Previous: item.rank}));
                                                 setPreviousRankIsFocused(false);
                                             }}
-                                                >{`${item.rank? item.rank?.rankName : "[ Пусто ]"}`}</div>
+                                                >{`${item.rank? item.rank?.Name : "[ Пусто ]"}`}</div>
                                         ))
                                         }
                                     </div>
@@ -304,23 +269,23 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                                 <div className={`relative flex min-h-0 transition-all ${permissionsExtended? "" : "h-0  overflow-clip pointer-events-none"}`} > {/* onClick={attemptToEdit}  */}
                                     <div  className={`flex flex-1  font-text-bold min-h-0 p-2 gap-2 flex-col mt-2 z-1 top-full  max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${permissionsExtended? "" :"h-0 pointer-events-none"}`} style={{minHeight: `${permissionsExtended? "" :"0px"}`}}>
                                         {!canEdit && 
-                                            rank.permissions.map((item)=>(
-                                            <div key={item} className="flex">
-                                                <p className="hover:bg-bg-secondary gap-3 flex flex-1">{item}</p>
+                                            rank.GivedPermissions.map((item)=>(
+                                            <div key={item.Permission.Name} className="flex">
+                                                <p className="hover:bg-bg-secondary gap-3 flex flex-1">{item.Permission.Name}</p>
                                             </div>
                                         ))
                                         }
                                         {canEdit &&
                                         mockPermissions.map((item)=>(
-                                            <div key={item} className="flex">
+                                            <div key={item.Permission.Name} className="flex">
                                                 <button className="hover:bg-bg-secondary gap-3 flex flex-1 ">
                                                     <ToolTip tooltipText="Выдать разрешение" className="flex">
-                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item); setIsNotSaved(true)}}> <Check className={`${rank.permissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Permission.Name); setIsNotSaved(true)}}> <Check className={`${rank.GivedPermissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                                                     </ToolTip>
                                                     <ToolTip tooltipText="Наследовать разраешение">
-                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item); setIsNotSaved(true)}}> <Check className={`${rank.permissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                                        <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Permission.Name); setIsNotSaved(true)}}> <Check className={`${rank.GivedPermissions.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                                                     </ToolTip>
-                                                    <p className="text-text-primary font-text-bold">{item}</p>
+                                                    <p className="text-text-primary font-text-bold">{item.Permission.Name}</p>
                                                 </button>
                                                 
                                             </div>
@@ -335,8 +300,8 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                           
                         
                         </div>
-                        <div className="flex self-center font-text-bold hover:text-accent cursor-copy transition-all" onClick={()=>{navigator.clipboard.writeText(rank.DiscordId)}}>
-                            <p>ID Discord роли: {rank.DiscordId}</p>
+                        <div className="flex self-center font-text-bold hover:text-accent cursor-copy transition-all" onClick={()=>{navigator.clipboard.writeText(`${rank.DiscordRoleId}`)}}>
+                            <p>ID Discord роли: {rank.DiscordRoleId}</p>
                         </div>
                     </div>
 
