@@ -91,7 +91,7 @@ export default function createSubdivPage(){
                 <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{console.warn(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
-                <PermissionRollDownList setPermissionsMethod={setPermissions} givedPermissionList={permissions} allPermissionsList={mockG} editable={true} editMode={true}></PermissionRollDownList>
+                <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
             </BaseContainer>
         </CreationForm>
     </div>)
