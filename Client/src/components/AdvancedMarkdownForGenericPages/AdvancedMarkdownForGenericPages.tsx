@@ -262,14 +262,18 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
                 {editable && allPermissionsList &&
                 allPermissionsList!.map((item)=>(
                     <div key={item.Permission.Name} className="flex">
+                        
                         <button className="hover:bg-bg-secondary gap-3 flex flex-1 ">
-                            <ToolTip tooltipText="Выдать разрешение" className="flex">
-                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Id)}}> <Check className={`${givedPermissionList.includes(item)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                            <ToolTip tooltipText="Выдать разрешение" className="flex" className_Tooltip="text-[16px]">
+                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Id)}}> <Check className={`${givedPermissionList.find(x=>x.Id == item.Id)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                             </ToolTip>
-                            <ToolTip tooltipText="Наследовать разраешение">
-                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setInherit(item.Id)}}> <Check className={`${item.Inherit? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                            <ToolTip tooltipText="Наследовать разраешение" className_Tooltip="text-[16px]">
+                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setInherit(item.Id)}}> <Check className={`${givedPermissionList.find(x=>x.Id == item.Id)?.Inherit? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                             </ToolTip>
-                            <p className="text-text-primary font-text-bold">{item.Permission.Name}</p>
+                            <ToolTip className="flex flex-1" innerClassName="flex" tooltipAlignment="right" className_Tooltip="max-w-100 text-[14px]" tooltipText={`${item.Permission.Description}`}>
+
+                                <p className="text-text-primary font-text-bold">{item.Permission.Name}</p>
+                            </ToolTip>
                         </button>
                         
                     </div>

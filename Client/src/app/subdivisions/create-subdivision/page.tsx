@@ -25,7 +25,7 @@ const mockG : IGivedPermission[] = [
         Permission : {
             Name: "Разрешен2",
             PermissionType : 1,
-            Description : "",
+            Description : "какая-то крутая разрешение",
             GivedPermissions: []
         },
         Inherit : false,
@@ -37,7 +37,7 @@ const mockG : IGivedPermission[] = [
         Permission : {
             Name: "Разрешен3",
             PermissionType : 1,
-            Description : "",
+            Description : "какая-то НЕ ОЧЕНЬ разрешение",
             GivedPermissions: []
         },
         Inherit : false,
@@ -56,7 +56,32 @@ export default function createSubdivPage(){
 
     const [color, setColor] = useState<string>("#ffffff");
 
-    let [permissions, setPermissions] = useState<IGivedPermission[]>([])
+    let [permissions, setPermissions] = useState<IGivedPermission[]>([
+        {
+            Id : 1,
+            PermissionType : 1,
+            Permission : {
+                Name: "Разрешен2",
+                PermissionType : 1,
+                Description : "какая-то крутая разрешение",
+                GivedPermissions: []
+            },
+            Inherit : false,
+            Entity: {}
+        },
+        {
+            Id : 2,
+            PermissionType : 1,
+            Permission : {
+                Name: "Разрешен3",
+                PermissionType : 1,
+                Description : "какая-то НЕ ОЧЕНЬ разрешение",
+                GivedPermissions: []
+            },
+            Inherit : false,
+            Entity: {}
+        }
+    ])
 
     function UpdateSearch(prompt : string){
         setHeadList( [
