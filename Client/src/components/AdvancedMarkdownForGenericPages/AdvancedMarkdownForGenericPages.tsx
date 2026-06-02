@@ -31,7 +31,7 @@ interface IMultiroleInputField{
 export const MultiroleInputField = ({className = "", editingClassName = "", editable, onClick, onChange, value, editMode, tooltip, type="text"} : IMultiroleInputField) =>{
     //const [editMode, setEditMode] = useState<boolean>();
     return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
-        <div className="flex flex-1 gap-5">
+        <div className="flex flex-1 gap-5" onClick={onClick}>
             <div className={`flex text-accent font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${className} ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
                 <h1 className={`flex text-accent font-text-bold uppercase tracking-wider text-lg transition-all ${editMode? "opacity-0" : ""}`} >
                 {`${value}`}
@@ -54,6 +54,33 @@ export const MultiroleInputField = ({className = "", editingClassName = "", edit
         </div>
     </Tooltip>
 }
+
+// interface IDescriptionInputField{
+//     className? : string
+//     editingClassName? : string
+//     editable? : boolean
+//     editMode? : boolean
+//     onClick? : () => void
+//     onChange? : (e : ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => void
+//     value? : string | number
+//     tooltip? : string
+//     type? : "text" | "num"
+// }
+
+// export const DescriptionInputField = ({className = "", editingClassName = "", editable, onClick, onChange, value, editMode, tooltip} : IDescriptionInputField) =>{
+//     //const [editMode, setEditMode] = useState<boolean>();
+//     return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full ${className}`}>
+
+//                 <p className={`flex absolute text-black dark:text-text-primary font-text text-sm leading-relaxed pr-8 transition-all  py-2  ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
+//                 {`${value}`}
+//                 </p>
+
+//                 {editable&&
+
+//                 <textarea value={value} spellCheck="false"  onChange={(e)=>{if (onChange) onChange(e)}} className={`flex inset-4 ${editingClassName} ${editMode? "" : "absolute opacity-0 pointer-events-none"} resize-none flex absolute flex-1 text-black dark:text-text-primary font-text text-sm leading-relaxed py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
+//                 }
+//             </Tooltip>
+// }
 
 // interface IListedInputField<T>{
 //     className? : string
@@ -97,7 +124,7 @@ export const MultiroleInputField = ({className = "", editingClassName = "", edit
 //                 }
 //                 </div>
 
-                                    
+                    
 
 //                 </div>
 //             }
