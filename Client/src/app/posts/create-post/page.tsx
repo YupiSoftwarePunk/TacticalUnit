@@ -2,6 +2,7 @@
 import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/CreationForm.tsx/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { validateColor } from "@/typescript/colorValidator";
 import { error } from "console";
 import { useState } from "react";
 
@@ -52,8 +53,8 @@ export default function createSubdivPage(){
     const [description, setDescription] = useState<string>("");
     const [activityToPromotion, setActivityToPromotion] = useState<number>(1);
 
-    const [availableHeads, setAvailableHead] = useState<IPost[]>([]);
-    const [head, setHead] = useState<IPost>();
+    const [availableRanks, setAvailableRanks] = useState<IRank[]>([]);
+    const [maxRank, setMaxRank] = useState<IRank>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
@@ -108,12 +109,16 @@ export default function createSubdivPage(){
         if(rankName.replace(' ', '').length == 0){
             problems += "Название должности\n";
         }
-        if(head == undefined){
-            problems += "Описание должности\n";
-
+        if(maxRank == undefined){
+            problems += "Высшее звание\n";
         }
         if (problems){
             alert("Вы забыли указать:\n"+problems)
+            return;
+        }
+        if (!validateColor(color)){
+            alert("Цвет указан с ошибками, проверьте, что цвет начинается с \"#\" и содержит 6 символов после \"#\"");
+            return
         }
         let newRank : IPost = {
             Color : color,
@@ -121,7 +126,8 @@ export default function createSubdivPage(){
             AppendSubdivisionName : true,
             Name : rankName,
             GivedPermissions : permissions,
-            
+            MaxRank : maxRank!
+
 
         }
     }
@@ -140,7 +146,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setHead(availableHeads?.find(x=>x.Id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRank(availableRanks?.find(x=>x.Id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
