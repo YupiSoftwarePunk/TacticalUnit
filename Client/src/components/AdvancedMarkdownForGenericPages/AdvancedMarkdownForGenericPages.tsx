@@ -52,7 +52,7 @@ export const MultiroleInputField = ({className = "", editingClassName = "", edit
         return e;
     }
 
-    return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
+    return  <Tooltip className_Tooltip="text-[16px]" tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
         <div className="flex flex-1 gap-5" onClick={onClick}>
             <div className={`flex text-accent font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${className} ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
                 <h1 className={`flex text-accent font-text-bold uppercase tracking-wider text-lg transition-all ${editMode? "opacity-0" : ""}`} >
@@ -70,7 +70,6 @@ export const MultiroleInputField = ({className = "", editingClassName = "", edit
                 type == "num" &&
                 <div className={`flex flex-col ${editingClassName} ${editMode? "" : "absolute opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
                     <input value={value} type="number" onChange={changeSequence} className={`flex ${editMode? "" : " opacity-0 pointer-events-none"} inset-4 flex flex-1 text-accent font-text-bold uppercase tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
-                    {watermark&& <p className={`absolute size-full content-center px-3 pointer-events-none text-t ext-primary  transition-all`} style={{opacity: `${filling? "0" : "0.5"}`}}>{watermark}</p>}
                 
                 </div>
                 }
@@ -165,7 +164,7 @@ export function ListedInputField({className, editingClassName, editable, onClick
     //const [editMode, setEditMode] = useState<boolean>();
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [isOverMenu, setIsOverMenu] = useState<boolean>(false);
-    return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
+    return  <Tooltip verticalPlacement="top" className_Tooltip="text-[16px]" tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
 
 
             <h1 className={`flex text-accent font-text-bold tracking-wider text-lg py-2 transition-all ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
@@ -267,12 +266,12 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
                         
                         <button className="hover:bg-bg-secondary gap-3 flex flex-1 ">
                             <ToolTip tooltipText="Выдать разрешение" className="flex" className_Tooltip="text-[16px]">
-                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Id)}}> <Check className={`${givedPermissionList.find(x=>x.Id == item.Id)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Id!)}}> <Check className={`${givedPermissionList.find(x=>x.Id == item.Id)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                             </ToolTip>
                             <ToolTip tooltipText="Наследовать разраешение" className_Tooltip="text-[16px]">
-                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setInherit(item.Id)}}> <Check className={`${givedPermissionList.find(x=>x.Id == item.Id)?.Inherit? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setInherit(item.Id!)}}> <Check className={`${givedPermissionList.find(x=>x.Id == item.Id)?.Inherit? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                             </ToolTip>
-                            <ToolTip className="flex flex-1" innerClassName="flex" tooltipAlignment="right" className_Tooltip="max-w-100 text-[14px]" tooltipText={`${item.Permission.Description}`}>
+                            <ToolTip className="flex flex-1" innerClassName="flex" tooltipAlignment="left" className_Tooltip="max-w-100 text-[14px]" tooltipText={`${item.Permission.Description}`}>
 
                                 <p className="text-text-primary font-text-bold">{item.Permission.Name}</p>
                             </ToolTip>

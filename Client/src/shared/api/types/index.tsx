@@ -20,7 +20,7 @@ enum PermissionType{
 }
 
 interface ISubdivision{
-    Id : number,
+    Id? : number,
     Description : string,
     AppendHeadName : boolean,
     Posts : IPost[],
@@ -30,26 +30,26 @@ interface ISubdivision{
     GivedPermissions : IGivedPermission[],
     Color : string,
     Name : string,
-    DiscordRoleId : string
+    DiscordRoleId? : string
 }
 
 interface IRank{
-    Id : number,
+    Id? : number,
     CounterToReach : number,
     PreviousId? : number,
     Previous? : IRank,
     NextId? : number,
     Next? : IRank,
-    Units : IUnit[],
+    Units? : IUnit[],
     Color : string,
     Name : string,
     RankChevronURL? : string,
     GivedPermissions : IGivedPermission[],
-    DiscordRoleId : number
+    DiscordRoleId? : number
 }
 
 interface IPost{
-    Id : number,
+    Id? : number,
     Description : string,
     SubdivisionId? : number,
     Subdivision? : ISubdivision,
@@ -57,21 +57,21 @@ interface IPost{
     HeadId? : number,
     Head? : IPost,
     MaxRank : IRank,
-    Units : IUnit[],
+    Units? : IUnit[],
     Color : string,
     Name : string,
-    GivedPermission : string[],
-    DiscordRoleId : string
+    GivedPermissions : IGivedPermission[],
+    DiscordRoleId? : string
 }
 interface IDocType{
-    Id : number,
+    Id? : number,
     Name : string,
     Description : string,
     TemplatePath? : string,
     Docs : IDoc[]
 }
 interface IDoc{
-    Id : number,
+    Id? : number,
     Name : string,
     FilePath : string,
     DocType? : IDocType,
@@ -79,14 +79,14 @@ interface IDoc{
     Units : IUnit[]
 }
 interface IReward{
-    Id : number,
+    Id? : number,
     Conditions : string,
     Privileges : string,
     ImagePath? : string,
     Assigned : IAssignedReward[],
     Color : string,
     Name : string,
-    DiscordRoleId : number
+    DiscordRoleId? : number
 }
 interface IAssignedReward{
     RewardId : number,
@@ -114,10 +114,10 @@ interface IStatus{
     UnitStatus : IUnitStatus,
     Color : string,
     Name : string,
-    DiscordRoleId : number
+    DiscordRoleId? : number
 }
 interface IUnitStatus{
-    Id : number,
+    Id? : number,
     Unit : IUnit,
     Status : IStatus,
     StartDate : Date,
@@ -141,7 +141,7 @@ interface IUnit {
 }
 
 interface IGivedPermission{
-    Id : number,
+    Id? : number,
     PermissionType : PermissionType,
     Permission : IPermission,
     Entity : any,
