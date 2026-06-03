@@ -127,7 +127,7 @@ export const ActivityCalendar = () =>{
         activityMatrixFilled.push(newCell);
     }
     function refreshMonthsDisplay(){
-        const monthsToSet = BlankMonths;
+        const monthsToSet : IActivityCalendarPillar[] = BlankMonths;
         let selectedMonthIndex = monthsToSet.findIndex(x=>x.isSelected == true);
 
             const monthsMargin = 4; //both directions
@@ -176,18 +176,22 @@ export const ActivityCalendar = () =>{
 
             }
             else{
+                //console.warn('THIS ROUTE. ANIM: ' + `${20 * ( currentMonth -previouslySelectedMonthIndexOffset  -1)}`)
+                
                 setPillarsTransitionStatus(false);
-                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset));
+                
+                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset-1));
+
+                refresh();
             }
             
-            let interval = setTimeout(()=>{ setPillarsOffset(0); refresh(); },50);
+            let interval = setTimeout(()=>{ setPillarsOffset(0); refresh(); }, 50);
         }else{
             refresh();
         }
         setTimeout(()=>{setPillarsTransitionStatus(true);}, 1);
 
 
-        setMonthsMatrix(preparedMonths);
         //if (preparedMonths != monthsMatrix){setMonthsMatrix(preparedMonths);}
                 
     }
