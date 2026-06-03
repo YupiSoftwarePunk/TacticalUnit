@@ -173,8 +173,7 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
         }
     }
     
-    return (
-    <RRForm>
+    return (<RRForm>
         <div className="flex flex-1 gap-3">
         <Tooltip tooltipText="Шеврон" className="flex flex-1 max-w-50" innerClassName="flex">
                     <div className=" flex flex-col flex-1 h-full">
@@ -190,7 +189,7 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                             )}
                         </div>
                     </div>
-            </Tooltip>
+        </Tooltip>
         <div className="flex flex-col flex-4">
 
         <BaseContainer>
@@ -207,8 +206,9 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
         </BaseContainer>
         </div>
         </div>
-        <AccordingUnitsTable TableName="Бойцы носящие это имя" rightsToGrant={canGrant} GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} GIVEN_DATA={MEMBERS_DATA}></AccordingUnitsTable>
-    </RRForm>)
+        <AccordingUnitsTable TableName="Бойцы носящие это звание" rightsToGrant={canGrant} GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} GIVEN_DATA={MEMBERS_DATA}></AccordingUnitsTable>
+    </RRForm>
+    )
     
     
     

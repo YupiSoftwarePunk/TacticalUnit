@@ -83,7 +83,7 @@ interface IReward{
     Conditions : string,
     Privileges : string,
     ImagePath? : string,
-    Assigned : IAssignedReward[],
+    Assigned? : IAssignedReward[],
     Color : string,
     Name : string,
     DiscordRoleId? : number

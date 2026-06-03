@@ -61,7 +61,7 @@ export const MultiroleInputField = ({className = "", editingClassName = "", edit
 
     return  <Tooltip verticalPlacement="top" className_Tooltip="text-[16px]" tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
         <div className="flex flex-1" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setEditMode(false)}}>
-            <div className={`flex absolute w-full  text-accent font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${className} ${editMode? "pointer-events-none" : ""}`} >
+            <div className={`flex  w-full  text-accent font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${className} ${editable? "absolute" : ""} ${editMode? "pointer-events-none" : ""}`} >
                 <h1 className={`flex  w-full absolute text-accent font-text-bold uppercase tracking-wider text-lg transition-all ${editMode? "opacity-0" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
                 {`${value? value : "[ Пусто ]"}`}
                 </h1>
@@ -141,9 +141,9 @@ export const DescriptionInputField = ({className = "", editingClassName = "", ed
     const [rows, setRows] = useState<number>()
     const textSize = 16;
     
-    return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
+    return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full font-text-bold`}>
         <div className="flex flex-1 gap-5" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setEditMode(false)}}>
-            <div className={`flex text-text-secondary font-text-bold tracking-wider  text-[${textSize}px] py-2 transition-all ${className} ${editMode? "absolute pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
+            <div className={`flex  text-text-secondary  tracking-wider  text-[${textSize}px] py-2 transition-all ${className} ${editable? "absolute": ""} ${editMode? " pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
                 <p className={`flex tracking-wider transition-all  ${editMode? "opacity-0" : ""}`} >
                 {`${value? value : "[ описание пусто ]"}`}
                 </p>
