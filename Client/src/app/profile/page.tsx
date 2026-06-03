@@ -13,9 +13,7 @@ interface IActionMenuOption{
 }
 
 
-interface IUnit {
 
-}
 
 
 
@@ -28,7 +26,6 @@ export default function Profile(){
     // }
     
 
-    const [jsonData, setJsonData] = useState<IUnit>();
     const dom : string = getBaseVariables().dom;
     useEffect(()=>{
         // var r = fetch(`${dom}/api/unit/${id}`).then((response)=>response.json()).then((data)=>setJsonData(data)).catch(error=>{
@@ -36,9 +33,7 @@ export default function Profile(){
         // })
         
     }, [])
-    if (jsonData == undefined){
-        return (<ErrorScreen error="Не удалось получить данные профиля"></ErrorScreen>);
-    }
+    
     
     const [unitData, setUnitData] = useState<IUnit>();
 

@@ -1,10 +1,12 @@
 "use client";
 
-import { BaseContainer, MultiroleInputField } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { AccordingUnitsTable, BaseContainer, ColorInputField, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import ToolTip from "@/components/ToolTip/ToolTip";
+import { validateColor } from "@/typescript/colorValidator";
 import UniversalTable from "@/widgets/universalList/universalTable";
 import { Check, ChevronDown, Cross, Pencil, X } from "lucide-react";
 import Link from "next/link";
@@ -88,7 +90,7 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
 
 
 
-    const [rankPrompt, setRankPrompt] = useState<string>(rank.Previous? rank.Previous.Name : "");
+    const [rankPrompt, setRankPrompt] = useState<string>(rank.Previous? rank.Previous.Name : "Пром");
 
     let edit = false;
     let wasEditing = false;
@@ -171,9 +173,49 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
         }
     }
     
+    return (
+    <RRForm>
+        <div className="flex flex-1 gap-3">
+        <Tooltip tooltipText="Шеврон" className="flex flex-1 max-w-50" innerClassName="flex">
+                    <div className=" flex flex-col flex-1 h-full">
+                        <div className="relative  bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group">
+                            <img 
+                            src="/-_-.jpg"
+                            alt="Award" 
+                            className="flex self-start object-top object-contain overflow-hidden "/>
+                            {canEdit && (
+                            <button className="absolute bottom-2 right-2 p-2 bg-black/10 dark:bg-black/50 hover:bg-accent opacity-50 hover:opacity-100 transition-all border border-black/20 dark:border-white/10">
+                                <Pencil className="text-white hover:text-white" />
+                            </button>
+                            )}
+                        </div>
+                    </div>
+            </Tooltip>
+        <div className="flex flex-col flex-4">
+
+        <BaseContainer>
+                
+                <ColorInputField editable={canEdit} editMode={true} value={rank.Color} onChange={(e)=>{if(validateColor(e.target.value)){setRank(rank=>({...rank, Color: e.target.value}))}}}></ColorInputField>
+        </BaseContainer>
+        <BaseContainer className="flex-col">
+            <MultiroleInputField value={rank.Name} onChange={(e)=>{setRank(rank=>({...rank, Name: e.target.value}))}} tooltip="Наименование звания" editable={canEdit}></MultiroleInputField>
+            <MultiroleInputField value={rank.CounterToReach} onChange={(e)=>{setRank(rank=>({...rank, CounterToReach: Math.max((e.target.value as unknown as number), 1)}))}} tooltip="Кол-во активности до повышения" type="num" editable={canEdit}></MultiroleInputField>
+        </BaseContainer>
+        <BaseContainer className="flex-col">
+            <ListedInputField editable={canEdit} value={rankPrompt} onChange={(e)=>{setRankPrompt}} tooltip="Нижестоящее по иерархии звание" textWhenEmpty="[ Нижестоящее звание не указано ]"></ListedInputField>
+            <PermissionRollDownList></PermissionRollDownList>
+        </BaseContainer>
+        </div>
+        </div>
+        <AccordingUnitsTable TableName="Бойцы носящие это имя" rightsToGrant={canGrant} GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} GIVEN_DATA={MEMBERS_DATA}></AccordingUnitsTable>
+    </RRForm>)
+    
+    
+    
+    
     
     return (
-        <div className="flex flex-col h-screen" >
+        <div className="flex flex-col min-h-screen" >
             {canEdit&&
             <button onClick={saveChanges} className={`fixed bottom-10 self-center text-text-primary bg-bg-primary border border-accent px-10 py-3 text-2xl hover:bg-accent hover:text-black cursor-pointer transition-all `} style={{bottom: `${isNotSaved?  "40px" : "-80px"}`}}>Сохранить изменения</button>
             }
@@ -304,31 +346,8 @@ export default function PostPage({params}: {params: Promise<{rankName: string}>}
                             <p>ID Discord роли: {rank.DiscordRoleId}</p>
                         </div>
                     </div>
-
-                    <div className="mt-16">
-                        <div className="flex justify-between items-end mb-6">
-                        <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
-                            Бойцы носящие это звание
-                        </h2>
-                        
-                        {canGrant && (
-                            <Link 
-                            href={`/awards/grant/${rankName}`}
-                            className="text-accent font-text uppercase text-sm border-b-2 border-accent hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1"
-                            >
-                            Назначить бойца
-                            </Link>
-                        )}
-                        </div>
-
-                        <div className="border border-black/10 dark:border-white/5 overflow-hidden">
-                        <UniversalTable 
-                            data={MEMBERS_DATA} 
-                            columns={COLUMNS_CONFIG} 
-                            onExport={(data) => console.log("Exporting:", data)}
-                        />
-                        </div>
-                    </div>
+                <AccordingUnitsTable rightsToGrant={canGrant} TableName="Бойцы состоящие на должности" GIVEN_DATA={MEMBERS_DATA} GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG}></AccordingUnitsTable>
+                    
                 </div>
                 </div>
         </div>

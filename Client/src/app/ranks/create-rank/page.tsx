@@ -1,6 +1,6 @@
 'use client';
 import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
-import CreationForm from "@/components/CreationForm.tsx/CreationForm";
+import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { error } from "console";
 import { useState } from "react";

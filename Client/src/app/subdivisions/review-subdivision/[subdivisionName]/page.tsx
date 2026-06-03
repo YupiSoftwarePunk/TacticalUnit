@@ -356,7 +356,7 @@ export default function PostPage({params}: {params: Promise<{subdivisionId: stri
                           
                         
                         </div>
-                        <div className="flex self-center font-text-bold hover:text-accent cursor-copy transition-all" onClick={()=>{navigator.clipboard.writeText(subdivision.DiscordRoleId)}}>
+                        <div className="flex self-center font-text-bold hover:text-accent cursor-copy transition-all" onClick={()=>{navigator.clipboard.writeText(subdivision.DiscordRoleId!)}}>
                             <p>ID Discord роли: {subdivision.DiscordRoleId}</p>
                         </div>
                     </div>
