@@ -64,7 +64,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // В реальном приложении здесь будет API вызов
+                // позже тута будет API вызов
                 // const rankData = await RankService.getById(rankId);
                 // setRank(rankData);
 
@@ -104,7 +104,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
         
         try {
             setIsSaving(true);
-            // В реальном приложении здесь будут API вызовы
+            // позже тут тоже будут API вызовы
             // for (const unitDiscordId of selectedUnits) {
             //     await RankService.assignToUnit(rank.Id, {
             //         method: 'POST',

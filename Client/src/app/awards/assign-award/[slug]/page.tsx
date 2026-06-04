@@ -66,7 +66,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // В реальном приложении здесь будет API вызов
+                // позже тут будет API вызов
                 // const rewardData = await RewardService.getById(parseInt(slug));
                 // setAward(rewardData);
 
@@ -107,7 +107,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         
         try {
             setIsSaving(true);
-            // В реальном приложении здесь будут API вызовы
+            // позже тут будут API вызовы
             // for (const unitDiscordId of selectedUnits) {
             //     await RewardService.assignToUnit(award.Id, {
             //         method: 'POST',
