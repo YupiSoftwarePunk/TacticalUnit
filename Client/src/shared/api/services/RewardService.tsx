@@ -11,4 +11,7 @@ export const RewardService = {
     getDiscordRoleOf: (id: number) => apiClient<IReward>(`/reward/${id}/discord-role`),
     patchDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IReward>(`/reward/${id}/discord-role`, options),
 
+    getAssigned: (id: number) => apiClient<IAssignedReward[]>(`/reward/${id}/assign`),
+    assignToUnit: (id: number, options: RequestInit) => apiClient<IAssignedReward>(`/reward/${id}/assign`, options),
+    getUnitAssignment: (id: number, unitId: number) => apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}`),
 };

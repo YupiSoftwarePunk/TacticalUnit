@@ -10,4 +10,8 @@ export const PostService = {
     getDiscordRoleOf: (id: number) => apiClient<IPost>(`/post/${id}/discord-role`),
     patchDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IPost>(`/post/${id}/discord-role`, options),
 
+    getAssigned: (id: number) => apiClient<IAssignedReward[]>(`/post/${id}/assign`),
+    assignToUnit: (id: number, options: RequestInit) => apiClient<IAssignedReward>(`/post/${id}/assign`, options),
+    getUnitAssignment: (id: number, unitId: number) => apiClient<IAssignedReward>(`/post/${id}/assign/${unitId}`),
+    deleteUnitAssignment: (id: number, unitId: number) => apiClient<IAssignedReward>(`/post/${id}/assign/${unitId}`),
 };
