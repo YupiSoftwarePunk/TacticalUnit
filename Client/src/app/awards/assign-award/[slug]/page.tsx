@@ -69,8 +69,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                 // В реальном приложении здесь будет API вызов
                 // const rewardData = await RewardService.getById(parseInt(slug));
                 // setAward(rewardData);
-                
-                // Используем моковые данные
+
                 const mockReward: IReward = {
                     Id: parseInt(slug) || 1,
                     Name: `Орден "Мастер документооборота III степени"`,
@@ -83,7 +82,8 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                 };
                 setAward(mockReward);
                 setLoading(false);
-            } catch (err) {
+            } 
+            catch (err) {
                 setError("Ошибка при загрузке награды");
                 setLoading(false);
             }
@@ -95,7 +95,8 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         const newSelected = new Set(selectedUnits);
         if (newSelected.has(discordId)) {
             newSelected.delete(discordId);
-        } else {
+        } 
+        else {
             newSelected.add(discordId);
         }
         setSelectedUnits(newSelected);
@@ -114,11 +115,11 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
             //     });
             // }
             
-            // Имитация сохранения
             await new Promise(resolve => setTimeout(resolve, 1000));
             setIsSaving(false);
             setSelectedUnits(new Set());
-        } catch (err) {
+        } 
+        catch (err) {
             setError("Ошибка при назначении награды");
             setIsSaving(false);
         }
