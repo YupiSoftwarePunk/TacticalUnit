@@ -101,25 +101,26 @@ interface IActivity{
     Unit : IUnit,
     Date : Date
 }
-enum StatusType{
-    Vacation = 1,
-    TemporaryPost = 2,
-    Gratitude = 3,
-    Reprimand = 4,
-    SevereReprimand = 5,
-    Retirement = 6
-}
-interface IStatus{
-    Type : StatusType,
-    UnitStatus : IUnitStatus,
+
+interface IState{
     Color : string,
     Name : string,
     DiscordRoleId? : number
 }
+
+interface ISingleDayEvent{
+    Id : number,
+    Name : string,
+    Color : string,
+    DateTime : Date,
+    UnitId : number
+    Unit? : IUnit
+}
+
 interface IUnitStatus{
     Id? : number,
     Unit : IUnit,
-    Status : IStatus,
+    Status : IState,
     StartDate : Date,
     EndDate : Date
 }
@@ -155,19 +156,6 @@ interface IPermission{
     GivedPermissions : IGivedPermission[]
 }
 
-interface IUnitState{
-    Id : number,
-    Start: Date,
-    End: Date,
-    UnitId : number
-}
-
-interface ISingleDayEvent{
-    Id : number,
-    Date: Date,
-    UnitId : number
-}
-
 interface IDiscordLoginUrlResponse {
     login_url: string;
     state: string;
@@ -190,4 +178,12 @@ interface ICurrentUserResponse {
     joined: string;
     rank: string;
     steam_id: string | null;
+}
+
+
+interface activityCell {
+    id : number,
+    date: Date,
+    isCurrentMonth: boolean,
+    isChecked: boolean
 }

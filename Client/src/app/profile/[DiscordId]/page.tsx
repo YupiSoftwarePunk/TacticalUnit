@@ -1,9 +1,11 @@
 'use client'
-import { ActivityCalendar } from "@/components/ActivityCalendar.tsx/ActivityCalendar";
+import { ActivityCalendar } from "@/components/ActivityCalendar/BaseCalendar/ActivityCalendar";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { ProfileBGImage, ProfileSidePanel, UnitInfoPanel } from "@/components/ProfileComponents/ProfileComponents";
 import {LoadingScreen, ErrorScreen} from "@/components/StatusScreens/Screens";
 import { getBaseVariables } from "@/typescript/variables";
 import { useSearchParams } from "next/navigation";
+import React from "react";
 import { useEffect, useState } from "react";
 
 interface IActionMenuOption{
@@ -13,19 +15,22 @@ interface IActionMenuOption{
 }
 
 
+interface IUnit {
+
+}
 
 
 
 
-
-export default function Profile(){
-    const params = useSearchParams();
-    const id = params?.get("id"); 
+export default function Profile({ params }: { params: Promise<{DiscordId: string}> }){
+    // const params = useSearchParams();
     // if (!id) {
     //     return (<LoadingScreen></LoadingScreen>);
     // }
+    const {DiscordId} = React.use(params);
     
 
+    const [jsonData, setJsonData] = useState<IUnit>();
     const dom : string = getBaseVariables().dom;
     useEffect(()=>{
         // var r = fetch(`${dom}/api/unit/${id}`).then((response)=>response.json()).then((data)=>setJsonData(data)).catch(error=>{
@@ -33,7 +38,9 @@ export default function Profile(){
         // })
         
     }, [])
-    
+    if (jsonData == undefined){
+        //return (<ErrorScreen error="Не удалось получить данные профиля"></ErrorScreen>);
+    }
     
     const [unitData, setUnitData] = useState<IUnit>();
 
@@ -54,62 +61,34 @@ export default function Profile(){
         <div className="flex flex-col min-h-screen text-text-secondary font-text">
             <MainHeader></MainHeader>
             <div className="flex min-h-[250px] h-[30vh] bg-black relative">
-                <img src="#" alt="Profile background image" className="flex object-top object-cover self-center size-full text-white"/>
-                <button className="absolute transform bg-bg-primary px-4 py-1 rounded-md transition-all hover:bg-bg-accent bottom-4 right-4">Заменить баннер</button>
+                <ProfileBGImage></ProfileBGImage>
             </div>
-            <div className="flex max-lg:flex-col flex-1 justify-center bg-bg-primary py-8 text-xl">
-                <div className="flex justify-end border-r border-border-primary">
-                    <div className="flex flex-col text-end gap-2">
-                        <div className="flex size-60 bg-black self-end relative">
-                            <img src="#" alt="Profile image" className="object-top object-cover self-center size-full text-white"/>
-                        </div>
-                        <ul className="flex flex-col gap-1 pr-4 items-end">
-                            {menuOptions.map((item)=>(
-                                <a href={item.url} key={menuOptions.indexOf(item)} className=" hover:text-accent transition-all">{item.name}</a>
-                            ))}
-                        </ul>
-                    </div>
+            <div className="flex   flex-1 justify-center bg-bg-primary py-8 text-xl">
+                <div className="flex border-r border-border-secondary">
+                    <ProfileSidePanel></ProfileSidePanel>
                 </div>
                 <div className="flex flex-col px-4">
-                    <div className="flex flex-1 gap-5">
-                        <div className="flex flex-col flex-1">
+                    <div className="flex flex-1 gap-5 max-lg:flex-col">
+                        <div className="flex flex-col  flex-1">
                             <div className="flex flex-1">
 
-                                <div className="flex flex-col gap-2">
-                                    <div className="flex flex-col">
-                                        <div className="flex justify-items-center gap-3">
-                                            <div className="bg-bg-dark size-8">
-                                                <img src="#" alt="" />
-                                            </div>
-                                            <p className="text-text-secondary self-center">Звание</p>
-                                        </div>
-                                        <p className="text-text-secondary-accent text-3xl">Никнейм</p>
-                                    </div>
-                                    <ul className="flex flex-col"> 
-                                        <p>Должность 1</p>
-                                        <p>Должность 2</p>
-                                    </ul>
-                                    <div className="flex flex-col">
-                                        <ul className="flex gap-2">
-                                            <p className="flex ">Статус 1</p>
-                                            <p className="flex ">Статус 2</p>
-                                        </ul>
-                                    </div>
+                                <div className="flex flex-col">
+                                    <UnitInfoPanel></UnitInfoPanel>
                                 </div>
                             </div>
                             <div className="flex ">
                                 <ActivityCalendar></ActivityCalendar>
                             </div>
                         </div>
-                        <div className="flex">
+                        <div className="flex ">
 
                             <div className="flex flex-col flex-3 justify-start gap-4">
                                 <div className="flex flex-col">
                                     <div className="flex size-80 border-b border-border-primary">
-                                        <img src="AK-74__163.png" alt="Soldier of heaven" className="object-top object-cover self-center size-full text-white"/>
+                                        <img src="/AK-74__163.png" alt="Soldier of heaven" className="object-top object-cover self-center size-full text-white"/>
                                     </div>
                                     <p className="text-text-secondary">Избранный кит :</p>
-                                    <p className="text-text-secondary-accent mt-[-8px]">Командир отряда</p>
+                                    <p className="text-text-secondary-accent -mt-2">Командир отряда</p>
                                 </div>
                                 
                                 <div className="flex flex-col">

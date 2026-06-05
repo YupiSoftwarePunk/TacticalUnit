@@ -7,7 +7,7 @@ export const SubdivisionService = {
 
     getById: (id: number) => apiClient<ISubdivision>(`/subdivision/${id}`),
     patchById: (id: number, options : RequestInit) => apiClient<ISubdivision>(`/subdivision/${id}`, options),
-    deleteById: (id: number, options : RequestInit) => apiClient<void>(`/subdivision/${id}`, options),
+    deleteById: (id: number) => apiClient<void>(`/subdivision/${id}`),
 
     getPermissions: (id: number) => apiClient<IPermission[]>(`/subdivision/${id}/permission`),
 

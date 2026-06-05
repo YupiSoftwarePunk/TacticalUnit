@@ -6,7 +6,7 @@ export const PostService = {
     getAll: () => apiClient<IPost[]>("/post"),
     getById: (id: number) => apiClient<IPost>(`/post/${id}`),
     patchById: (id: number, options : RequestInit) => apiClient<IPost>(`/post/${id}`, options),
-    deleteById: (id: number, options : RequestInit) => apiClient<void>(`/post/${id}`, options),
+    deleteById: (id: number) => apiClient<void>(`/post/${id}`),
 
     getPermissions: (id: number) => apiClient<IPermission>(`/post/${id}/permission`),
 
