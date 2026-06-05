@@ -22,7 +22,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
     const { slug } = React.use(params);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [award, setAward] = useState<any | null>(null);
+    const [award, setAward] = useState<IReward | null>(null);
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
 
@@ -30,11 +30,12 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // Имитация API вызова
-                const mockReward = {
+                const mockReward: IReward = {
                     Id: parseInt(slug) || 1,
                     Name: `Орден "Мастер документооборота III степени"`,
                     Conditions: "Выдается за безупречную службу",
+                    Privileges: "Дополнительные привилегии в системе",
+                    Color: "#FFD700",
                     ImagePath: "/-_-.jpg",
                 };
                 setAward(mockReward);
@@ -63,7 +64,6 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         if (!award || selectedUnits.size === 0) return;
         try {
             setIsSaving(true);
-            // Имитация POST запроса
             await new Promise(resolve => setTimeout(resolve, 1000));
             setIsSaving(false);
             setSelectedUnits(new Set());

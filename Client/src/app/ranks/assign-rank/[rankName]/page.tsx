@@ -31,10 +31,9 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // Имитация API вызова
-                const mockRank = {
-                    Id: 1,
-                    Name: rankName || "Генерал-Майор",
+                const mockRank: IRank = {
+                    Id: parseInt(rankName) || 1,
+                    Name: "Генерал-Майор",
                     Color: "#FFD700",
                     CounterToReach: 10,
                     Units: [],
@@ -56,7 +55,8 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
         const newSelected = new Set(selectedUnits);
         if (newSelected.has(discordId)) {
             newSelected.delete(discordId);
-        } else {
+        } 
+        else {
             newSelected.add(discordId);
         }
         setSelectedUnits(newSelected);
@@ -66,7 +66,6 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
         if (!rank || selectedUnits.size === 0) return;
         try {
             setIsSaving(true);
-            // Имитация POST запроса
             await new Promise(resolve => setTimeout(resolve, 1000));
             setIsSaving(false);
             setSelectedUnits(new Set());

@@ -31,29 +31,30 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // Имитация API вызова
-                const mockPost = {
-                    Id: 1,
-                    Name: postName || "Офицер",
+                // Имитация API вызова. Убрали postName из поля Name, так как postName - это скорее всего ID из URL.
+                const mockPost: IPost = {
+                    Id: parseInt(postName) || 1,
+                    Name: "Офицер", 
                     Description: "Должность офицера",
                     Color: "#0066FF",
                     AppendSubdivisionName: false,
                     Units: [],
                     GivedPermissions: [],
-                    DiscordRoleId: "",
+                    DiscordRoleId: "12345",
                     MaxRank: {
                         Id: 0,
                         CounterToReach: 10,
                         Units: [],
                         Color: "#ffffff",
-                        Name: "Никнейм",
+                        Name: "Генерал",
                         GivedPermissions: [],
                         DiscordRoleId: 0,
                     },
                 };
                 setPost(mockPost);
                 setLoading(false);
-            } catch (err) {
+            } 
+            catch (err) {
                 setError("Ошибка при загрузке должности");
                 setLoading(false);
             }
@@ -76,7 +77,6 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
         if (!post || selectedUnits.size === 0) return;
         try {
             setIsSaving(true);
-            // Имитация POST запроса
             await new Promise(resolve => setTimeout(resolve, 1000));
             setIsSaving(false);
             setSelectedUnits(new Set());
@@ -127,16 +127,6 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                     <AssignInfoHeader 
                         title={post.Name}
                         description={post.Description}
-                        mediaNode={
-                            <div
-                                className="relative aspect-square border border-black/10 dark:border-white/5 flex items-center justify-center flex-col gap-4"
-                                style={{ backgroundColor: post.Color }}
-                            >
-                                <div className="text-black dark:text-text-primary font-text-bold text-2xl text-center px-4">
-                                    {post.Name}
-                                </div>
-                            </div>
-                        }
                     />
 
                     <div className="mt-16">
