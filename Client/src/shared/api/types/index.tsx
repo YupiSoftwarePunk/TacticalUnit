@@ -167,3 +167,27 @@ interface ISingleDayEvent{
     Date: Date,
     UnitId : number
 }
+
+interface IDiscordLoginUrlResponse {
+    login_url: string;
+    state: string;
+}
+
+interface IDiscordCallbackResponse {
+    success: boolean;
+    access_token: string;
+    token_type: string;
+    expires_in: number;
+    user: {
+        discord_id: number;
+        username: string;
+    };
+}
+
+interface ICurrentUserResponse {
+    discord_id: string;
+    username: string;
+    joined: string;
+    rank: string;
+    steam_id: string | null;
+}
