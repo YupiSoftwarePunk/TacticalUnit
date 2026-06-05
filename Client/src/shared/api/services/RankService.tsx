@@ -12,6 +12,10 @@ export const RankService = {
     getPermissions: (id: number) => apiClient<IPermission[]>(`/rank/${id}/permission`),
 
     getDiscordRoleOf: (id: number) => apiClient<IRank>(`/rank/${id}/discord-role`),
-    patchDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IRank>(`/rank/${id}/discord-role`, options),
+    postDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IRank>(`/rank/${id}/discord-role`, options),
 
+    getUnitsOfRankByRankId: (id: number) => apiClient<IRank>(`/rank/${id}/assign`),
+    postUnitById: (id: number, options : RequestInit) => apiClient<IRank>(`/rank/${id}/assign`, options),
+    
+    getUnitRankInfoById: (id: number, UnitDiscordId : number) => apiClient<IRank>(`/rank/${id}/discord-role/${UnitDiscordId}`),
 };

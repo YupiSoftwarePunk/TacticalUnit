@@ -6,6 +6,7 @@ export const UnitService = {
     getAll: () => apiClient<IUnit[]>("/unit"),
     getByDiscordId: (id: number) => apiClient<IUnit>(`/unit/${id}`),
     patchByDiscordId: (id: number, options : RequestInit) => apiClient<IUnit>(`/unit/${id}`, options),
+    deleteByDiscordId: (id: number) => apiClient<IUnit>(`/unit/${id}`),
 
     getStatuses: (id: number) => apiClient<IState[]>(`/unit/${id}/status`),
     putStatus: (id: number, options : RequestInit) => apiClient<IState>(`/unit/${id}/status`, options),  //add | update status
@@ -20,6 +21,9 @@ export const UnitService = {
 
     getDismissedUnits: () => apiClient<Date>(`/unit-dismissed`), 
     getRetiredUnits: () => apiClient<Date>(`/unit-retirement`), 
+    
+    getStateStory: (id : number) => apiClient<Date>(`/api/unit/${id}/states`), 
+    getEventStory: (id : number) => apiClient<Date>(`/api/unit/${id}/events`), 
 
     getDiscordRoleOf: (id: number) => apiClient<IUnit>(`/unit/${id}/discord-role`),
     patchDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IUnit>(`/unit/${id}/discord-role`, options),
