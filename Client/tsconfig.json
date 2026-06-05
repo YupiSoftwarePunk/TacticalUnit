@@ -37,6 +37,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "src/components/Forms", "src/pages/404.js"  ],
+, "src/components/Forms", "src/pages/404.js", "src/components/ActivityCalendar"  ],
   "exclude": ["node_modules"]
 }

@@ -1,25 +1,15 @@
 import { act, useEffect, useState } from "react"
-import { ActivityCalendarCell } from "./ActivityCalendarCell";
+import { ActivityCalendarCell } from "../ActivityCalendarCell";
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import { ActivityCalendarPillar, IActivityCalendarPillar } from "./ActivityCalendarPillar";
 
-interface activityCell {
-    id : number,
-    date: Date,
-    isCurrentMonth: boolean,
-    isChecked: boolean
-}
 
-const monthsStr = [
-        "Январь", "Февраль", "Март", 
-        "Апрель","Май","Июнь",
-        "Июль","Август","Сентябрь",
-        "Октябрь","Ноябрь","Декабрь"
-    ];
 
-    const _today = new Date();
-    const _currentYear = _today.getFullYear();
-    const _currentMonth = _today.getMonth();
+
+
+const _today = new Date();
+const _currentYear = _today.getFullYear();
+const _currentMonth = _today.getMonth();
 const BlankMonths : IActivityCalendarPillar[] = [
         {
             Id : 0,
@@ -84,6 +74,13 @@ const BlankMonths : IActivityCalendarPillar[] = [
             filling : 65,
             Date : new Date(_currentYear, _currentMonth-7, 1 )
         }
+    ];
+
+const monthsStr = [
+        "Январь", "Февраль", "Март", 
+        "Апрель","Май","Июнь",
+        "Июль","Август","Сентябрь",
+        "Октябрь","Ноябрь","Декабрь"
     ];
 export const ActivityCalendar = () =>{
     const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
@@ -287,7 +284,7 @@ export const ActivityCalendar = () =>{
 
     return(
         <div className="flex size-full flex-col gap-5">
-            <div className="flex gap-2">
+            <div className="flex gap-2 max-md:flex-col max-md:items-center">
 
                 <div className="flex">
                     <div className="grid grid-cols-7 grid-rows-6 w-full h-full text-center gap-1">
@@ -306,7 +303,7 @@ export const ActivityCalendar = () =>{
                         ))}
                     </div>
                 </div>
-                <div className="flex flex-col flex-2 w-60">
+                <div className="flex flex-col flex-2 w-60 min-h-60">
                     <div className="flex flex-1 overflow-clip ">
                         <div className={`grid flex-1 gap-1 grid-cols-9 transition-all`} style={{marginLeft:`${-40 - pillarsOffset}%`, marginRight:`${-40 + pillarsOffset}%`, transitionProperty: `${pillarsTransitionStatus? "all" : "none"}`}}>
                             {monthsMatrix.map((item)=>(

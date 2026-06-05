@@ -101,25 +101,26 @@ interface IActivity{
     Unit : IUnit,
     Date : Date
 }
-enum StatusType{
-    Vacation = 1,
-    TemporaryPost = 2,
-    Gratitude = 3,
-    Reprimand = 4,
-    SevereReprimand = 5,
-    Retirement = 6
-}
-interface IStatus{
-    Type : StatusType,
-    UnitStatus : IUnitStatus,
+
+interface IState{
     Color : string,
     Name : string,
     DiscordRoleId? : number
 }
+
+interface ISingleDayEvent{
+    Id : number,
+    Name : string,
+    Color : string,
+    DateTime : Date,
+    UnitId : number
+    Unit? : IUnit
+}
+
 interface IUnitStatus{
     Id? : number,
     Unit : IUnit,
-    Status : IStatus,
+    Status : IState,
     StartDate : Date,
     EndDate : Date
 }
@@ -154,3 +155,19 @@ interface IPermission{
     Description : string,
     GivedPermissions : IGivedPermission[]
 }
+
+
+
+interface activityCell {
+    id : number,
+    date: Date,
+    isCurrentMonth: boolean,
+    isChecked: boolean
+}
+
+const monthsStr = [
+        "Январь", "Февраль", "Март", 
+        "Апрель","Май","Июнь",
+        "Июль","Август","Сентябрь",
+        "Октябрь","Ноябрь","Декабрь"
+    ];

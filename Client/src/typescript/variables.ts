@@ -2,6 +2,7 @@ interface IBaseVar{
     dom : string
 }
 
+
 export function getBaseVariables() : IBaseVar
 {
     let baseVars : IBaseVar = {

@@ -7,10 +7,10 @@ export const UnitService = {
     getByDiscordId: (id: number) => apiClient<IUnit>(`/unit/${id}`),
     patchByDiscordId: (id: number, options : RequestInit) => apiClient<IUnit>(`/unit/${id}`, options),
 
-    getStatuses: (id: number) => apiClient<IStatus[]>(`/unit/${id}/status`),
-    putStatus: (id: number, options : RequestInit) => apiClient<IStatus>(`/unit/${id}/status`, options),  //add | update status
+    getStatuses: (id: number) => apiClient<IState[]>(`/unit/${id}/status`),
+    putStatus: (id: number, options : RequestInit) => apiClient<IState>(`/unit/${id}/status`, options),  //add | update status
     
-    StatusById: (UnitId: number, StatusId : number) => apiClient<IStatus[]>(`/unit/${UnitId}/status/${StatusId}`), // Delete | Get
+    StatusById: (UnitId: number, StatusId : number) => apiClient<IState[]>(`/unit/${UnitId}/status/${StatusId}`), // Delete | Get
     //terminateStatus: (id: number, options : RequestInit) => apiClient<IStatus>(`/unit/${id}/status`, options),  //add | update status
 
     getActivity: (id: number) => apiClient<Date[]>(`/unit/${id}/activity`),
