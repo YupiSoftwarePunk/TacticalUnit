@@ -154,3 +154,16 @@ interface IPermission{
     Description : string,
     GivedPermissions : IGivedPermission[]
 }
+
+interface IUnitState{
+    Id : number,
+    Start: Date,
+    End: Date,
+    UnitId : number
+}
+
+interface ISingleDayEvent{
+    Id : number,
+    Date: Date,
+    UnitId : number
+}

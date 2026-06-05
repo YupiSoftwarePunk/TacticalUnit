@@ -6,9 +6,12 @@ export const PostService = {
     getAll: () => apiClient<IPost[]>("/post"),
     getById: (id: number) => apiClient<IPost>(`/post/${id}`),
     patchById: (id: number, options : RequestInit) => apiClient<IPost>(`/post/${id}`, options),
+    deleteById: (id: number, options : RequestInit) => apiClient<void>(`/post/${id}`, options),
+
     getPermissions: (id: number) => apiClient<IPermission>(`/post/${id}/permission`),
+
     getDiscordRoleOf: (id: number) => apiClient<IPost>(`/post/${id}/discord-role`),
-    patchDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IPost>(`/post/${id}/discord-role`, options),
+    postDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IPost>(`/post/${id}/discord-role`, options),
 
     getAssigned: (id: number) => apiClient<IAssignedReward[]>(`/post/${id}/assign`),
     assignToUnit: (id: number, options: RequestInit) => apiClient<IAssignedReward>(`/post/${id}/assign`, options),
