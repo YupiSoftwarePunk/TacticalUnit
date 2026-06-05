@@ -12,7 +12,7 @@ export const UnitService = {
     putStatus: (id: number, options : RequestInit) => apiClient<IState>(`/unit/${id}/status`, options),  //add | update status
     
     StatusById: (UnitId: number, StatusId : number) => apiClient<IState[]>(`/unit/${UnitId}/status/${StatusId}`), // Delete | Get
-    //terminateStatus: (id: number, options : RequestInit) => apiClient<IStatus>(`/unit/${id}/status`, options),  //add | update status
+    terminateStatus: (id: number, options : RequestInit) => apiClient<void>(`/unit/${id}/status`, options),  //add | update status
 
     getActivity: (id: number) => apiClient<Date[]>(`/unit/${id}/activity`),
     putActivity: (id: number, options : RequestInit) => apiClient<Date>(`/unit/${id}/activity`, options),  // fix activity
