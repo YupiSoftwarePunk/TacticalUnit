@@ -3,14 +3,15 @@
 import { AccordingUnitsTable, BaseContainer, ColorInputField, DescriptionInputField, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { MainHeader } from "@/components/Header/MainHeader";
-import { LoadingScreen } from "@/components/StatusScreens/Screens";
+import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import ToolTip from "@/components/ToolTip/ToolTip";
+import { PostService } from "@/shared/api/services/postService";
 import { validateColor } from "@/typescript/colorValidator";
 import UniversalTable from "@/widgets/universalList/universalTable";
 import { Check, ChevronDown, Cross, Pencil, X } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 
 const MEMBERS_DATA = [
@@ -106,7 +107,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     
 
     const [savedPost, setSavedPost] = useState<IPost>({
-        Id : 0,
+        Id : "0",
         Description : "Загрузка описания...",
         SubdivisionId : undefined,
         Subdivision : undefined,
@@ -114,7 +115,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
         HeadId : undefined,
         Head : undefined,
         MaxRank : {
-            Id : 0,
+            Id : "0",
             CounterToReach : 10,
             PreviousId : undefined,
             Previous : undefined,
@@ -135,9 +136,30 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     });
     const [post, setPost] = useState<IPost>(savedPost);
 
-    if (!post){
-        return (<LoadingScreen></LoadingScreen>)
+
+    let loaded = false;
+    const [error, setError] = useState<string | undefined>();
+    function loadData(){
+        PostService.getById(postName as unknown as number).then(
+            (data)=>{
+                loaded = true;
+                setPost(data);
+            }
+        ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
     }
+    useEffect(()=>{
+        loadData();
+    }, [])
+
+    if(error!= undefined){return <ErrorScreen error={error}></ErrorScreen>}
+    if(!loaded){return <LoadingScreen></LoadingScreen>}
+
+
+
+
+
+
+
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>(post.Subdivision? post.Subdivision.Name : "");
     const [postPrompt, setPostPrompt] = useState<string>(post.Head? post.Head.Name : "");
 

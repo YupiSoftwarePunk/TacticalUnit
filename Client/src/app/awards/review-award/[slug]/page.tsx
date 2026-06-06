@@ -2,11 +2,13 @@
 import { AccordingUnitsTable, BaseContainer, ColorInputField, DescriptionInputField, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import AwardDetailsPage  from "@/pages/award-details/ui/AwardDetailsPage";
+import { RewardService } from "@/shared/api/services/RewardService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 
 
@@ -55,14 +57,29 @@ export default function Page({ params }: { params: Promise<{slug: string}> }) {
     const [canGrant, setCanGrant] = useState(true);
 
     const [reward, setReward] = useState<IReward>({
-        Id:0,
+        Id : "0",
         Name:"Название загружается...",
         Conditions: "Условия получения загружаются...",
         Privileges:"Привилегии загружаются...",
         Color:"#F100FF"
     });
 
-
+    let loaded = false;
+        const [error, setError] = useState<string | undefined>();
+        function loadData(){
+            RewardService.getById(slug as unknown as number).then(
+                (data)=>{
+                    loaded = true;
+                    setReward(data);
+                }
+            ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
+        }
+        useEffect(()=>{
+            loadData();
+        }, [])
+    
+        if(error!= undefined){return <ErrorScreen error={error}></ErrorScreen>}
+        if(!loaded){return <LoadingScreen></LoadingScreen>}
 
     // return (
     //     <div className="flex flex-col h-full">

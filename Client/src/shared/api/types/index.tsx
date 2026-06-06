@@ -16,7 +16,7 @@ enum PermissionType{
 }
 
 interface ISubdivision{
-    Id? : number,
+    Id? : string,
     Description : string,
     AppendHeadName : boolean,
     Posts : IPost[],
@@ -30,7 +30,7 @@ interface ISubdivision{
 }
 
 interface IRank{
-    Id? : number,
+    Id? : string,
     CounterToReach : number,
     PreviousId? : number,
     Previous? : IRank,
@@ -45,7 +45,7 @@ interface IRank{
 }
 
 interface IPost{
-    Id? : number,
+    Id? : string,
     Description : string,
     SubdivisionId? : number,
     Subdivision? : ISubdivision,
@@ -60,14 +60,14 @@ interface IPost{
     DiscordRoleId? : string
 }
 interface IDocType{
-    Id? : number,
+    Id? : string,
     Name : string,
     Description : string,
     TemplatePath? : string,
     Docs : IDoc[]
 }
 interface IDoc{
-    Id? : number,
+    Id? : string,
     Name : string,
     FilePath : string,
     DocType? : IDocType,
@@ -75,25 +75,25 @@ interface IDoc{
     Units : IUnit[]
 }
 interface IReward{
-    Id? : number,
+    Id? : string,
     Conditions : string,
     Privileges : string,
     ImagePath? : string,
     Assigned? : IAssignedReward[],
     Color : string,
     Name : string,
-    DiscordRoleId? : number
+    DiscordRoleId? : string
 }
 interface IAssignedReward{
-    RewardId : number,
+    RewardId : string,
     Reward : IReward,
-    UnitId : number,
+    UnitId : string,
     Unit : IUnit,
     AssignedDate : Date,
     Display : number
 }
 interface IActivity{
-    UnitId : number,
+    UnitId : string,
     Unit : IUnit,
     Date : Date
 }
@@ -101,20 +101,20 @@ interface IActivity{
 interface IState{
     Color : string,
     Name : string,
-    DiscordRoleId? : number
+    DiscordRoleId? : string
 }
 
 interface ISingleDayEvent{
-    Id : number,
+    Id : string,
     Name : string,
     Color : string,
     DateTime : Date,
-    UnitId : number
+    UnitId : string
     Unit? : IUnit
 }
 
 interface IUnitStatus{
-    Id? : number,
+    Id? : string,
     Unit : IUnit,
     Status : IState,
     StartDate : Date,
@@ -122,9 +122,9 @@ interface IUnitStatus{
 }
 
 interface IUnit {
-    DiscordId : number,
+    DiscordId : string,
     Nickname : string,
-    SteamId? : number,
+    SteamId? : string,
     RankUpCounter : number,
     Joined : Date,
     Colour : string,
@@ -138,7 +138,7 @@ interface IUnit {
 }
 
 interface IGivedPermission{
-    Id? : number,
+    Id? : string,
     PermissionType : PermissionType,
     Permission : IPermission,
     Entity : any,
