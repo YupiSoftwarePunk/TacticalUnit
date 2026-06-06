@@ -94,14 +94,22 @@ export default function PostPage({params}: {params: Promise<{subdivisionId: stri
     const [subdivision, setSubdivision] = useState<ISubdivision>(savedSubdivision);
     // const [subdivision, setSubdivision] = useState<ISubdivision>();
 
-    const [loadingError, setLoadingError] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(true);
-    useEffect(()=>{
-        SubdivisionService.getById(subdivisionId as unknown as number).then(data =>{ setSubdivision(data); setLoading(false)}).catch(()=>{setLoadingError(true)})
-    }, [])
-
-    //if (loadingError) {return <ErrorScreen error="Не удалось получить данные с сервера. Проверьте правильность адреса и перезагрузите страницу"></ErrorScreen>}
-    //if (loading) {return <LoadingScreen></LoadingScreen>}
+    let loaded = false;
+            const [error, setError] = useState<string | undefined>();
+            function loadData(){
+                SubdivisionService.getById(subdivisionId as unknown as number).then(
+                    (data)=>{
+                        loaded = true;
+                        setSubdivision(data);
+                    }
+                ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
+            }
+            useEffect(()=>{
+                loadData();
+            }, [])
+        
+            if(error!= undefined){return <ErrorScreen error={error}></ErrorScreen>}
+            if(!loaded){return <LoadingScreen></LoadingScreen>}
     
 
 
