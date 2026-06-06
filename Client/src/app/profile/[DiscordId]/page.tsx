@@ -3,6 +3,7 @@ import { ActivityCalendar } from "@/components/ActivityCalendar/BaseCalendar/Act
 import { MainHeader } from "@/components/Header/MainHeader";
 import { ProfileBGImage, ProfileSidePanel, UnitInfoPanel } from "@/components/ProfileComponents/ProfileComponents";
 import {LoadingScreen, ErrorScreen} from "@/components/StatusScreens/Screens";
+import { UnitService } from "@/shared/api/services/unitService";
 import { getBaseVariables } from "@/typescript/variables";
 import { useSearchParams } from "next/navigation";
 import React from "react";
@@ -29,20 +30,25 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
     // }
     const {DiscordId} = React.use(params);
     
-
-    const [jsonData, setJsonData] = useState<IUnit>();
-    const dom : string = getBaseVariables().dom;
-    useEffect(()=>{
-        // var r = fetch(`${dom}/api/unit/${id}`).then((response)=>response.json()).then((data)=>setJsonData(data)).catch(error=>{
-        //     console.warn("fail to fetch: "+ error)
-        // })
-        
-    }, [])
-    if (jsonData == undefined){
-        //return (<ErrorScreen error="Не удалось получить данные профиля"></ErrorScreen>);
-    }
-    
     const [unitData, setUnitData] = useState<IUnit>();
+
+    let loaded = false;
+        const [error, setError] = useState<string | undefined>();
+        function loadData(){
+            UnitService.getByDiscordId(DiscordId as unknown as number).then(
+                (data)=>{
+                    loaded = true;
+                    setUnitData(data);
+                }
+            ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
+        }
+        useEffect(()=>{
+            loadData();
+        }, [])
+    
+        if(error!= undefined){return <ErrorScreen error={error}></ErrorScreen>}
+        if(!loaded){return <LoadingScreen></LoadingScreen>}
+    
 
     const [accessRoles, setAccessRoles] = useState<string[]>([]);
     const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([

@@ -107,7 +107,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     
 
     const [savedPost, setSavedPost] = useState<IPost>({
-        Id : 0,
+        Id : "0",
         Description : "Загрузка описания...",
         SubdivisionId : undefined,
         Subdivision : undefined,
@@ -115,7 +115,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
         HeadId : undefined,
         Head : undefined,
         MaxRank : {
-            Id : 0,
+            Id : "0",
             CounterToReach : 10,
             PreviousId : undefined,
             Previous : undefined,

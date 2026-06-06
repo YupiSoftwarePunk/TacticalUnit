@@ -74,7 +74,7 @@ export default function PostPage({params}: {params: Promise<{rankId: string}>}) 
 
     const [savedRank, setSavedRank] = useState<IRank>(
     {
-        Id : 0,
+        Id : "0",
         CounterToReach : 10,
         PreviousId : undefined,
         Previous : undefined,

@@ -57,7 +57,7 @@ export default function Page({ params }: { params: Promise<{slug: string}> }) {
     const [canGrant, setCanGrant] = useState(true);
 
     const [reward, setReward] = useState<IReward>({
-        Id:0,
+        Id : "0",
         Name:"Название загружается...",
         Conditions: "Условия получения загружаются...",
         Privileges:"Привилегии загружаются...",
