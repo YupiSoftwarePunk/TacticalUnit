@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 const textFont = localFont({
   src: "./../../public/fonts/couriercyrps.ttf",
@@ -64,9 +65,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="font-sans">
-        {children}
-      </body>
+      <AuthProvider>
+        <body className="font-sans">
+          {children}
+        </body>
+      </AuthProvider>
     </html>
   );
 }

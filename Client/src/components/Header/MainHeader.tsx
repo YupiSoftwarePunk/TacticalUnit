@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { applyTheme } from "@/layouts/ThemeLayout";
+import { useAuth } from "@/context/AuthContext";
 
 export interface IHeader{
     isDark: boolean,
@@ -12,13 +13,15 @@ export interface IHeader{
 export const MainHeader = () => {
     const [isDark, setIsDark] = useState(true);
     const [mounted, setMounted] = useState(false);
+    const { user, isAuthenticated, isLoading, login, logout } = useAuth();
 
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme === "light") {
             setIsDark(false);
             applyTheme("light");
-        } else {
+        } 
+        else {
             applyTheme("dark");
         }
         setMounted(true);
@@ -55,11 +58,33 @@ export const MainHeader = () => {
           </div>
 
           <div className="flex items-center space-x-6">
-            <Link href="#" className="bg-accent hover:bg-accent-hover text-black font-text-bold px-4 py-2 transition-all">
-              Вступить
-            </Link>
+            {mounted && !isLoading && (
+                <>
+                    {!isAuthenticated ? (
+                        <button 
+                            onClick={login}
+                            className="bg-accent hover:bg-accent-hover text-black font-text-bold px-4 py-2 transition-all cursor-pointer"
+                        >
+                            Вступить
+                        </button>
+                    ) : (
+                        <div className="flex items-center space-x-4 font-text">
+                            <span className="text-text-primary text-sm font-text-bold bg-bg-secondary/40 px-3 py-1 rounded border border-bg-secondary">
+                                {user?.username} <span className="text-accent ml-1 text-xs">[{user?.rank}]</span>
+                            </span>
+                            <button 
+                                onClick={logout}
+                                className="text-xs text-text-secondary hover:text-accent transition-colors cursor-pointer"
+                                title="Выйти из аккаунта"
+                            >
+                                Выйти 🚪
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
             
-            <button onClick={toggleTheme} className="hover:opacity-70 text-xl transition-all w-6 h-6 flex items-center justify-center">
+            <button onClick={toggleTheme} className="hover:opacity-70 text-xl transition-all w-6 h-6 flex items-center justify-center cursor-pointer">
               <span className={mounted ? "opacity-100" : "opacity-0"}>
                 {isDark ? "☀️" : "🌙"}
               </span>
