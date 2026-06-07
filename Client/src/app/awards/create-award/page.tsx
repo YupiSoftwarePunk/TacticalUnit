@@ -10,7 +10,7 @@ import { useState } from "react";
 
 const mockG : IGivedPermission[] = [
     {
-        Id : 0,
+        Id : "0",
         PermissionType : 1,
         Permission : {
             Name: "Разрешен1",
@@ -22,7 +22,7 @@ const mockG : IGivedPermission[] = [
         Entity: {}
     },
     {
-        Id : 1,
+        Id : "1",
         PermissionType : 1,
         Permission : {
             Name: "Разрешен2",
@@ -34,7 +34,7 @@ const mockG : IGivedPermission[] = [
         Entity: {}
     },
     {
-        Id : 2,
+        Id : "2",
         PermissionType : 1,
         Permission : {
             Name: "Разрешен3",
@@ -62,7 +62,7 @@ export default function createSubdivPage(){
 
     let [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
-            Id : 1,
+            Id : "1",
             PermissionType : 1,
             Permission : {
                 Name: "Разрешен2",
@@ -74,7 +74,7 @@ export default function createSubdivPage(){
             Entity: {}
         },
         {
-            Id : 2,
+            Id : "2",
             PermissionType : 1,
             Permission : {
                 Name: "Разрешен3",

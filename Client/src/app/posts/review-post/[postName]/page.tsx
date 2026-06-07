@@ -126,7 +126,7 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
             Name : "Загрузка названия звания",
             RankChevronURL : "#",
             GivedPermissions : [],
-            DiscordRoleId : -1
+            DiscordRoleId : "-1"
         },
         Units : [],
         Color : "#b4b4b4",

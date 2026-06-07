@@ -79,7 +79,7 @@ export default function PostPage({params}: {params: Promise<{subdivisionId: stri
     const [isNotSaved, setIsNotSaved] = useState(false);
 
     const [savedSubdivision, setSavedSubdivision] = useState<ISubdivision>({
-        Id : 0,
+        Id : "0",
         Description : "Загрузка описания...",
         AppendHeadName : false,
         Posts : [],

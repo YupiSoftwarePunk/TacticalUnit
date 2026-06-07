@@ -85,7 +85,7 @@ export default function PostPage({params}: {params: Promise<{rankId: string}>}) 
         Name : "Имя загружается...",
         RankChevronURL : "#",
         GivedPermissions : [],
-        DiscordRoleId : -1
+        DiscordRoleId : "-1"
     });
     const [rank, setRank] = useState<IRank>(savedRank);
 

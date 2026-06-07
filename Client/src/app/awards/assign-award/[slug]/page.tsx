@@ -31,7 +31,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
             try {
                 setLoading(true);
                 const mockReward: IReward = {
-                    Id: parseInt(slug) || 1,
+                    Id: slug || "1",
                     Name: `Орден "Мастер документооборота III степени"`,
                     Conditions: "Выдается за безупречную службу",
                     Privileges: "Дополнительные привилегии в системе",
