@@ -23,6 +23,6 @@ export const UnitService = {
     getDismissedUnits: () => apiClient<IUnit[]>(`/unit-dismissed`), 
     getRetiredUnits: () => apiClient<IUnit[]>(`/unit-retirement`), 
     
-    getStateStory: (id : number) => apiClient<IUnitStatus[]>(`/api/unit/${id}/states`), 
+    getStateStory: (id : number) => apiClient<IUnitState[]>(`/api/unit/${id}/states`), 
     getEventStory: (id : number) => apiClient<ISingleDayEvent[]>(`/api/unit/${id}/events`), 
 };
