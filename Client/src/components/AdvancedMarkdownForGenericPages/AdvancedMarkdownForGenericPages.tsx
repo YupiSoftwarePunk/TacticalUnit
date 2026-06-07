@@ -250,7 +250,7 @@ interface IPermissionRollDownList{
 export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode, onChange, allPermissionsList, givedPermissionList} : IPermissionRollDownList) =>{
     const [permissionsExtended, setPermissionExtended] = useState(false);
     
-    function setPermission(PermissionId : number) : IGivedPermission[]{
+    function setPermission(PermissionId : string) : IGivedPermission[]{
         let midList :IGivedPermission[] = [...[], ...givedPermissionList!];
 
         if(givedPermissionList!.find(x=>x.Id == PermissionId)){
@@ -267,7 +267,7 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
         onChange?onChange(midList):false;
         return midList;
     }
-    function setInherit(PermissionId : number) : IGivedPermission[]{
+    function setInherit(PermissionId : string) : IGivedPermission[]{
         let modList : IGivedPermission[] = [...[], ...givedPermissionList!];
         if(modList.find(x=>x.Id == PermissionId)){
             modList.find(x=>x.Id == PermissionId)!.Inherit = !modList.find(x=>x.Id == PermissionId)!.Inherit;
