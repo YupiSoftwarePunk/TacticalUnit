@@ -31,12 +31,12 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
             try {
                 setLoading(true);
                 const mockReward: IReward = {
-                    Id: parseInt(slug) || 1,
-                    Name: `Орден "Мастер документооборота III степени"`,
-                    Conditions: "Выдается за безупречную службу",
-                    Privileges: "Дополнительные привилегии в системе",
-                    Color: "#FFD700",
-                    ImagePath: "/-_-.jpg",
+                    id: parseInt(slug) || 1,
+                    name: `Орден "Мастер документооборота III степени"`,
+                    conditions: "Выдается за безупречную службу",
+                    privileges: "Дополнительные привилегии в системе",
+                    color: "#FFD700",
+                    imagePath: "/-_-.jpg",
                 };
                 setAward(mockReward);
                 setLoading(false);
@@ -118,13 +118,13 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                 <div className="max-w-[1200px] mx-auto pt-10 px-6 w-full animate-in fade-in duration-500">
 
                     <AssignInfoHeader 
-                        title={award.Name}
-                        description={award.Conditions}
+                        title={award.name}
+                        description={award.conditions}
                         mediaNode={
                             <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center">
                                 <img
-                                    src={award.ImagePath || "/-_-.jpg"}
-                                    alt={award.Name}
+                                    src={award.imagePath || "/-_-.jpg"}
+                                    alt={award.name}
                                     className="w-4/5 h-4/5 object-contain"
                                 />
                             </div>

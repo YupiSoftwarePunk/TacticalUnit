@@ -10,40 +10,40 @@ import { useState } from "react";
 
 const mockG : IGivedPermission[] = [
     {
-        Id : 0,
-        PermissionType : 1,
-        Permission : {
-            Name: "Разрешен1",
-            PermissionType : 1,
-            Description : "",
-            GivedPermissions: []
+        id : 0,
+        permissionType : 1,
+        permission : {
+            name: "Разрешен1",
+            permissionType : 1,
+            description : "",
+            givedPermissions: []
         },
-        Inherit : false,
-        Entity: {}
+        inherit : false,
+        entity: {}
     },
     {
-        Id : 1,
-        PermissionType : 1,
-        Permission : {
-            Name: "Разрешен2",
-            PermissionType : 1,
-            Description : "какая-то крутая разрешение",
-            GivedPermissions: []
+        id : 1,
+        permissionType : 1,
+        permission : {
+            name: "Разрешен2",
+            permissionType : 1,
+            description : "какая-то крутая разрешение",
+            givedPermissions: []
         },
-        Inherit : false,
-        Entity: {}
+        inherit : false,
+        entity: {}
     },
     {
-        Id : 2,
-        PermissionType : 1,
-        Permission : {
-            Name: "Разрешен3",
-            PermissionType : 1,
-            Description : "какая-то НЕ ОЧЕНЬ разрешение",
-            GivedPermissions: []
+        id : 2,
+        permissionType : 1,
+        permission : {
+            name: "Разрешен3",
+            permissionType : 1,
+            description : "какая-то НЕ ОЧЕНЬ разрешение",
+            givedPermissions: []
         },
-        Inherit : false,
-        Entity: {}
+        inherit : false,
+        entity: {}
     }
 ]
 
@@ -62,28 +62,28 @@ export default function createSubdivPage(){
 
     let [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
-            Id : 1,
-            PermissionType : 1,
-            Permission : {
-                Name: "Разрешен2",
-                PermissionType : 1,
-                Description : "какая-то крутая разрешение",
-                GivedPermissions: []
+            id : 1,
+            permissionType : 1,
+            permission : {
+                name: "Разрешен2",
+                permissionType : 1,
+                description : "какая-то крутая разрешение",
+                givedPermissions: []
             },
-            Inherit : false,
-            Entity: {}
+            inherit : false,
+            entity: {}
         },
         {
-            Id : 2,
-            PermissionType : 1,
-            Permission : {
-                Name: "Разрешен3",
-                PermissionType : 1,
-                Description : "какая-то НЕ ОЧЕНЬ разрешение",
-                GivedPermissions: []
+            id : 2,
+            permissionType : 1,
+            permission : {
+                name: "Разрешен3",
+                permissionType : 1,
+                description : "какая-то НЕ ОЧЕНЬ разрешение",
+                givedPermissions: []
             },
-            Inherit : false,
-            Entity: {}
+            inherit : false,
+            entity: {}
         }
     ])
 
@@ -121,12 +121,12 @@ export default function createSubdivPage(){
             return
         }
         let newRank : IPost = {
-            Color : color,
-            Description : description,
-            AppendSubdivisionName : true,
-            Name : rankName,
-            GivedPermissions : permissions,
-            MaxRank : maxRank!
+            color : color,
+            description : description,
+            appendSubdivisionName : true,
+            name : rankName,
+            givedPermissions : permissions,
+            maxRank : maxRank!
 
 
         }
@@ -146,7 +146,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRank(availableRanks?.find(x=>x.Id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRank(availableRanks?.find(x=>x.id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>

@@ -20,140 +20,140 @@ enum PermissionType{
 }
 
 interface ISubdivision{
-    Id? : string,
-    Description : string,
-    AppendHeadName : boolean,
-    Posts : IPost[],
-    HeadId? : number,
-    Head? : ISubdivision,
-    Subordinates : ISubdivision[],
-    GivedPermissions : IGivedPermission[],
-    Color : string,
-    Name : string,
-    DiscordRoleId? : string
+    id? : string,
+    description : string,
+    appendHeadName : boolean,
+    posts : IPost[],
+    headId? : number,
+    head? : ISubdivision,
+    subordinates : ISubdivision[],
+    givedPermissions : IGivedPermission[],
+    color : string,
+    name : string,
+    discordRoleId? : string
 }
 
 interface IRank{
-    Id? : string,
-    CounterToReach : number,
-    PreviousId? : number,
-    Previous? : IRank,
-    NextId? : number,
-    Next? : IRank,
-    Units? : IUnit[],
-    Color : string,
-    Name : string,
-    RankChevronURL? : string,
-    GivedPermissions : IGivedPermission[],
-    DiscordRoleId? : number
+    id? : string,
+    counterToReach : number,
+    previousId? : number,
+    previous? : IRank,
+    nextId? : number,
+    next? : IRank,
+    units? : IUnit[],
+    color : string,
+    name : string,
+    rankChevronURL? : string,
+    givedPermissions : IGivedPermission[],
+    giscordRoleId? : number
 }
 
 interface IPost{
-    Id? : string,
-    Description : string,
-    SubdivisionId? : number,
-    Subdivision? : ISubdivision,
-    AppendSubdivisionName : boolean,
-    HeadId? : number,
-    Head? : IPost,
-    MaxRank : IRank,
-    Units? : IUnit[],
-    Color : string,
-    Name : string,
-    GivedPermissions : IGivedPermission[],
-    DiscordRoleId? : string
+    id? : string,
+    description : string,
+    subdivisionId? : number,
+    subdivision? : ISubdivision,
+    appendSubdivisionName : boolean,
+    headId? : number,
+    head? : IPost,
+    maxRank : IRank,
+    units? : IUnit[],
+    color : string,
+    name : string,
+    givedPermissions : IGivedPermission[],
+    discordRoleId? : string
 }
 interface IDocType{
-    Id? : string,
-    Name : string,
-    Description : string,
-    TemplatePath? : string,
-    Docs : IDoc[]
+    id? : string,
+    name : string,
+    description : string,
+    templatePath? : string,
+    docs : IDoc[]
 }
 interface IDoc{
-    Id? : string,
-    Name : string,
-    FilePath : string,
-    DocType? : IDocType,
-    Author : IUnit,
-    Units : IUnit[]
+    id? : string,
+    name : string,
+    filePath : string,
+    docType? : IDocType,
+    author : IUnit,
+    units : IUnit[]
 }
 interface IReward{
-    Id? : string,
-    Conditions : string,
-    Privileges : string,
-    ImagePath? : string,
-    Assigned? : IAssignedReward[],
-    Color : string,
-    Name : string,
-    DiscordRoleId? : string
+    id? : string,
+    conditions : string,
+    privileges : string,
+    imagePath? : string,
+    assigned? : IAssignedReward[],
+    color : string,
+    name : string,
+    discordRoleId? : string
 }
 interface IAssignedReward{
-    RewardId : string,
-    Reward : IReward,
-    UnitId : string,
-    Unit : IUnit,
-    AssignedDate : Date,
-    Display : number
+    rewardId : string,
+    reward : IReward,
+    unitId : string,
+    unit : IUnit,
+    assignedDate : Date,
+    display : number
 }
 interface IActivity{
-    UnitId : string,
-    Unit : IUnit,
-    Date : Date
+    unitId : string,
+    unit : IUnit,
+    date : Date
 }
 
 interface IState{
-    Color : string,
-    Name : string,
-    DiscordRoleId? : string
+    color : string,
+    name : string,
+    discordRoleId? : string
 }
 
 interface ISingleDayEvent{
-    Id : string,
-    Name : string,
-    Color : string,
-    DateTime : Date,
-    UnitId : string
-    Unit? : IUnit
+    id : string,
+    name : string,
+    color : string,
+    dateTime : Date,
+    unitId : string
+    unit? : IUnit
 }
 
 interface IUnitState{
-    Id? : string,
-    Unit : IUnit,
-    Status : IState,
-    StartDate : Date,
-    EndDate : Date
+    id? : string,
+    unit : IUnit,
+    status : IState,
+    startDate : Date,
+    endDate : Date
 }
 
 interface IUnit {
-    DiscordId : string,
-    Nickname : string,
-    SteamId? : string,
-    RankUpCounter : number,
-    Joined : Date,
-    Colour : string,
-    Rank : IRank,
-    OwnDocs : IDoc[],
-    AssignedDocs : IDoc[],
-    Posts : IPost[],
-    AssignedRewards : IAssignedReward[],
-    Activities : IActivity[],
-    UnitStatuses : IUnitState[]
+    discordId : string,
+    nickname : string,
+    steamId? : string,
+    rankUpCounter : number,
+    joined : Date,
+    colour : string,
+    rank : IRank,
+    ownDocs : IDoc[],
+    assignedDocs : IDoc[],
+    posts : IPost[],
+    assignedRewards : IAssignedReward[],
+    activities : IActivity[],
+    unitStatuses : IUnitState[]
 }
 
 interface IGivedPermission{
-    Id? : string,
-    PermissionType : PermissionType,
-    Permission : IPermission,
-    Entity : any,
-    Inherit : boolean
+    id? : string,
+    permissionType : PermissionType,
+    permission : IPermission,
+    entity : any,
+    inherit : boolean
 
 }
 interface IPermission{
-    PermissionType : PermissionType,
-    Name : string,
-    Description : string,
-    GivedPermissions : IGivedPermission[]
+    permissionType : PermissionType,
+    name : string,
+    description : string,
+    givedPermissions : IGivedPermission[]
 }
 
 interface IDiscordLoginUrlResponse {

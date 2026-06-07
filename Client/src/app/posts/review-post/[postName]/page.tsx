@@ -107,32 +107,32 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     
 
     const [savedPost, setSavedPost] = useState<IPost>({
-        Id : "0",
-        Description : "Загрузка описания...",
-        SubdivisionId : undefined,
-        Subdivision : undefined,
-        AppendSubdivisionName : false,
-        HeadId : undefined,
-        Head : undefined,
-        MaxRank : {
-            Id : "0",
-            CounterToReach : 10,
-            PreviousId : undefined,
-            Previous : undefined,
-            NextId : undefined,
-            Next : undefined,
-            Units : [],
-            Color : "#f6f6f6",
-            Name : "Загрузка названия звания",
-            RankChevronURL : "#",
-            GivedPermissions : [],
-            DiscordRoleId : -1
+        id : "0",
+        description : "Загрузка описания...",
+        subdivisionId : undefined,
+        subdivision : undefined,
+        appendSubdivisionName : false,
+        headId : undefined,
+        head : undefined,
+        maxRank : {
+            id : "0",
+            counterToReach : 10,
+            previousId : undefined,
+            previous : undefined,
+            nextId : undefined,
+            next : undefined,
+            units : [],
+            color : "#f6f6f6",
+            name : "Загрузка названия звания",
+            rankChevronURL : "#",
+            givedPermissions : [],
+            giscordRoleId : -1
         },
-        Units : [],
-        Color : "#b4b4b4",
-        Name : "Загрузка названия должности...",
-        GivedPermissions : [],
-        DiscordRoleId : ""
+        units : [],
+        color : "#b4b4b4",
+        name : "Загрузка названия должности...",
+        givedPermissions : [],
+        discordRoleId : ""
     });
     const [post, setPost] = useState<IPost>(savedPost);
 
@@ -160,8 +160,8 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
 
 
 
-    const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>(post.Subdivision? post.Subdivision.Name : "");
-    const [postPrompt, setPostPrompt] = useState<string>(post.Head? post.Head.Name : "");
+    const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>(post.subdivision? post.subdivision.name : "");
+    const [postPrompt, setPostPrompt] = useState<string>(post.head? post.head.name : "");
 
     let edit = false;
     let wasEditing = false;
@@ -213,8 +213,8 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
     }
 
     const setDivision = (division? : ISubdivision) => {
-        setPost(post=>({...post, Subdivision: division}) )
-        setSavedPost(savedPost=>({...savedPost, Subdivision: division}) )
+        setPost(post=>({...post, subdivision: division}) )
+        setSavedPost(savedPost=>({...savedPost, subdivision: division}) )
     }
 
     function getDivisions (prompt:string) : ISubdivision[]{
@@ -223,11 +223,11 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
             //     actualName: "",
             //     displayName: "[ Без подразделения ]"
             // })
-        let list = mockDivisions.filter(post.Subdivision?.Name.length == 0? (x=>x == x):(x=>!x.Name.search(post.Subdivision?.Name!)));
+        let list = mockDivisions.filter(post.subdivision?.name.length == 0? (x=>x == x):(x=>!x.name.search(post.subdivision?.name!)));
         return list;
     }
     function getPosts (prompt:string) : IPost[]{
-        let list = mockPosts.filter(post.Head?.Name.length == 0? (x=>x == x):(x=>!x.Name.search(post.Head?.Name!)));
+        let list = mockPosts.filter(post.head?.name.length == 0? (x=>x == x):(x=>!x.name.search(post.head?.name!)));
         return list;
     }
 
@@ -252,11 +252,11 @@ export default function PostPage({params}: {params: Promise<{postName: string}>}
 
         <BaseContainer>
                 
-                <ColorInputField editable={canEdit} editMode={true} value={post.Color} onChange={(e)=>{if(validateColor(e.target.value)){setPost(rank=>({...rank, Color: e.target.value}))}}}></ColorInputField>
+                <ColorInputField editable={canEdit} editMode={true} value={post.color} onChange={(e)=>{if(validateColor(e.target.value)){setPost(rank=>({...rank, color: e.target.value}))}}}></ColorInputField>
         </BaseContainer>
         <BaseContainer className="flex-col">
-            <MultiroleInputField value={post.Name} onChange={(e)=>{setPost(rank=>({...rank, Name: e.target.value}))}} tooltip="Наименование должности" editable={canEdit}></MultiroleInputField>
-            <DescriptionInputField value={post.Description} onChange={(e)=>{setPost(rank=>({...rank, Description: e.target.value}))}} tooltip="Описание должности" editable={canEdit}></DescriptionInputField>
+            <MultiroleInputField value={post.name} onChange={(e)=>{setPost(rank=>({...rank, name: e.target.value}))}} tooltip="Наименование должности" editable={canEdit}></MultiroleInputField>
+            <DescriptionInputField value={post.description} onChange={(e)=>{setPost(rank=>({...rank, description: e.target.value}))}} tooltip="Описание должности" editable={canEdit}></DescriptionInputField>
         </BaseContainer>
         <BaseContainer className="flex-col">
             <ListedInputField editable={canEdit} value={postPrompt} onChange={(e)=>{setPostPrompt(e.target.value)}} tooltip="Нижестоящая по иерархии должность" textWhenEmpty="[ Нижестоящая должность не указана ]"></ListedInputField>

@@ -32,13 +32,13 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
             try {
                 setLoading(true);
                 const mockRank: IRank = {
-                    Id: parseInt(rankName) || 1,
-                    Name: "Генерал-Майор",
-                    Color: "#FFD700",
-                    CounterToReach: 10,
-                    Units: [],
-                    GivedPermissions: [],
-                    DiscordRoleId: 12345,
+                    id: parseInt(rankName) || 1,
+                    name: "Генерал-Майор",
+                    color: "#FFD700",
+                    counterToReach: 10,
+                    units: [],
+                    givedPermissions: [],
+                    giscordRoleId: 12345,
                 };
                 setRank(mockRank);
                 setLoading(false);
@@ -120,15 +120,15 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
                 <div className="max-w-[1200px] mx-auto pt-10 px-6 w-full animate-in fade-in duration-500">
 
                     <AssignInfoHeader 
-                        title={rank.Name}
-                        description={`Количество до повышения: ${rank.CounterToReach}`}
+                        title={rank.name}
+                        description={`Количество до повышения: ${rank.counterToReach}`}
                         mediaNode={
                             <div
                                 className="relative aspect-square border border-black/10 dark:border-white/5 flex items-center justify-center flex-col gap-4"
-                                style={{ backgroundColor: rank.Color }}
+                                style={{ backgroundColor: rank.color }}
                             >
                                 <div className="text-black dark:text-text-primary font-text-bold text-2xl text-center px-4">
-                                    {rank.Name}
+                                    {rank.name}
                                 </div>
                             </div>
                         }
