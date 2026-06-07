@@ -117,7 +117,7 @@ interface ISingleDayEvent{
     Unit? : IUnit
 }
 
-interface IUnitStatus{
+interface IUnitState{
     Id? : string,
     Unit : IUnit,
     Status : IState,
@@ -138,7 +138,7 @@ interface IUnit {
     Posts : IPost[],
     AssignedRewards : IAssignedReward[],
     Activities : IActivity[],
-    UnitStatuses : IUnitStatus[]
+    UnitStatuses : IUnitState[]
 }
 
 interface IGivedPermission{
