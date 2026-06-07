@@ -33,7 +33,7 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                 setLoading(true);
                 // Имитация API вызова. Убрали postName из поля Name, так как postName - это скорее всего ID из URL.
                 const mockPost: IPost = {
-                    Id: parseInt(postName) || 1,
+                    Id: postName || "1",
                     Name: "Офицер", 
                     Description: "Должность офицера",
                     Color: "#0066FF",
@@ -42,13 +42,13 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                     GivedPermissions: [],
                     DiscordRoleId: "12345",
                     MaxRank: {
-                        Id: 0,
+                        Id: "0",
                         CounterToReach: 10,
                         Units: [],
                         Color: "#ffffff",
                         Name: "Генерал",
                         GivedPermissions: [],
-                        DiscordRoleId: 0,
+                        DiscordRoleId: "0",
                     },
                 };
                 setPost(mockPost);

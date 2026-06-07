@@ -32,13 +32,13 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
             try {
                 setLoading(true);
                 const mockRank: IRank = {
-                    Id: parseInt(rankName) || 1,
+                    Id: rankName || "1",
                     Name: "Генерал-Майор",
                     Color: "#FFD700",
                     CounterToReach: 10,
                     Units: [],
                     GivedPermissions: [],
-                    DiscordRoleId: 12345,
+                    DiscordRoleId: "12345",
                 };
                 setRank(mockRank);
                 setLoading(false);
