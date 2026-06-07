@@ -14,11 +14,6 @@ const monthsStr = [
         "Октябрь","Ноябрь","Декабрь"
     ];
 const StoryCalendarPanel = ({year, month, ActivityDaysList} : IStoryCalendarPanel) =>{
-    
-    
-
-
-    
 
     return (
         <div className="flex flex-col content-center justify-center gap-6">
