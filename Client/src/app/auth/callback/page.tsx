@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthService } from "@/shared/api/services/authService";
 import { useAuth } from "@/context/AuthContext";
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { checkAuth } = useAuth();
@@ -51,5 +51,19 @@ export default function AuthCallbackPage() {
             <h1 className="text-xl font-text-bold uppercase tracking-wider">Синхронизация с Discord...</h1>
             <p className="text-text-secondary text-sm mt-2">Пожалуйста, подождите, мы проверяем ваши данные.</p>
         </div>
+    );
+}
+
+export default function AuthCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col items-center justify-center min-h-screen bg-bg-primary text-text-primary font-text">
+                <div className="text-3xl mb-4 animate-bounce">🛡️</div>
+                <h1 className="text-xl font-text-bold uppercase tracking-wider">Синхронизация с Discord...</h1>
+                <p className="text-text-secondary text-sm mt-2">Пожалуйста, подождите, мы проверяем ваши данные.</p>
+            </div>
+        }>
+            <AuthCallbackContent />
+        </Suspense>
     );
 }

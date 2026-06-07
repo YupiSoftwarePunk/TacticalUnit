@@ -6,7 +6,7 @@ export interface IActivityCalendarCell{
     isCurrentMonth : boolean,
     givenInfo?: IContainedInfo[]
     SingleDayActivities? : ISingleDayEvent[],
-    States? : IUnitStatus[],
+    States? : IUnitState[],
 }
 export const ActivityCalendarCell: React.FC<IActivityCalendarCell> = ({isActive,isCurrentMonth, SingleDayActivities, States, givenInfo}) =>
 {
