@@ -41,8 +41,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        checkAuth();
-    }, []);
+    const handleDiscordCallback = async () => {
+        if (typeof window !== "undefined") {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get("code");
+            const state = urlParams.get("state");
+
+            if (code) {
+                setIsLoading(true);
+                try {
+                    const data = await AuthService.getCallBack(code, state || undefined);
+                    
+                    if (data && data.access_token) {
+                        localStorage.setItem("access_token", data.access_token);
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                } 
+                catch (error) {
+                    console.error("Ошибка при обработке ответа Discord OAuth:", error);
+                } 
+                finally {
+                    setIsLoading(false);
+                }
+            }
+        }
+
+        await checkAuth();
+    };
+
+    handleDiscordCallback();
+}, []);
 
     const login = async () => {
         try {

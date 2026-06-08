@@ -42,7 +42,7 @@ export default function AwardsPage() {
 
                 {hasAdminPermission && (
                     <Link 
-                    href="#" 
+                    href="/awards/create-award" 
                     className="relative group inline-block"
                     >
                     <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>

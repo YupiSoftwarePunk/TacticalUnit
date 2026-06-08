@@ -77,7 +77,7 @@ export const MainHeader = () => {
                                 className="text-xs text-text-secondary hover:text-accent transition-colors cursor-pointer"
                                 title="Выйти из аккаунта"
                             >
-                                Выйти 🚪
+                                Выйти
                             </button>
                         </div>
                     )}
