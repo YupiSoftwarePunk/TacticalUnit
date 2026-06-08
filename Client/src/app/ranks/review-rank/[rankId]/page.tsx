@@ -74,18 +74,18 @@ export default function PostPage({params}: {params: Promise<{rankId: string}>}) 
 
     const [savedRank, setSavedRank] = useState<IRank>(
     {
-        Id : "0",
-        CounterToReach : 10,
-        PreviousId : undefined,
-        Previous : undefined,
-        NextId : undefined,
-        Next : undefined,
-        Units : [],
-        Color : "#f3f3f3",
-        Name : "Имя загружается...",
-        RankChevronURL : "#",
-        GivedPermissions : [],
-        DiscordRoleId : "-1"
+        id : "0",
+        counterToReach : 10,
+        previousId : undefined,
+        previous : undefined,
+        nextId : undefined,
+        next : undefined,
+        units : [],
+        color : "#f3f3f3",
+        name : "Имя загружается...",
+        rankChevronURL : "#",
+        givedPermissions : [],
+        giscordRoleId : -1
     });
     const [rank, setRank] = useState<IRank>(savedRank);
 
@@ -108,7 +108,7 @@ export default function PostPage({params}: {params: Promise<{rankId: string}>}) 
 
 
 
-    const [rankPrompt, setRankPrompt] = useState<string>(rank.Previous? rank.Previous.Name : "Пром");
+    const [rankPrompt, setRankPrompt] = useState<string>(rank.previous? rank.previous.name : "Пром");
 
     let edit = false;
     let wasEditing = false;
@@ -172,7 +172,7 @@ export default function PostPage({params}: {params: Promise<{rankId: string}>}) 
     //     return list;
     // }
     function getRanks (prompt:string) : IRankWrapper[]{
-        let rankList = mockRanks.filter(rank.Previous?.Name.length == 0? (x=>x == x):(x=>!x.Name.search(rank.Previous?.Name!)));
+        let rankList = mockRanks.filter(rank.previous?.name.length == 0? (x=>x == x):(x=>!x.name.search(rank.previous?.name!)));
         let list : IRankWrapper[] = []
         rankList.forEach(element => {
             list.push({rank: element})
@@ -181,12 +181,12 @@ export default function PostPage({params}: {params: Promise<{rankId: string}>}) 
         return list;
     }
     function setPermission(prompt : string){
-        if(rank.GivedPermissions.find(x=>x.Permission.Name == prompt)){
-            setRank(post=>({...post, GivedPermissions: post.GivedPermissions.filter(x=>x.Permission.Name != prompt)}))
+        if(rank.givedPermissions.find(x=>x.permission.name == prompt)){
+            setRank(post=>({...post, givedPermissions: post.givedPermissions.filter(x=>x.permission.name != prompt)}))
         }else{
-            let modList : IGivedPermission[] = rank.GivedPermissions;
+            let modList : IGivedPermission[] = rank.givedPermissions;
             //modList.push(prompt);
-            setRank(post=>({...post, GivedPermissions: modList}))
+            setRank(post=>({...post, givedPermissions: modList}))
         }
     }
     
@@ -211,11 +211,11 @@ export default function PostPage({params}: {params: Promise<{rankId: string}>}) 
 
         <BaseContainer>
                 
-                <ColorInputField editable={canEdit} editMode={true} value={rank.Color} onChange={(e)=>{if(validateColor(e.target.value)){setRank(rank=>({...rank, Color: e.target.value}))}}}></ColorInputField>
+                <ColorInputField editable={canEdit} editMode={true} value={rank.color} onChange={(e)=>{if(validateColor(e.target.value)){setRank(rank=>({...rank, color: e.target.value}))}}}></ColorInputField>
         </BaseContainer>
         <BaseContainer className="flex-col">
-            <MultiroleInputField value={rank.Name} onChange={(e)=>{setRank(rank=>({...rank, Name: e.target.value}))}} tooltip="Наименование звания" editable={canEdit}></MultiroleInputField>
-            <MultiroleInputField value={rank.CounterToReach} onChange={(e)=>{setRank(rank=>({...rank, CounterToReach: Math.max((e.target.value as unknown as number), 1)}))}} tooltip="Кол-во активности до повышения" type="num" editable={canEdit}></MultiroleInputField>
+            <MultiroleInputField value={rank.name} onChange={(e)=>{setRank(rank=>({...rank, name: e.target.value}))}} tooltip="Наименование звания" editable={canEdit}></MultiroleInputField>
+            <MultiroleInputField value={rank.counterToReach} onChange={(e)=>{setRank(rank=>({...rank, counterToReach: Math.max((e.target.value as unknown as number), 1)}))}} tooltip="Кол-во активности до повышения" type="num" editable={canEdit}></MultiroleInputField>
         </BaseContainer>
         <BaseContainer className="flex-col">
             <ListedInputField editable={canEdit} value={rankPrompt} onChange={(e)=>{setRankPrompt}} tooltip="Нижестоящее по иерархии звание" textWhenEmpty="[ Нижестоящее звание не указано ]"></ListedInputField>

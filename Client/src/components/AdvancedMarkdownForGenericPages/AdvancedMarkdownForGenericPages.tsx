@@ -253,14 +253,14 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
     function setPermission(PermissionId : string) : IGivedPermission[]{
         let midList :IGivedPermission[] = [...[], ...givedPermissionList!];
 
-        if(givedPermissionList!.find(x=>x.Id == PermissionId)){
+        if(givedPermissionList!.find(x=>x.id == PermissionId)){
             // console.warn("unSet")
-            givedPermissionList!.find(x=>x.Id == PermissionId)!.Inherit = false;
-            midList = midList.filter(x=>x.Id != PermissionId);
+            givedPermissionList!.find(x=>x.id == PermissionId)!.inherit = false;
+            midList = midList.filter(x=>x.id != PermissionId);
             //return midList.filter(x=>x.Id != PermissionId)
         }else if (allPermissionsList){
             // console.warn("Set")
-            midList.push(allPermissionsList?.find(x=>x.Id == PermissionId)!)
+            midList.push(allPermissionsList?.find(x=>x.id == PermissionId)!)
             
             //return midList;
         }
@@ -269,12 +269,12 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
     }
     function setInherit(PermissionId : string) : IGivedPermission[]{
         let modList : IGivedPermission[] = [...[], ...givedPermissionList!];
-        if(modList.find(x=>x.Id == PermissionId)){
-            modList.find(x=>x.Id == PermissionId)!.Inherit = !modList.find(x=>x.Id == PermissionId)!.Inherit;
+        if(modList.find(x=>x.id == PermissionId)){
+            modList.find(x=>x.id == PermissionId)!.inherit = !modList.find(x=>x.id == PermissionId)!.inherit;
             
         }else{
             modList = setPermission(PermissionId);
-            modList.find(x=>x.Id == PermissionId)!.Inherit = !modList.find(x=>x.Id == PermissionId)!.Inherit;
+            modList.find(x=>x.id == PermissionId)!.inherit = !modList.find(x=>x.id == PermissionId)!.inherit;
             //modList.push(prompt);
         }
         onChange?onChange(modList):false;
@@ -294,26 +294,26 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
             <div  className={`flex flex-1  font-text-bold min-h-0 p-2 gap-2 flex-col mt-2 z-1 top-full  max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${permissionsExtended? "" :"h-0 pointer-events-none"}`} style={{minHeight: `${permissionsExtended? "" :"0px"}`}}>
                 {!editable && givedPermissionList && 
                     givedPermissionList!.map((item)=>(
-                    <div key={item.Permission.Name} className="flex">
-                        <p className="hover:bg-bg-secondary gap-3 flex flex-1">{item.Permission.Name}</p>
+                    <div key={item.permission.name} className="flex">
+                        <p className="hover:bg-bg-secondary gap-3 flex flex-1">{item.permission.name}</p>
                     </div>
                 ))
                 }
                 {!givedPermissionList && <p>[ Список отсутствует ]</p>}
                 {editable && allPermissionsList && givedPermissionList &&
                 allPermissionsList!.map((item)=>(
-                    <div key={item.Permission.Name} className="flex">
+                    <div key={item.permission.name} className="flex">
                         
                         <button className="hover:bg-bg-secondary gap-3 flex flex-1 ">
                             <ToolTip tooltipText="Выдать разрешение" className="flex" className_Tooltip="text-[16px]">
-                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.Id!)}}> <Check className={`${givedPermissionList!.find(x=>x.Id == item.Id)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.id!)}}> <Check className={`${givedPermissionList!.find(x=>x.id == item.id)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                             </ToolTip>
                             <ToolTip tooltipText="Наследовать разраешение" className_Tooltip="text-[16px]">
-                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setInherit(item.Id!)}}> <Check className={`${givedPermissionList!.find(x=>x.Id == item.Id)?.Inherit? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setInherit(item.id!)}}> <Check className={`${givedPermissionList!.find(x=>x.id == item.id)?.inherit? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                             </ToolTip>
-                            <ToolTip className="flex flex-1" innerClassName="flex" tooltipAlignment="left" className_Tooltip="max-w-100 text-[14px]" tooltipText={`${item.Permission.Description}`}>
+                            <ToolTip className="flex flex-1" innerClassName="flex" tooltipAlignment="left" className_Tooltip="max-w-100 text-[14px]" tooltipText={`${item.permission.description}`}>
 
-                                <p className="text-text-primary font-text-bold">{item.Permission.Name}</p>
+                                <p className="text-text-primary font-text-bold">{item.permission.name}</p>
                             </ToolTip>
                         </button>
                         

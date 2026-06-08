@@ -33,22 +33,22 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                 setLoading(true);
                 // Имитация API вызова. Убрали postName из поля Name, так как postName - это скорее всего ID из URL.
                 const mockPost: IPost = {
-                    Id: postName || "1",
-                    Name: "Офицер", 
-                    Description: "Должность офицера",
-                    Color: "#0066FF",
-                    AppendSubdivisionName: false,
-                    Units: [],
-                    GivedPermissions: [],
-                    DiscordRoleId: "12345",
-                    MaxRank: {
-                        Id: "0",
-                        CounterToReach: 10,
-                        Units: [],
-                        Color: "#ffffff",
-                        Name: "Генерал",
-                        GivedPermissions: [],
-                        DiscordRoleId: "0",
+                    id: postName || "1",
+                    name: "Офицер", 
+                    description: "Должность офицера",
+                    color: "#0066FF",
+                    appendSubdivisionName: false,
+                    units: [],
+                    givedPermissions: [],
+                    discordRoleId: "12345",
+                    maxRank: {
+                        id: "0",
+                        counterToReach: 10,
+                        units: [],
+                        color: "#ffffff",
+                        name: "Генерал",
+                        givedPermissions: [],
+                        giscordRoleId: 0,
                     },
                 };
                 setPost(mockPost);
@@ -125,8 +125,8 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                 <div className="max-w-[1200px] mx-auto pt-10 px-6 w-full animate-in fade-in duration-500">
 
                     <AssignInfoHeader 
-                        title={post.Name}
-                        description={post.Description}
+                        title={post.name}
+                        description={post.description}
                     />
 
                     <div className="mt-16">

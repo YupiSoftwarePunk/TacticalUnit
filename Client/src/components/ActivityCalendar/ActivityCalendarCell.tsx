@@ -15,16 +15,16 @@ export const ActivityCalendarCell: React.FC<IActivityCalendarCell> = ({isActive,
         if(SingleDayActivities!= undefined){
             SingleDayActivities.forEach(element => {
                 containedInfo.push({
-                    content: element.Name,
-                    color : element.Color
+                    content: element.name,
+                    color : element.color
                 })
             });
         }
         if(States!= undefined){
             States.forEach(element => {
                 containedInfo.push({
-                    content: element.Status.Name,
-                    color : element.Status.Color
+                    content: element.status.name,
+                    color : element.status.color
                 })
             });
         }

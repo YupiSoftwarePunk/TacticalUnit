@@ -79,17 +79,17 @@ export default function PostPage({params}: {params: Promise<{subdivisionId: stri
     const [isNotSaved, setIsNotSaved] = useState(false);
 
     const [savedSubdivision, setSavedSubdivision] = useState<ISubdivision>({
-        Id : "0",
-        Description : "Загрузка описания...",
-        AppendHeadName : false,
-        Posts : [],
-        HeadId : undefined,
-        Head : undefined,
-        Subordinates : [],
-        GivedPermissions : [],
-        Color : "#006666",
-        Name : "Загрузка названия...",
-        DiscordRoleId : "-1"
+        id : "0",
+        description : "Загрузка описания...",
+        appendHeadName : false,
+        posts : [],
+        headId : undefined,
+        head : undefined,
+        subordinates : [],
+        givedPermissions : [],
+        color : "#006666",
+        name : "Загрузка названия...",
+        discordRoleId : "-1"
     });
     const [subdivision, setSubdivision] = useState<ISubdivision>(savedSubdivision);
     // const [subdivision, setSubdivision] = useState<ISubdivision>();
@@ -168,11 +168,11 @@ export default function PostPage({params}: {params: Promise<{subdivisionId: stri
         setSavedSubdivision(savedPost=>({...savedPost, division: division}) )
     }
 
-    const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>(subdivision.Head? subdivision.Head.Name : "");
+    const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>(subdivision.head? subdivision.head.name : "");
 
     function getDivisions (prompt:string) : ISubdivision[]{
         // let list = mockDivisions.filter(subdivision.division?.length == 0? (x=>x == x):(x=>!x.displayName.search(subdivision.division!)));
-        let list = mockDivisions.filter(subdivision.Subordinates? (x=>x == x):(x=>!x.Name.search(prompt!)));
+        let list = mockDivisions.filter(subdivision.subordinates? (x=>x == x):(x=>!x.name.search(prompt!)));
         return list;
     }
     // function getPosts (prompt:string) : IPost[]{
@@ -181,12 +181,12 @@ export default function PostPage({params}: {params: Promise<{subdivisionId: stri
     // }
 
     function setPermission(prompt : string){
-        if(subdivision.GivedPermissions.find(x=>x.Permission.Name == prompt)){
-            setSubdivision(post=>({...post, GivedPermissions: post.GivedPermissions.filter(x=>x.Permission.Name != prompt)}))
+        if(subdivision.givedPermissions.find(x=>x.permission.name == prompt)){
+            setSubdivision(post=>({...post, givedPermissions: post.givedPermissions.filter(x=>x.permission.name != prompt)}))
         }else{
-            let modList : IGivedPermission[] = subdivision.GivedPermissions;
+            let modList : IGivedPermission[] = subdivision.givedPermissions;
             //modList.push(prompt);
-            setSubdivision(post=>({...post, GivedPermissions: modList}))
+            setSubdivision(post=>({...post, givedPermissions: modList}))
         }
     }
     
@@ -213,11 +213,11 @@ export default function PostPage({params}: {params: Promise<{subdivisionId: stri
     
             <BaseContainer>
                     
-                    <ColorInputField editable={canEdit} editMode={true} value={subdivision.Color} onChange={(e)=>{if(validateColor(e.target.value)){setSubdivision(rank=>({...rank, Color: e.target.value}))}}}></ColorInputField>
+                    <ColorInputField editable={canEdit} editMode={true} value={subdivision.color} onChange={(e)=>{if(validateColor(e.target.value)){setSubdivision(rank=>({...rank, color: e.target.value}))}}}></ColorInputField>
             </BaseContainer>
             <BaseContainer className="flex-col">
-                <MultiroleInputField value={subdivision.Name} onChange={(e)=>{setSubdivision(rank=>({...rank, Name: e.target.value}))}} tooltip="Наименование подразделения" editable={canEdit}></MultiroleInputField>
-                <DescriptionInputField value={subdivision.Description} onChange={(e)=>{setSubdivision(rank=>({...rank, Description: e.target.value}))}} tooltip="Описание подразделения" editable={canEdit}></DescriptionInputField>
+                <MultiroleInputField value={subdivision.name} onChange={(e)=>{setSubdivision(rank=>({...rank, name: e.target.value}))}} tooltip="Наименование подразделения" editable={canEdit}></MultiroleInputField>
+                <DescriptionInputField value={subdivision.description} onChange={(e)=>{setSubdivision(rank=>({...rank, description: e.target.value}))}} tooltip="Описание подразделения" editable={canEdit}></DescriptionInputField>
             </BaseContainer>
             <BaseContainer className="flex-col">
                 <ListedInputField editable={canEdit} value={subdivisionPrompt} onChange={(e)=>{setSubdivisionPrompt(e.target.value)}} tooltip="Подразделение к которому относится это подразделение" textWhenEmpty="[ Подразделение не указано ]"></ListedInputField>

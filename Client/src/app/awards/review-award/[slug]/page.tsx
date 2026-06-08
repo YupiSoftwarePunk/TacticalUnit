@@ -57,22 +57,30 @@ export default function Page({ params }: { params: Promise<{slug: string}> }) {
     const [canGrant, setCanGrant] = useState(true);
 
     const [reward, setReward] = useState<IReward>({
-        Id : "0",
-        Name:"Название загружается...",
-        Conditions: "Условия получения загружаются...",
-        Privileges:"Привилегии загружаются...",
-        Color:"#F100FF"
+        id : "0",
+        name:"Название загружается...",
+        conditions: "Условия получения загружаются...",
+        privileges:"Привилегии загружаются...",
+        color:"#F100FF"
     });
 
-    let loaded = false;
+    const [loaded, setLoaded] = useState<boolean>(false);
         const [error, setError] = useState<string | undefined>();
         function loadData(){
-            RewardService.getById(slug as unknown as number).then(
-                (data)=>{
-                    loaded = true;
+            // RewardService.getById(slug as unknown as number).then(
+            //     (data)=>{
+            //         loaded = true;
+            //         setReward(data);
+            //     }
+            // ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
+            
+            fetch(`http://localhost:5000/api/reward/${slug}`, {method: "GET", headers:{'Content-Type' : 'application/json'}}).then((responce)=>{if(!responce.ok) throw new Error("erroprrrrr"); return responce.json();
+            }).then(
+                (data : IReward)=>{
+                    setLoaded(true);
                     setReward(data);
                 }
-            ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
+            ).catch((er)=>{console.warn(er); setError(`Не удалось загрузить данные | ${er}`);})
         }
         useEffect(()=>{
             loadData();
@@ -110,14 +118,14 @@ export default function Page({ params }: { params: Promise<{slug: string}> }) {
     
             <BaseContainer>
                     
-                    <ColorInputField editable={canEdit} editMode={true} value={reward.Color} onChange={(e)=>{if(validateColor(e.target.value)){setReward(rank=>({...rank, Color: e.target.value}))}}}></ColorInputField>
+                    <ColorInputField editable={canEdit} editMode={true} value={reward.color} onChange={(e)=>{if(validateColor(e.target.value)){setReward(rank=>({...rank, color: e.target.value}))}}}></ColorInputField>
             </BaseContainer>
             <BaseContainer className="flex-col">
-                <MultiroleInputField value={reward.Name} onChange={(e)=>{setReward(rank=>({...rank, Name: e.target.value}))}} tooltip="Наименование награды" editable={canEdit}></MultiroleInputField>
-                <DescriptionInputField value={reward.Conditions} onChange={(e)=>{setReward(rank=>({...rank, Conditions: e.target.value}))}} tooltip="Описание награды" editable={canEdit}></DescriptionInputField>
+                <MultiroleInputField value={reward.name} onChange={(e)=>{setReward(rank=>({...rank, name: e.target.value}))}} tooltip="Наименование награды" editable={canEdit}></MultiroleInputField>
+                <DescriptionInputField value={reward.conditions} onChange={(e)=>{setReward(rank=>({...rank, conditions: e.target.value}))}} tooltip="Описание награды" editable={canEdit}></DescriptionInputField>
             </BaseContainer>
             <BaseContainer className="flex-col">
-                <DescriptionInputField value={reward.Privileges} onChange={(e)=>{setReward(rank=>({...rank, Privileges: e.target.value}))}} tooltip="Привилегии" editable={canEdit}></DescriptionInputField>
+                <DescriptionInputField value={reward.privileges} onChange={(e)=>{setReward(rank=>({...rank, privileges: e.target.value}))}} tooltip="Привилегии" editable={canEdit}></DescriptionInputField>
             </BaseContainer>
             </div>
             </div>
