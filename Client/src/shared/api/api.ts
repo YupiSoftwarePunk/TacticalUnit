@@ -30,8 +30,26 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
     }).catch((er)=>{ console.error(er); throw er; } );;
 
     if (!response.ok) {
-        const errorData = await response.json().catch((er)=>{console.error(er); throw er;} );
-        throw new Error(errorData.message || `API Error: ${response.status}`);
+        let errorMessage = `API Error: ${response.status}`;
+        
+        try {
+            const textData = await response.text();
+            
+            try {
+                const errorData = JSON.parse(textData);
+                errorMessage = errorData.message || errorData.error || errorMessage;
+            } 
+            catch {
+                if (textData && textData.trim()) {
+                    errorMessage = textData;
+                }
+            }
+        } 
+        catch (e) {
+            console.error("Не удалось прочитать тело ответа об ошибке:", e);
+        }
+
+        throw new Error(errorMessage);
     }
 
     return response.json();
