@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { AuthService } from "@/shared/api/services/authService";
 
 interface AuthContextType {
@@ -17,6 +17,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<ICurrentUserResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const isProcessed = useRef(false);
 
     const checkAuth = async () => {
         const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
@@ -41,6 +43,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
+        if (isProcessed.current) return;
+        isProcessed.current = true;
+
     const handleDiscordCallback = async () => {
         if (typeof window !== "undefined") {
             const urlParams = new URLSearchParams(window.location.search);
