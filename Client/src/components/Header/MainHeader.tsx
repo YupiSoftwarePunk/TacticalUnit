@@ -65,7 +65,7 @@ export const MainHeader = () => {
                             onClick={login}
                             className="bg-accent hover:bg-accent-hover text-black font-text-bold px-4 py-2 transition-all cursor-pointer"
                         >
-                            Вступить
+                            Войти через Discord
                         </button>
                     ) : (
                         <div className="flex items-center space-x-4 font-text">
