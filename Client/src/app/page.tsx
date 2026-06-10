@@ -82,7 +82,6 @@ const PRIDE_MEMBERS = [
   },
 ];
 
-// === ФИНАЛЬНЫЙ НАДЕЖНЫЙ ОБРАБОТЧИК АВТОРИЗАЦИИ ===
 function DiscordCallbackHandler() {
   const searchParams = useSearchParams();
   const { checkAuth } = useAuth();
@@ -92,7 +91,7 @@ function DiscordCallbackHandler() {
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
-  // Функция для ручного закрытия оверлея авторизации
+
   const handleCloseOverlay = () => {
     setStatusText(null);
     setErrorDetails(null);
@@ -104,7 +103,6 @@ function DiscordCallbackHandler() {
 
     if (!code) return;
 
-    // Защита от дублирующих запросов на уровне жизненного цикла компонента
     if (hasCalledApi.current) return;
     hasCalledApi.current = true;
 
@@ -112,7 +110,6 @@ function DiscordCallbackHandler() {
       try {
         setStatusText("Синхронизация с Discord: отправка данных бэкенду...");
 
-        // Мгновенно чистим query-параметры из адресной строки, чтобы Next.js не затриггерил повторный useEffect
         if (typeof window !== "undefined") {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
@@ -123,33 +120,31 @@ function DiscordCallbackHandler() {
         const token = response?.access_token || response?.data?.access_token || response?.accessToken || response?.token;
 
         if (token) {
-          // Токен пришел — сохраняем железобетонно
           localStorage.setItem("access_token", token);
           setIsSuccess(true);
           setStatusText("Токен успешно получен и сохранен в системе!");
 
           try {
-            // Проверяем сессию пользователя через контекст
             await checkAuth();
             setStatusText("Авторизация полностью завершена успешно!");
-            
-            // Автоматически скрываем окно через 2 секунды, если всё прошло гладко
+
             setTimeout(() => {
               handleCloseOverlay();
             }, 2000);
 
-          } catch (authError: any) {
+          } 
+          catch (authError: any) {
             console.error("Ошибка верификации через checkAuth:", authError);
-            // Если упал checkAuth (аккаунта нет в бд клана), токен ВСЁ РАВНО остается в localStorage.
-            // Мы просто информируем пользователя об ограничении прав.
             setStatusText("Токен сохранен, но возникла проблема с правами доступа.");
             setErrorDetails(authError?.message || "Ваш Discord ID отсутствует в базе данных клана.");
           }
-        } else {
+        } 
+        else {
           setStatusText("Сервер ответил, но не передал токен авторизации.");
           setErrorDetails(`Структура ответа бэкенда: ${JSON.stringify(response)}`);
         }
-      } catch (error: any) {
+      }
+      catch (error: any) {
         console.error("Критическая ошибка fetch-запроса callback:", error);
         setStatusText("Произошла ошибка при обмене данными с сервером.");
         setErrorDetails(error?.message || String(error));
