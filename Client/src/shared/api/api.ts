@@ -22,19 +22,17 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
-        body: options.body,
-        headers: {
-            "Content-Type": "application/json",
-            ...options.headers,
-        },
-    }).catch((er)=>{ console.error(er); throw er; } );;
+        method,
+        headers,
+    }).catch((er) => { 
+        console.error(er); 
+        throw er; 
+    });
 
     if (!response.ok) {
         let errorMessage = `API Error: ${response.status}`;
-        
         try {
             const textData = await response.text();
-            
             try {
                 const errorData = JSON.parse(textData);
                 errorMessage = errorData.message || errorData.error || errorMessage;
@@ -48,7 +46,6 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
         catch (e) {
             console.error("Не удалось прочитать тело ответа об ошибке:", e);
         }
-
         throw new Error(errorMessage);
     }
 

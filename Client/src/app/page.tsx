@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { MainHeader } from "@/components/Header/MainHeader";
-import { applyTheme } from "@/layouts/ThemeLayout";
-import Image from "next/image";
+import { AuthService } from "@/shared/api/services/authService";
+import { useAuth } from "@/context/AuthContext";
 
 type ThemeMode = "dark" | "light" | "system";
 
@@ -81,11 +82,114 @@ const PRIDE_MEMBERS = [
   },
 ];
 
+// === ФИНАЛЬНЫЙ НАДЕЖНЫЙ ОБРАБОТЧИК АВТОРИЗАЦИИ ===
+function DiscordCallbackHandler() {
+  const searchParams = useSearchParams();
+  const { checkAuth } = useAuth();
+  const hasCalledApi = useRef(false);
+
+  const [statusText, setStatusText] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+
+  // Функция для ручного закрытия оверлея авторизации
+  const handleCloseOverlay = () => {
+    setStatusText(null);
+    setErrorDetails(null);
+  };
+
+  useEffect(() => {
+    const code = searchParams?.get("code");
+    const state = searchParams?.get("state");
+
+    if (!code) return;
+
+    // Защита от дублирующих запросов на уровне жизненного цикла компонента
+    if (hasCalledApi.current) return;
+    hasCalledApi.current = true;
+
+    const processAuthentication = async () => {
+      try {
+        setStatusText("Синхронизация с Discord: отправка данных бэкенду...");
+
+        // Мгновенно чистим query-параметры из адресной строки, чтобы Next.js не затриггерил повторный useEffect
+        if (typeof window !== "undefined") {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        const response = await AuthService.getCallBack(code, state || undefined) as any;
+        console.log("Ответ от бэкенда при обмене кода:", response);
+
+        const token = response?.access_token || response?.data?.access_token || response?.accessToken || response?.token;
+
+        if (token) {
+          // Токен пришел — сохраняем железобетонно
+          localStorage.setItem("access_token", token);
+          setIsSuccess(true);
+          setStatusText("Токен успешно получен и сохранен в системе!");
+
+          try {
+            // Проверяем сессию пользователя через контекст
+            await checkAuth();
+            setStatusText("Авторизация полностью завершена успешно!");
+            
+            // Автоматически скрываем окно через 2 секунды, если всё прошло гладко
+            setTimeout(() => {
+              handleCloseOverlay();
+            }, 2000);
+
+          } catch (authError: any) {
+            console.error("Ошибка верификации через checkAuth:", authError);
+            // Если упал checkAuth (аккаунта нет в бд клана), токен ВСЁ РАВНО остается в localStorage.
+            // Мы просто информируем пользователя об ограничении прав.
+            setStatusText("Токен сохранен, но возникла проблема с правами доступа.");
+            setErrorDetails(authError?.message || "Ваш Discord ID отсутствует в базе данных клана.");
+          }
+        } else {
+          setStatusText("Сервер ответил, но не передал токен авторизации.");
+          setErrorDetails(`Структура ответа бэкенда: ${JSON.stringify(response)}`);
+        }
+      } catch (error: any) {
+        console.error("Критическая ошибка fetch-запроса callback:", error);
+        setStatusText("Произошла ошибка при обмене данными с сервером.");
+        setErrorDetails(error?.message || String(error));
+      }
+    };
+
+    processAuthentication();
+  }, [searchParams, checkAuth]);
+
+  if (!statusText) return null;
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95 text-white font-text p-6 backdrop-blur-sm">
+      <div className={`text-4xl mb-4 ${!errorDetails ? "animate-bounce" : ""}`}>
+        {errorDetails && !isSuccess ? "❌" : "🛡️"}
+      </div>
+      <h2 className="text-xl font-bold tracking-wide uppercase text-accent mb-2">Обработка входа</h2>
+      <p className="text-text-secondary text-center max-w-md">{statusText}</p>
+      
+      {errorDetails && (
+        <div className="mt-6 p-4 bg-red-950/40 border border-red-900/60 text-red-200 text-xs rounded max-w-xl w-full font-mono overflow-auto max-h-40">
+          <strong>Детали статуса:</strong> {errorDetails}
+        </div>
+      )}
+
+      {/* Кнопка ручного закрытия, если произошел сбой checkAuth или процесс завершен */}
+      {(errorDetails || isSuccess) && (
+        <button 
+          onClick={handleCloseOverlay} 
+          className="mt-8 text-xs bg-bg-accent hover:bg-accent hover:text-black border border-border-secondary px-6 py-2 uppercase tracking-wider transition-colors font-black"
+        >
+          Вернуться на главную
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
-
-  
-
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -97,14 +201,12 @@ export default function LandingPage() {
     return () => cancelAnimationFrame(handle);
   }, []);
 
-
   const scrollLeft = () => carouselRef.current?.scrollBy({ left: -350, behavior: "smooth" });
   const scrollRight = () => carouselRef.current?.scrollBy({ left: 350, behavior: "smooth" });
 
   const checkScroll = () => {
     if (!carouselRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-
     setCanScrollLeft(scrollLeft > 0);
     setCanScrollRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth);
   };
@@ -133,6 +235,11 @@ export default function LandingPage() {
 
   return (
     <div className="transition-colors duration-300 bg-bg-primary overflow-x-hidden font-text">
+      
+      <Suspense fallback={null}>
+        <DiscordCallbackHandler />
+      </Suspense>
+
       <MainHeader />
 
       {/* === HERO SECTION === */}
@@ -228,7 +335,6 @@ export default function LandingPage() {
           )}
         </div>
           
-
         <div className="text-center mt-12">
           <Link href="/members" className="text-[12px] font-text-bold text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
             Показать весь состав
