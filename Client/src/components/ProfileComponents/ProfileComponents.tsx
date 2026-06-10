@@ -1,3 +1,6 @@
+import { UnitService } from "@/shared/api/services/unitService"
+import { useEffect, useState } from "react"
+
 interface IProfileBGImage{
     Url? : string
 }
@@ -44,6 +47,14 @@ interface IUnitInfoPanel{
 }
 
 export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
+
+    const [states, setStates] = useState<IState[]>();
+    useEffect(()=>{
+        if(Unit != undefined){
+            UnitService.getStates(Unit.discordId as unknown as number).then((data)=>{setStates(data);}).catch((error)=>{console.warn(error)})
+        }
+    }, [])
+
     return(
         <div className="flex size-full flex-col gap-2">
                                             <div className="flex flex-col">
@@ -51,18 +62,23 @@ export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
                                                     <div className="bg-bg-dark size-8">
                                                         <img src="#" alt="" />
                                                     </div>
-                                                    <p className="text-text-secondary self-center">Звание</p>
+                                                    <div className={`text-text-primary relative px-4 self-center`}>
+                                                        <div className={`absolute min-h-2 min-w-10 inset-0 px-4 opacity-20 opacity-gradient-to-r from-100 to-0`} style={{background: `${Unit?.rank.color}`}}>{Unit?.rank.name}</div>
+                                                        <p className=" flex z-10">{Unit?.rank.name}</p>
+                                                    </div>
                                                 </div>
-                                                <p className="text-text-secondary-accent text-3xl">Никнейм</p>
+                                                <p className="text-text-secondary-accent text-3xl">{Unit?.name}</p>
                                             </div>
                                             <ul className="flex flex-col"> 
-                                                <p>Должность 1</p>
-                                                <p>Должность 2</p>
+                                                {Unit?.posts! && Unit?.posts.map((post)=>(
+                                                    <p key={post.id}>{post.name}</p>
+                                                ))}
                                             </ul>
                                             <div className="flex flex-col">
                                                 <ul className="flex gap-2">
-                                                    <p className="flex ">Статус 1</p>
-                                                    <p className="flex ">Статус 2</p>
+                                                    {states && states.map((state)=>(
+                                                    <p key={state.discordRoleId}>{state.name}</p>
+                                                    ))}
                                                 </ul>
                                             </div>
                                         </div>

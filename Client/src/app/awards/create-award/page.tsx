@@ -2,6 +2,7 @@
 import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { RewardService } from "@/shared/api/services/RewardService";
 import { validateColor } from "@/typescript/colorValidator";
 import { error } from "console";
 import { useState } from "react";
@@ -127,9 +128,9 @@ export default function createSubdivPage(){
             name : rankName,
             givedPermissions : permissions,
             maxRank : maxRank!
-
-
         }
+        
+        RewardService.add({method: "POST", body:JSON.stringify({newRank})});
     }
 
 

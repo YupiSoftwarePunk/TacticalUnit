@@ -9,7 +9,7 @@ export const UnitService = {
     patchByDiscordId: (id: number, options : RequestInit) => apiClient<IUnit>(`/unit/${id}`, options),
     deleteByDiscordId: (id: number) => apiClient<void>(`/unit/${id}`),
 
-    getStatuses: (id: number) => apiClient<IState[]>(`/unit/${id}/status`),
+    getStates: (id: number) => apiClient<IState[]>(`/unit/${id}/status`),
     putStatus: (id: number, options : RequestInit) => apiClient<IState>(`/unit/${id}/status`, options),  //add | update status
     
     StatusById: (UnitId: number, StatusId : number) => apiClient<IState[]>(`/unit/${UnitId}/status/${StatusId}`), // Delete | Get

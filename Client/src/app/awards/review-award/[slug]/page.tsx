@@ -14,36 +14,6 @@ import React, { useEffect, useState } from "react";
 
 
 
-const MEMBERS_DATA = [
-    {
-    rank: "Генерал-Майор",
-    nickname: "Дениска",
-    top_role: "Senior Developer",
-    roles: ["Senior Developer", "Пивонос"],
-    kit: "Стрелок",
-    steamId: "632641236412378",
-    discordId: "00000000000000000"
-    },
-    {
-    rank: "Ст. Лейтенант",
-    nickname: "NikitaNet",
-    top_role: "Начальник службы связи",
-    roles: ["Начальник службы связи"],
-    kit: "Марксмен",
-    steamId: "76561198000000002",
-    discordId: "345678901234567890",
-    },
-    {
-    rank: "Полковник",
-    nickname: "Ярек",
-    top_role: "Старый пират",
-    roles: ["Старый пират", "друг флинта", "Не женат"],
-    kit: "Пилот",
-    steamId: "76561198000000003",
-    discordId: "456789012345678901",
-    }
-];
-
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
@@ -66,7 +36,7 @@ export default function Page({ params }: { params: Promise<{slug: string}> }) {
         color:"#F100FF"
     });
 
-    const [loading, setIsLoading] = useState<boolean>(false);
+    const [loading, setIsLoading] = useState<boolean>(true);
         const [error, setError] = useState<string | undefined>();
         useEffect(() => {
                 if (isNaN(numSlug)) {
@@ -143,7 +113,7 @@ export default function Page({ params }: { params: Promise<{slug: string}> }) {
             </BaseContainer>
             </div>
             </div>
-            <AccordingUnitsTable TableName="Награждённые бойцы" rightsToGrant={canGrant} GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} GIVEN_DATA={MEMBERS_DATA}></AccordingUnitsTable>
+            <AccordingUnitsTable TableName="Награждённые бойцы" rightsToGrant={canGrant} GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} GIVEN_DATA={members}></AccordingUnitsTable>
         </RRForm>
         )
 

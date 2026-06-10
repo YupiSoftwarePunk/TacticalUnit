@@ -2,6 +2,7 @@
 import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { RankService } from "@/shared/api/services/RankService";
 import { error } from "console";
 import { useState } from "react";
 
@@ -121,6 +122,8 @@ export default function createSubdivPage(){
             givedPermissions : permissions,
 
         }
+        RankService.add({method: "POST", body:JSON.stringify({newRank})});
+        
     }
 
 
