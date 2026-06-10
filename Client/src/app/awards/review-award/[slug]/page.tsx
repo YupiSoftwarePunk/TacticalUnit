@@ -53,8 +53,10 @@ const COLUMNS_CONFIG = [
 
 export default function Page({ params }: { params: Promise<{slug: string}> }) {
     const {slug} = React.use(params);
+    const numSlug = Number(slug);
     const [canEdit, setCanEdit] = useState(true);
     const [canGrant, setCanGrant] = useState(true);
+    const [members, setMembers] = useState<any[]>([]);
 
     const [reward, setReward] = useState<IReward>({
         id : "0",
@@ -64,30 +66,42 @@ export default function Page({ params }: { params: Promise<{slug: string}> }) {
         color:"#F100FF"
     });
 
-    const [loaded, setLoaded] = useState<boolean>(false);
+    const [loading, setIsLoading] = useState<boolean>(false);
         const [error, setError] = useState<string | undefined>();
-        function loadData(){
-            // RewardService.getById(slug as unknown as number).then(
-            //     (data)=>{
-            //         loaded = true;
-            //         setReward(data);
-            //     }
-            // ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
-            
-            fetch(`http://localhost:5000/api/reward/${slug}`, {method: "GET", headers:{'Content-Type' : 'application/json'}}).then((responce)=>{if(!responce.ok) throw new Error("erroprrrrr"); return responce.json();
-            }).then(
-                (data : IReward)=>{
-                    setLoaded(true);
-                    setReward(data);
+        useEffect(() => {
+                if (isNaN(numSlug)) {
+                    setError("Некорректный ID звания");
+                    setIsLoading(false);
+                    return;
                 }
-            ).catch((er)=>{console.warn(er); setError(`Не удалось загрузить данные | ${er}`);})
-        }
-        useEffect(()=>{
-            loadData();
-        }, [])
+        
+                setIsLoading(true);
+        
+                Promise.all([
+                    RewardService.getById(numSlug),
+                    RewardService.getAssigned(numSlug)
+                ])
+                .then(([rankData, membersData]) => {
+                    setReward(rankData);
+                    if (Array.isArray(membersData)) {
+                        setMembers(membersData);
+                    } 
+                    else if (membersData && (membersData as any).value) {
+                        setMembers((membersData as any).value);
+                    }
+                    
+                    
+                })
+                .catch((er) => {
+                    setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+            }, [numSlug]);
     
         if(error!= undefined){return <ErrorScreen error={error}></ErrorScreen>}
-        if(!loaded){return <LoadingScreen></LoadingScreen>}
+        if(loading){return <LoadingScreen></LoadingScreen>}
 
     // return (
     //     <div className="flex flex-col h-full">

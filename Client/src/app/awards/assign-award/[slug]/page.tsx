@@ -67,7 +67,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
             await new Promise(resolve => setTimeout(resolve, 1000));
             setIsSaving(false);
             setSelectedUnits(new Set());
-        } 
+        }
         catch (err) {
             setError("Ошибка при назначении награды");
             setIsSaving(false);
