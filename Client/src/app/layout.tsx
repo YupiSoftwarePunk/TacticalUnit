@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import Script from 'next/script';
 
 const textFont = localFont({
   src: "./../../public/fonts/couriercyrps.ttf",
