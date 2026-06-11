@@ -124,20 +124,27 @@ function DiscordCallbackHandler() {
           setIsSuccess(true);
           setStatusText("Токен успешно получен и сохранен в системе!");
 
-          try {
-            await checkAuth();
-            setStatusText("Авторизация полностью завершена успешно!");
+          // try {
+          //   const profileData = await checkAuth() as any;
 
-            setTimeout(() => {
-              handleCloseOverlay();
-            }, 2000);
+          //   if (profileData?.is_registered === false) {
+          //     setIsSuccess(true); 
+          //     setStatusText("Дискорд успешно привязан!");
+          //     setErrorDetails("Ваш Discord ID отсутствует в базе данных подразделения. Вы можете пройти регистрацию через нашего Дискорд-бота. Доступ к закрытым функциям сайта временно ограничен.");
+          //   } else {
+          //     setIsSuccess(true);
+          //     setStatusText("Авторизация полностью завершена успешно!");
+          //     setTimeout(() => {
+          //       handleCloseOverlay();
+          //     }, 2000);
+          //   }
 
-          } 
-          catch (authError: any) {
-            console.error("Ошибка верификации через checkAuth:", authError);
-            setStatusText("Токен сохранен, но возникла проблема с правами доступа.");
-            setErrorDetails(authError?.message || "Ваш Discord ID отсутствует в базе данных клана.");
-          }
+          // } 
+          // catch (authError: any) {
+          //   console.error("Ошибка верификации через checkAuth:", authError);
+          //   setStatusText("Токен сохранен, но возникла критическая ошибка проверки сессии.");
+          //   setErrorDetails(authError?.message || "Не удалось связаться с сервером авторизации.");
+          // }
         } 
         else {
           setStatusText("Сервер ответил, но не передал токен авторизации.");
@@ -170,7 +177,6 @@ function DiscordCallbackHandler() {
         </div>
       )}
 
-      {/* Кнопка ручного закрытия, если произошел сбой checkAuth или процесс завершен */}
       {(errorDetails || isSuccess) && (
         <button 
           onClick={handleCloseOverlay} 

@@ -41,7 +41,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    // При первой загрузке приложения просто проверяем, авторизован ли юзер
     useEffect(() => {
         if (isProcessed.current) return;
         isProcessed.current = true;
@@ -64,7 +63,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const logout = () => {
         localStorage.removeItem("access_token");
         setUser(null);
-        // Вместо жесткого релоада можно просто редиректнуть на главную
         window.location.href = "/"; 
     };
 
