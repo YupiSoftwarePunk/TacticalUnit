@@ -15,6 +15,8 @@ export const MainHeader = () => {
     const [mounted, setMounted] = useState(false);
     const { user, isAuthenticated, isLoading, login, logout } = useAuth();
 
+    const discordId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
+
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme === "light") {
@@ -98,7 +100,7 @@ export const MainHeader = () => {
               </span>
             </button>
 
-            <Link href={`/profile/${user?.discord_id}`} className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
+            <Link href={`/profile/${discordId || user?.discord_id}`} className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
               👤
             </Link>
           </div>

@@ -163,7 +163,7 @@ interface IDiscordCallbackResponse {
     token_type: string;
     expires_in: number;
     user: {
-        discord_id: number;
+        discord_id: string;
         username: string;
     };
 }
