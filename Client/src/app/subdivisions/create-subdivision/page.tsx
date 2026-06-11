@@ -2,6 +2,7 @@
 import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { useState } from "react";
 
 
@@ -49,9 +50,10 @@ const mockG : IGivedPermission[] = [
 export default function createSubdivPage(){
     const [subdivisionName, setSubdivisionName] = useState<string>("");
     const [subdivisionDescription, setSubdivisionDescription] = useState<string>("");
+    const [appendHeadName, setAppendHeadName] = useState<boolean>(false);
 
     const [availableHeads, setAvailableHead] = useState<ISubdivision[]>([]);
-    const [head, setHead] = useState<ISubdivision>();
+    const [headId, setHeadId] = useState<number>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
@@ -101,10 +103,31 @@ export default function createSubdivPage(){
     }
 
 
+    function sendForm(){
+            let problems : string = "";
+            if(subdivisionName.replace(' ', '').length == 0){
+                problems += "Название звания\n";
+            }
+            if (problems){
+                alert("Вы забыли указать:\n"+problems)
+                return;
+            }
+            let newRank : ISubdivision = {
+                description: subdivisionDescription,
+                appendHeadName: appendHeadName,
+                givedPermissions: permissions,
+                color: color,
+                name: subdivisionName
+            }
+            SubdivisionService.add({method: "POST", body:JSON.stringify(newRank)});
+            
+        }
+
+
     return(<div className="flex flex-col min-h-screen">
         <MainHeader></MainHeader>
 
-        <CreationForm title="Создание подразделения">
+        <CreationForm title="Создание подразделения" onClickSend={()=>{sendForm()}}>
             <BaseContainer className="flex-col">
                 <ColorInputField watermark="Цвет" value={color} editMode={true} onChange={(e)=>{setColor(e.target.value)}} editable={true}></ColorInputField>
             </BaseContainer>
@@ -114,7 +137,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setHead(availableHeads?.find(x=>x.id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name);  setHeadId(el.Id); UpdateSearch(headPrompt? headPrompt : "")}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>

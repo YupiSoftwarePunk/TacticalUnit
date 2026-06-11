@@ -41,7 +41,7 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                     units: [],
                     givedPermissions: [],
                     discordRoleId: "12345",
-                    maxRank: {
+                    maxRankId: {
                         id: "0",
                         counterToReach: 10,
                         units: [],

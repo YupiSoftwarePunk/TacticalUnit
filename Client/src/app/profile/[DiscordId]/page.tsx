@@ -16,10 +16,6 @@ interface IActionMenuOption{
 }
 
 
-interface IUnit {
-
-}
-
 
 
 
@@ -32,22 +28,9 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
     
     const [unitData, setUnitData] = useState<IUnit>();
 
-    let loaded = false;
-        const [error, setError] = useState<string | undefined>();
-        function loadData(){
-            UnitService.getByDiscordId(DiscordId as unknown as number).then(
-                (data)=>{
-                    loaded = true;
-                    setUnitData(data);
-                }
-            ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
-        }
-        useEffect(()=>{
-            loadData();
-        }, [])
     
-        if(error!= undefined){return <ErrorScreen error={error}></ErrorScreen>}
-        if(!loaded){return <LoadingScreen></LoadingScreen>}
+    
+    
     
 
     const [accessRoles, setAccessRoles] = useState<string[]>([]);
@@ -63,6 +46,27 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
         accessOnRoles : ["any"]
     }
     ]);
+
+
+    const [loaded, setLoaded] = useState<boolean>(false);
+    
+    const [error, setError] = useState<string | undefined>();
+    function loadData(){
+        UnitService.getByDiscordId(DiscordId as unknown as number).then(
+            (data)=>{
+                setLoaded(true);
+                data.discordId = DiscordId;
+                setUnitData(structuredClone(data));
+                
+            }
+        ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
+    }
+    useEffect(()=>{
+        loadData();
+    }, [DiscordId])
+    if(error!= undefined){return <ErrorScreen error={error}></ErrorScreen>}
+    if(!loaded){return <LoadingScreen></LoadingScreen>}
+
     return(
         <div className="flex flex-col min-h-screen text-text-secondary font-text">
             <MainHeader></MainHeader>
@@ -79,7 +83,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                             <div className="flex flex-1">
 
                                 <div className="flex flex-col">
-                                    <UnitInfoPanel></UnitInfoPanel>
+                                    <UnitInfoPanel Unit={unitData}></UnitInfoPanel>
                                 </div>
                             </div>
                             <div className="flex ">

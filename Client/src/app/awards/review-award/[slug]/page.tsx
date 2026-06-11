@@ -9,16 +9,24 @@ import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
+
+
+
+
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
     { key: "roles", label: "Должность", sortable: false, filterable: true },
 ];
 
-export default function Page({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = React.use(params);
+export default function Page({ params }: { params: Promise<{slug: string}> }) {
+    const {slug} = React.use(params);
+    const numSlug = Number(slug);
+    const [assignedMembers, setAssignedMembers] = useState<any[]>([]);
+    const [loaded, setLoaded] = useState<boolean>(false);
     const [canEdit, setCanEdit] = useState(true);
     const [canGrant, setCanGrant] = useState(true);
+    const [members, setMembers] = useState<any[]>([]);
 
     const [reward, setReward] = useState<IReward>({
         id: "0",
@@ -28,9 +36,42 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         color: "#F100FF"
     });
 
-    const [assignedMembers, setAssignedMembers] = useState<any[]>([]);
-    const [loaded, setLoaded] = useState<boolean>(false);
-    const [error, setError] = useState<string | undefined>();
+    const [loading, setIsLoading] = useState<boolean>(true);
+        const [error, setError] = useState<string | undefined>();
+        useEffect(() => {
+                if (isNaN(numSlug)) {
+                    setError("Некорректный ID звания");
+                    setIsLoading(false);
+                    return;
+                }
+        
+                setIsLoading(true);
+        
+                Promise.all([
+                    RewardService.getById(numSlug),
+                    RewardService.getAssigned(numSlug)
+                ])
+                .then(([rankData, membersData]) => {
+                    setReward(rankData);
+                    if (Array.isArray(membersData)) {
+                        setMembers(membersData);
+                    } 
+                    else if (membersData && (membersData as any).value) {
+                        setMembers((membersData as any).value);
+                    }
+                    
+                    
+                })
+                .catch((er) => {
+                    setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+            }, [numSlug]);
+    
+        if(error!= undefined){return <ErrorScreen error={error}></ErrorScreen>}
+        if(loading){return <LoadingScreen></LoadingScreen>}
 
     async function loadData() {
         try {
@@ -47,7 +88,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
             const formattedMembers = assignedData.map((item: IAssignedReward) => ({
                 discordId: item.unit.discordId,
-                nickname: item.unit.nickname,
+                nickname: item.unit.name,
                 rank: item.unit.rank?.name || "Без звания",
                 roles: item.unit.posts?.map(post => post.name) || [],
                 steamId: item.unit.steamId

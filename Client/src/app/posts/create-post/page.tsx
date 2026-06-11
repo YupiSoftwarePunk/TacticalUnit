@@ -2,6 +2,8 @@
 import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { PostService } from "@/shared/api/services/postService";
+import { RankService } from "@/shared/api/services/RankService";
 import { validateColor } from "@/typescript/colorValidator";
 import { error } from "console";
 import { useState } from "react";
@@ -51,10 +53,9 @@ const mockG : IGivedPermission[] = [
 export default function createSubdivPage(){
     const [rankName, setRankName] = useState<string>("");
     const [description, setDescription] = useState<string>("");
-    const [activityToPromotion, setActivityToPromotion] = useState<number>(1);
 
     const [availableRanks, setAvailableRanks] = useState<IRank[]>([]);
-    const [maxRank, setMaxRank] = useState<IRank>();
+    const [maxRankId, setMaxRankId] = useState<number>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
@@ -109,7 +110,7 @@ export default function createSubdivPage(){
         if(rankName.replace(' ', '').length == 0){
             problems += "Название должности\n";
         }
-        if(maxRank == undefined){
+        if(maxRankId == undefined){
             problems += "Высшее звание\n";
         }
         if (problems){
@@ -126,10 +127,12 @@ export default function createSubdivPage(){
             appendSubdivisionName : true,
             name : rankName,
             givedPermissions : permissions,
-            maxRank : maxRank!
+            maxRankId : maxRankId!
 
 
         }
+        PostService.add({method: "POST", body:JSON.stringify({newRank})});
+        
     }
 
 
@@ -146,7 +149,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRank(availableRanks?.find(x=>x.id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRankId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>

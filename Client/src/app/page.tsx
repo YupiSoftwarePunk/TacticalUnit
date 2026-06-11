@@ -118,9 +118,13 @@ function DiscordCallbackHandler() {
         console.log("Ответ от бэкенда при обмене кода:", response);
 
         const token = response?.access_token || response?.data?.access_token || response?.accessToken || response?.token;
+        const userId = response?.user.discord_id || response?.data?.user_id || response?.userId || response?.id;  // забрать юзера из запроса и сохранить его в локалсторадж
+        const userName = response?.user.username || response?.data?.username || response?.userName || response?.name || `User#${userId}`;  // забрать юзера из запроса и сохранить его в локалсторадж
+        const user = response?.user || response?.data?.user || { discord_id: userId, username: userName }; // забрать юзера из запроса и сохранить его в локалсторадж
 
         if (token) {
           localStorage.setItem("access_token", token);
+          localStorage.setItem("user", user);
           setIsSuccess(true);
           setStatusText("Токен успешно получен и сохранен в системе!");
 

@@ -38,7 +38,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
 
                 const formattedUnits = allUnits.map((unit: IUnit) => ({
                     discordId: unit.discordId,
-                    nickname: unit.nickname,
+                    nickname: unit.name,
                     rank: unit.rank?.name || "Без звания",
                     roles: unit.posts?.map(p => p.name) || [],
                     steamId: unit.steamId

@@ -2,6 +2,7 @@
 import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { RewardService } from "@/shared/api/services/RewardService";
 import { validateColor } from "@/typescript/colorValidator";
 import { error } from "console";
 import { useState } from "react";
@@ -49,14 +50,10 @@ const mockG : IGivedPermission[] = [
 
 
 export default function createSubdivPage(){
-    const [rankName, setRankName] = useState<string>("");
-    const [description, setDescription] = useState<string>("");
-    const [activityToPromotion, setActivityToPromotion] = useState<number>(1);
+    const [rewardName, setRewardName] = useState<string>("");
+    const [privileges, setPrivileges] = useState<string>("");
+    const [conditions, setConditions] = useState<string>("");
 
-    const [availableRanks, setAvailableRanks] = useState<IRank[]>([]);
-    const [maxRank, setMaxRank] = useState<IRank>();
-    const [headPrompt, setHeadPrompt] = useState<string>();
-    const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
     const [color, setColor] = useState<string>("#ffffff");
 
@@ -87,30 +84,19 @@ export default function createSubdivPage(){
         }
     ])
 
-    function UpdateSearch(prompt : string){
-        setHeadList( [
-            {
-                Name : ""
-        },
-            {
-                Id: 0,
-                Name : "Первый"
-        },
-            {
-                Id: 1,
-                Name : "Второй"
-        }
-    ])
-    }
+    
 
 
     function sendForm(){
         let problems : string = "";
-        if(rankName.replace(' ', '').length == 0){
-            problems += "Название должности\n";
+        if(rewardName.replace(' ', '').length == 0){
+            problems += "Название награды\n";
         }
-        if(maxRank == undefined){
-            problems += "Высшее звание\n";
+        if(privileges.replace(" ", "") == ""){
+            problems += "Привилегии награды\n";
+        }
+        if(conditions.replace(" ", "") == ""){
+            problems += "Условия получения награды\n";
         }
         if (problems){
             alert("Вы забыли указать:\n"+problems)
@@ -120,14 +106,14 @@ export default function createSubdivPage(){
             alert("Цвет указан с ошибками, проверьте, что цвет начинается с \"#\" и содержит 6 символов после \"#\"");
             return
         }
-        let newRank : IPost = {
-            color : color,
-            description : description,
-            appendSubdivisionName : true,
-            name : rankName,
-            givedPermissions : permissions,
-            maxRank : maxRank!
+        let newRank : IReward = {
+            color: color,
+            conditions: conditions,
+            privileges: privileges,
+            name: rewardName
         }
+        
+        RewardService.add({method: "POST", body:JSON.stringify(newRank)});
     }
 
 
@@ -139,15 +125,9 @@ export default function createSubdivPage(){
                 <ColorInputField watermark="Цвет" value={color} editMode={true} onChange={(e)=>{setColor(e.target.value)}} editable={true}></ColorInputField>
             </BaseContainer>
             <BaseContainer className="flex-col">
-                <MultiroleInputField tooltip="Название награды" watermark="Название награды" value={rankName} editMode={true} onChange={(e)=>{setRankName(e.target.value)}} editable={true}></MultiroleInputField>
-                <DescriptionInputField watermark="Описание награды" value={description} onChange={(e)=>{setDescription(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
-            </BaseContainer>
-
-            <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая награда" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRank(availableRanks?.find(x=>x.id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
-            </BaseContainer>
-            <BaseContainer>
-                <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
+                <MultiroleInputField tooltip="Название награды" watermark="Название награды" value={rewardName} editMode={true} onChange={(e)=>{setRewardName(e.target.value)}} editable={true}></MultiroleInputField>
+                <DescriptionInputField watermark="Привилегии награды" displayOnEmpty="[ Привилегии награды не заполнены ]" value={privileges} onChange={(e)=>{setPrivileges(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
+                <DescriptionInputField watermark="Условия получения награды"  displayOnEmpty="[ Условия получения награды не заполнены ]" value={conditions} onChange={(e)=>{setConditions(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
             </BaseContainer>
         </CreationForm>
     </div>)
