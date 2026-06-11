@@ -53,7 +53,7 @@ export default function createSubdivPage(){
     const [appendHeadName, setAppendHeadName] = useState<boolean>(false);
 
     const [availableHeads, setAvailableHead] = useState<ISubdivision[]>([]);
-    const [head, setHead] = useState<ISubdivision>();
+    const [headId, setHeadId] = useState<number>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
@@ -119,7 +119,7 @@ export default function createSubdivPage(){
                 color: color,
                 name: subdivisionName
             }
-            SubdivisionService.add({method: "POST", body:JSON.stringify({newRank})});
+            SubdivisionService.add({method: "POST", body:JSON.stringify(newRank)});
             
         }
 
@@ -137,7 +137,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name);  setHead(availableHeads?.find(x=>x.id == el.Id)); UpdateSearch(headPrompt? headPrompt : "")}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name);  setHeadId(el.Id); UpdateSearch(headPrompt? headPrompt : "")}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>

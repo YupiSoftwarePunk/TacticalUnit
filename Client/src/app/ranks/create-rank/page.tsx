@@ -53,7 +53,7 @@ export default function createSubdivPage(){
     const [activityToPromotion, setActivityToPromotion] = useState<number>(1);
 
     const [availableHeads, setAvailableHead] = useState<IRank[]>([]);
-    const [head, setHead] = useState<IRank>();
+    const [headId, setHeadId] = useState<number>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
@@ -108,7 +108,7 @@ export default function createSubdivPage(){
         if(rankName.replace(' ', '').length == 0){
             problems += "Название звания\n";
         }
-        if(head == undefined){
+        if(headId == undefined){
             problems += "Вышестоящее звание\n";
 
         }
@@ -122,7 +122,7 @@ export default function createSubdivPage(){
             givedPermissions : permissions,
 
         }
-        RankService.add({method: "POST", body:JSON.stringify({newRank})});
+        RankService.add({method: "POST", body:JSON.stringify(newRank)});
         
     }
 
@@ -140,7 +140,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField tooltip="Вышестоящее звание" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setHead(availableHeads?.find(x=>x.id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField tooltip="Вышестоящее звание" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setHeadId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>

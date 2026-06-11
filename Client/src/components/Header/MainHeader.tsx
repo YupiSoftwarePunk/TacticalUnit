@@ -27,6 +27,13 @@ export const MainHeader = () => {
         setMounted(true);
     }, []);
 
+    
+    useEffect(()=>{
+      const token = localStorage.getItem('token');
+
+    },
+    [isAuthenticated])
+
     const toggleTheme = () => {
         setIsDark((prevIsDark) => {
           const nextTheme = !prevIsDark;

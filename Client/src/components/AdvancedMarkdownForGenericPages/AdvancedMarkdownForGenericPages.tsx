@@ -127,9 +127,10 @@ interface IDescriptionInputField{
     value? : string | number
     tooltip? : string
     watermark? : string
+    displayOnEmpty? : string
 }
 
-export const DescriptionInputField = ({className = "", editingClassName = "", editable, onClick, onChange, value = "", tooltip,watermark} : IDescriptionInputField) =>{
+export const DescriptionInputField = ({className = "", displayOnEmpty, editingClassName = "", editable, onClick, onChange, value = "", tooltip,watermark} : IDescriptionInputField) =>{
     //const [editMode, setEditMode] = useState<boolean>();
     const [editMode, setEditMode] = useState<boolean>();
     function tryEditing(){
@@ -145,7 +146,7 @@ export const DescriptionInputField = ({className = "", editingClassName = "", ed
         <div className="flex flex-1 gap-5" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setEditMode(false)}}>
             <div className={`flex  text-text-secondary  tracking-wider  text-[${textSize}px] py-2 transition-all ${className} ${editable? "absolute": ""} ${editMode? " pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
                 <p className={`flex tracking-wider transition-all  ${editMode? "opacity-0" : ""}`} >
-                {`${value? value : "[ описание пусто ]"}`}
+                {`${value? value : displayOnEmpty? displayOnEmpty : "[ описание пусто ]"}`}
                 </p>
                 </div>
                 {editable &&
