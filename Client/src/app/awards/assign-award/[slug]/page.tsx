@@ -9,20 +9,15 @@ import { LoadingScreen, ErrorScreen } from "@/components/StatusScreens/Screens";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import { AssignInfoHeader } from "@/components/AssignScreens/AssignInfoHeader";
 import { AssignFooter } from "@/components/AssignScreens/AssignFooter";
-
-const MOCK_UNITS_DATA = [
-    { discordId: "123456789", nickname: "Дениска", rank: "Генерал-Майор", roles: ["Senior Developer", "Пивонос"], steamId: "632641236412378" },
-    { discordId: "987654321", nickname: "NikitaNet", rank: "Ст. Лейтенант", roles: ["Начальник службы связи"], steamId: "76561198000000002" },
-    { discordId: "555555555", nickname: "Ярек", rank: "Полковник", roles: ["Старый пират", "друг флинта"], steamId: "76561198000000003" },
-    { discordId: "444444444", nickname: "Челик", rank: "Рядовой", roles: ["Стрелок"], steamId: "76561198000000004" },
-    { discordId: "333333333", nickname: "Боец1", rank: "Рядовой", roles: ["Разведчик"], steamId: "76561198000000005" },
-];
+import { RewardService } from "@/shared/api/services/RewardService";
+import { UnitService } from "@/shared/api/services/unitService";
 
 export default function AssignAwardPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = React.use(params);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [award, setAward] = useState<IReward | null>(null);
+    const [units, setUnits] = useState<any[]>([]);
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
 
@@ -30,19 +25,31 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const mockReward: IReward = {
-                    id: slug || "1",
-                    name: `Орден "Мастер документооборота III степени"`,
-                    conditions: "Выдается за безупречную службу",
-                    privileges: "Дополнительные привилегии в системе",
-                    color: "#FFD700",
-                    imagePath: "/-_-.jpg",
-                };
-                setAward(mockReward);
+                const rewardId = Number(slug);
+                if (isNaN(rewardId)) {
+                    throw new Error("Некорректный ID награды");
+                }
+
+                const [rewardData, allUnits] = await Promise.all([
+                    RewardService.getById(rewardId),
+                    UnitService.getAll()
+                ]);
+                setAward(rewardData);
+
+                const formattedUnits = allUnits.map((unit: IUnit) => ({
+                    discordId: unit.discordId,
+                    nickname: unit.name,
+                    rank: unit.rank?.name || "Без звания",
+                    roles: unit.posts?.map(p => p.name) || [],
+                    steamId: unit.steamId
+                }));
+
+                setUnits(formattedUnits);
                 setLoading(false);
             } 
-            catch (err) {
-                setError("Ошибка при загрузке награды");
+            catch (err: any) {
+                console.error(err);
+                setError(err.message || "Ошибка при загрузке данных с сервера");
                 setLoading(false);
             }
         };
@@ -64,12 +71,24 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         if (!award || selectedUnits.size === 0) return;
         try {
             setIsSaving(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const rewardId = Number(award.id);
+
+            await Promise.all(
+                Array.from(selectedUnits).map(discordId => 
+                    RewardService.assignToUnit(rewardId, {
+                        method: "POST",
+                        body: JSON.stringify({ unitId: discordId })
+                    })
+                )
+            );
+
             setIsSaving(false);
             setSelectedUnits(new Set());
-        }
-        catch (err) {
-            setError("Ошибка при назначении награды");
+            alert("Награды успешно присвоены бойцам!");
+        } 
+        catch (err: any) {
+            console.error(err);
+            setError(err.message || "Ошибка при назначении награды");
             setIsSaving(false);
         }
     };
@@ -143,7 +162,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
 
                         <div className="border border-black/10 dark:border-white/5 overflow-hidden mb-6">
                             <UniversalTable 
-                                data={MOCK_UNITS_DATA}
+                                data={units}
                                 columns={tableColumns}
                                 onExport={handleExport}
                                 defaultSort={{ key: "nickname", direction: "asc" }}
