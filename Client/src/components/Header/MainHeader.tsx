@@ -38,12 +38,6 @@ export const MainHeader = () => {
     }, []);
 
     
-    useEffect(()=>{
-      const token = localStorage.getItem('token');
-      
-
-    },
-    [isAuthenticated])
 
     const toggleTheme = () => {
         setIsDark((prevIsDark) => {
