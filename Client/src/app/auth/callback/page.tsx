@@ -9,30 +9,36 @@ function AuthCallbackContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { checkAuth } = useAuth();
-    const lock = useRef(false);
+    const hasCalledApi = useRef(false); 
 
     useEffect(() => {
-        if (searchParams == null) {
-            console.error("Отсутствуют параметры запроса");
+        const code = searchParams?.get("code");
+        const state = searchParams?.get("state");
+
+        if (!code) {
+            console.warn("Параметр 'code' отсутствует в URL, пропускаем авторизацию.");
             return;
         }
-        const code = searchParams.get("code");
-        const state = searchParams.get("state");
 
-        if (!code || lock.current) return;
+        if (hasCalledApi.current) return;
+        hasCalledApi.current = true;
 
         const processAuthentication = async () => {
-            lock.current = true;
             try {
+                console.log("Отправка кода авторизации на бэкенд...", code);
                 const response = await AuthService.getCallBack(code, state || undefined);
 
                 if (response && response.access_token) {
+                    console.log("Токен успешно получен! Сохраняем в localStorage...");
                     localStorage.setItem("access_token", response.access_token);
+                    console.log("Запрос данных текущего пользователя...");
                     await checkAuth();
+
+                    console.log("Авторизация завершена. Перенаправление на /profile...");
                     router.push("/profile");
                 } 
                 else {
-                    console.error("Бэкенд не вернул токен доступа");
+                    console.error("Бэкенд вернул успешный статус, но поле access_token отсутствует в ответе.");
                     router.push("/?error=token_missing");
                 }
             } 
@@ -43,7 +49,7 @@ function AuthCallbackContent() {
         };
 
         processAuthentication();
-    }, [searchParams, router, checkAuth]);
+    }, [router, searchParams, checkAuth]); 
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-bg-primary text-text-primary font-text">
@@ -60,7 +66,7 @@ export default function AuthCallbackPage() {
             <div className="flex flex-col items-center justify-center min-h-screen bg-bg-primary text-text-primary font-text">
                 <div className="text-3xl mb-4 animate-bounce">🛡️</div>
                 <h1 className="text-xl font-text-bold uppercase tracking-wider">Синхронизация с Discord...</h1>
-                <p className="text-text-secondary text-sm mt-2">Пожалуйста, подождите, мы проверяем ваши данные.</p>
+                <p className="text-text-secondary text-sm mt-2">Загрузка интерфейса...</p>
             </div>
         }>
             <AuthCallbackContent />

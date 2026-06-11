@@ -57,7 +57,7 @@ export default function AwardsPage() {
                 {AWARDS_DATA.map((award) => (
                     <div key={award.id} className="group relative flex flex-col items-center">
                     <Link 
-                        href={`/awards/${award.slug}`}
+                        href={`/awards/review-award/${award.id}`}
                         className="relative aspect-square w-full bg-bg-secondary border border-bg-secondary overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:border-accent"
                     >
                         <img 
@@ -75,7 +75,7 @@ export default function AwardsPage() {
                         {hasAwardPermission && (
                         <div className="overflow-hidden h-0 group-hover:h-10 transition-all duration-300 ease-in-out">
                             <Link 
-                            href={`/awards/${award.slug}`}
+                            href={`/awards/assign-award/${award.slug}`}
                             className="inline-block mt-2 text-[10px] font-black text-accent uppercase tracking-widest border-b border-accent hover:text-text-primary hover:border-text-primary transition-all"
                             >
                             Наградить бойцов

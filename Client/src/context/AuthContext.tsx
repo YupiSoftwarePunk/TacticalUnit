@@ -17,7 +17,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<ICurrentUserResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-
     const isProcessed = useRef(false);
 
     const checkAuth = async () => {
@@ -46,36 +45,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (isProcessed.current) return;
         isProcessed.current = true;
 
-    const handleDiscordCallback = async () => {
-        if (typeof window !== "undefined") {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get("code");
-            const state = urlParams.get("state");
-
-            if (code) {
-                setIsLoading(true);
-                try {
-                    const data = await AuthService.getCallBack(code, state || undefined);
-                    
-                    if (data && data.access_token) {
-                        localStorage.setItem("access_token", data.access_token);
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-                } 
-                catch (error) {
-                    console.error("Ошибка при обработке ответа Discord OAuth:", error);
-                } 
-                finally {
-                    setIsLoading(false);
-                }
-            }
-        }
-
-        await checkAuth();
-    };
-
-    handleDiscordCallback();
-}, []);
+        checkAuth();
+    }, []);
 
     const login = async () => {
         try {
@@ -92,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const logout = () => {
         localStorage.removeItem("access_token");
         setUser(null);
-        window.location.reload();
+        window.location.href = "/"; 
     };
 
     return (

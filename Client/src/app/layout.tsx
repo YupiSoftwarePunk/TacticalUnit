@@ -51,12 +51,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   const savedTheme = localStorage.getItem('theme');
                   const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                   
-                  // Если выбор есть — ставим его, если нет — смотрим систему
                   const theme = savedTheme || 'system';
                   
                   if (theme === 'dark' || (theme === 'system' && systemPrefersDark)) {
                     document.documentElement.classList.add('dark');
-                  } else {
+                  } 
+                  else {
                     document.documentElement.classList.remove('dark');
                   }
                 } catch (e) {}
