@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { applyTheme } from "@/layouts/ThemeLayout";
 import { useAuth } from "@/context/AuthContext";
 
@@ -14,8 +14,16 @@ export const MainHeader = () => {
     const [isDark, setIsDark] = useState(true);
     const [mounted, setMounted] = useState(false);
     const { user, isAuthenticated, isLoading, login, logout } = useAuth();
+    const [profileLink, setProfileLink] = useState<string>("");
 
-    const discordId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
+    function userFromLocalStrorage(){
+        let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
+        console.warn(user);
+        return user;
+    }
+    useEffect(()=>{
+      setProfileLink(userFromLocalStrorage());
+    }, [])
 
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
@@ -100,7 +108,7 @@ export const MainHeader = () => {
               </span>
             </button>
 
-            <Link href={`/profile/${discordId || user?.discord_id}`} className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
+            <Link href={`/profile/${profileLink}`} className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
               👤
             </Link>
           </div>
