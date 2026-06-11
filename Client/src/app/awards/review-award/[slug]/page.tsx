@@ -129,10 +129,7 @@ export default function Page({ params }: { params: Promise<{slug: string}> }) {
             </BaseContainer>
             </div>
             </div>
-            <AccordingUnitsTable TableName="Награждённые бойцы" rightsToGrant={canGrant} GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} GIVEN_DATA={MEMBERS_DATA}></AccordingUnitsTable>
+            <AccordingUnitsTable TableName="Награждённые бойцы" rightsToGrant={canGrant} GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} GIVEN_DATA={MEMBERS_DATA} UrlToGrantPage={`/awards/assign-award/${reward.id}`}></AccordingUnitsTable>
         </RRForm>
         )
-
-
-    
 }

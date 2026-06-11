@@ -127,8 +127,6 @@ export default function createSubdivPage(){
             name : rankName,
             givedPermissions : permissions,
             maxRank : maxRank!
-
-
         }
     }
 
