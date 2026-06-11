@@ -488,18 +488,23 @@ export default function ClanStructurePage() {
 
                         {hasAdminPermission && (
                             <div className="flex gap-4">
-                                <button className="relative group inline-block">
-                                    <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
-                                    <div className="relative border border-border-secondary bg-bg-primary px-3 py-1.5 text-[10px] font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
-                                        Создать подразделение
-                                    </div>
-                                </button>
-                                <button className="relative group inline-block">
-                                    <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
-                                    <div className="relative border border-border-secondary bg-bg-primary px-3 py-1.5 text-[10px] font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
-                                        Создать должность
-                                    </div>
-                                </button>
+                                <Link href="/subdivisions/create-subdivision">
+                                    <button className="relative group inline-block">
+                                        <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
+                                        <div className="relative border border-border-secondary bg-bg-primary px-3 py-1.5 text-[10px] font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
+                                            Создать подразделение
+                                        </div>
+                                    </button>
+                                </Link>
+
+                                <Link href="/posts/create-post">
+                                    <button className="relative group inline-block">
+                                        <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
+                                        <div className="relative border border-border-secondary bg-bg-primary px-3 py-1.5 text-[10px] font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
+                                            Создать должность
+                                        </div>
+                                    </button>
+                                </Link>
                             </div>
                         )}
                     </div>

@@ -136,17 +136,17 @@ export default function createSubdivPage(){
     return(<div className="flex flex-col min-h-screen">
         <MainHeader></MainHeader>
 
-        <CreationForm title="Создание должности" onClickSend={()=>{sendForm()}}>
+        <CreationForm title="Создание награды" onClickSend={()=>{sendForm()}}>
             <BaseContainer className="flex-col">
                 <ColorInputField watermark="Цвет" value={color} editMode={true} onChange={(e)=>{setColor(e.target.value)}} editable={true}></ColorInputField>
             </BaseContainer>
             <BaseContainer className="flex-col">
-                <MultiroleInputField tooltip="Название должности" watermark="Название должности" value={rankName} editMode={true} onChange={(e)=>{setRankName(e.target.value)}} editable={true}></MultiroleInputField>
-                <DescriptionInputField watermark="Описание должности" value={description} onChange={(e)=>{setDescription(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
+                <MultiroleInputField tooltip="Название награды" watermark="Название награды" value={rankName} editMode={true} onChange={(e)=>{setRankName(e.target.value)}} editable={true}></MultiroleInputField>
+                <DescriptionInputField watermark="Описание награды" value={description} onChange={(e)=>{setDescription(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRank(availableRanks?.find(x=>x.id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField tooltip="Вышестоящая награда" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRank(availableRanks?.find(x=>x.id == el.Id))}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
