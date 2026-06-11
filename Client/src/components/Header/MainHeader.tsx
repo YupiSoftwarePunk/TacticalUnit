@@ -30,6 +30,7 @@ export const MainHeader = () => {
     
     useEffect(()=>{
       const token = localStorage.getItem('token');
+      
 
     },
     [isAuthenticated])
@@ -97,7 +98,7 @@ export const MainHeader = () => {
               </span>
             </button>
 
-            <Link href="/profile" className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
+            <Link href={`/profile/${user?.discord_id}`} className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
               👤
             </Link>
           </div>
