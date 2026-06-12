@@ -17,9 +17,10 @@ export const MainHeader = () => {
     const [profileLink, setProfileLink] = useState<string>("");
 
     function userFromLocalStrorage(){
-        let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
-        console.warn(user);
-        return user;
+        let userId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
+        console.warn("awdawdawd");
+        console.warn(userId);
+        return userId;
     }
     useEffect(()=>{
       setProfileLink(userFromLocalStrorage());

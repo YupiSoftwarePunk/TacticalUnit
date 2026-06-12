@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { UnitService } from "@/shared/api/services/unitService";
 
 interface Member {
     rank: string;
@@ -91,6 +92,50 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
 ];
 
 export default function MembersPage() {
+
+    const [members, setMembers] = useState<Member[]>([]);
+
+    useEffect(()=>{
+        UnitService.getAll().then((units)=>{
+            console.warn(units);
+            let un = units[0];
+
+            let preparedMemberArray : Member[] = []
+
+            if(!units){return}
+            units.forEach(element => {
+                let memberRoles : string[] = []
+
+                if(element.posts){
+
+                    element.posts.forEach(post => {
+                        memberRoles.push(post!.name!)
+                    });
+                }
+
+                let m : Member = {
+                    rank: "element.rank.name",
+                    nickname: element.nickname,
+                    top_role: "element.posts[0].name",
+                    roles: memberRoles,
+                    unit: element.nickname,
+                    activity_week: 0,
+                    activity_month: 0,
+                    activity_year: 0,
+                    activity_total: 0,
+                    kit: "",
+                    steamId: element.steamId!,
+                    discordId: element.discordId,
+                    joinDate: "`${element.joined.getDay()}.${element.joined.getMonth()}.${element.joined.getFullYear()}`"
+                }
+                preparedMemberArray.push(m);
+            });
+            setMembers(preparedMemberArray);
+
+        })
+    }, [])
+
+
     const handleExport = (dataToExport: Member[]) => {
         console.log("Экспорт данных:", dataToExport);
         alert("Модальное окно выбора полей для экспорта");
@@ -118,7 +163,7 @@ export default function MembersPage() {
 
                     <section className="bg-bg-primary border border-bg-secondary p-8 shadow-2xl">
                         <UniversalTable 
-                            data={MEMBERS_DATA} 
+                            data={members} 
                             columns={COLUMNS_CONFIG} 
                             onExport={handleExport}
                             defaultSort={{ key: "rank", direction: "desc" }}

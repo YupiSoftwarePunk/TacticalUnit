@@ -123,8 +123,10 @@ interface IUnitState{
 
 interface IUnit {
     discordId : string,
-    name : string,
+    nickname : string,
     steamId? : string,
+    favoriteKitId : string;
+    backgroundPictureId : string;
     rankUpCounter : number,
     joined : Date,
     color : string,

@@ -67,7 +67,7 @@ export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
                                                         <p className=" flex z-10">{Unit?.rank.name}</p>
                                                     </div>
                                                 </div>
-                                                <p className="text-text-secondary-accent text-3xl">{Unit?.name}</p>
+                                                <p className="text-text-secondary-accent text-3xl">{Unit?.nickname}</p>
                                             </div>
                                             <ul className="flex flex-col"> 
                                                 {Unit?.posts! && Unit?.posts.map((post)=>(

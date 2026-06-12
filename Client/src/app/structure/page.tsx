@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useMemo, useRef, MouseEvent } from "react";
+import React, { useState, useMemo, useRef, MouseEvent, useEffect } from "react";
 import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
+import { StructureService } from "@/shared/api/services/structureService";
 
 const MOCK_ROLES_DATA = {
     "Командир клана": {
@@ -167,6 +168,11 @@ class ClanStructureTransformer {
         const subdivisionId = data.Subdivision;
         const subdivisionInfo = subdivisionId ? this.subdivisions[subdivisionId] : undefined;
 
+
+
+
+
+
         const children: StructureNode[] = [];
         if (data.Subordinates) {
             Object.entries(data.Subordinates).forEach(([subName, subData]) => {
@@ -330,6 +336,16 @@ const TreeNode = ({ node, showVacant }: { node: StructureNode; showVacant: boole
 export default function ClanStructurePage() {
     const [hasAdminPermission] = useState(true);
     const [showVacant, setShowVacant] = useState(false);
+
+
+    const [structure, setStructure] = useState<string>();
+
+    useEffect(()=>{
+        StructureService.get().then((struct)=>{setStructure(JSON.stringify(struct)); console.warn(structure);}).then(()=>{console.warn(structure);})
+        
+    },[])
+
+
     
     const viewportRef = useRef<HTMLDivElement>(null);
     const [dragState, setDragState] = useState({ isDragging: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 });
