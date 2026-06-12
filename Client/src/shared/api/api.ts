@@ -38,23 +38,32 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
 
     if (!response.ok) {
         let errorMessage = `API Error: ${response.status}`;
+    try {
+        const textData = await response.text();
         try {
-            const textData = await response.text();
-            try {
-                const errorData = JSON.parse(textData);
-                errorMessage = errorData.error || errorData.message || errorMessage;
+            const errorData = JSON.parse(textData);
+            if (errorData.errors && typeof errorData.errors === "object") {
+                errorMessage = Object.values(errorData.errors)
+                    .flat()
+                    .join(", ");
             } 
-            catch {
-                if (textData && textData.trim()) {
-                    errorMessage = textData;
-                }
+            else {
+                errorMessage = errorData.error || errorData.message || errorData.title || errorMessage;
             }
         } 
-        catch (e) {
-            console.error("Не удалось прочитать тело ответа об ошибке:", e);
+        catch {
+            if (textData && textData.trim()) {
+                errorMessage = textData;
+            }
         }
-        throw new Error(errorMessage);
+    } 
+    catch (e) {
+        console.error("Не удалось прочитать тело ответа об ошибке:", e);
+    }
+    throw new Error(errorMessage);
     }
 
-    return response.json();
+    const rawText = await response.text();
+    const sanitizedText = rawText.replace(/:\s*(-?\d{16,})/g, ': "$1"');
+    return JSON.parse(sanitizedText);
 };

@@ -47,7 +47,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
             const formattedMembers = assignedData.map((item: IAssignedReward) => ({
                 discordId: item.unit.discordId,
-                nickname: item.unit.name,
+                nickname: item.unit.nickname,
                 rank: item.unit.rank?.name || "Без звания",
                 roles: item.unit.posts?.map(post => post.name) || [],
                 steamId: item.unit.steamId

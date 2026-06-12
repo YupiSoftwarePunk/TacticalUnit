@@ -37,8 +37,8 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                 setAward(rewardData);
 
                 const formattedUnits = allUnits.map((unit: IUnit) => ({
-                    discordId: unit.discordId,
-                    nickname: unit.name,
+                    discordId: String(unit.discordId),
+                    nickname: unit.nickname,
                     rank: unit.rank?.name || "Без звания",
                     roles: unit.posts?.map(p => p.name) || [],
                     steamId: unit.steamId
@@ -75,10 +75,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
 
             await Promise.all(
                 Array.from(selectedUnits).map(discordId => 
-                    RewardService.assignToUnit(rewardId, {
-                        method: "POST",
-                        body: JSON.stringify({ unitId: discordId })
-                    })
+                    RewardService.assignToUnit(rewardId, { discordId })
                 )
             );
 

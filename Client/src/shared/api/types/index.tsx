@@ -123,7 +123,7 @@ interface IUnitState{
 
 interface IUnit {
     discordId : string,
-    name : string,
+    nickname : string,
     steamId? : string,
     rankUpCounter : number,
     joined : Date,
