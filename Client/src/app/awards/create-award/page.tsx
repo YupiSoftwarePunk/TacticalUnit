@@ -113,7 +113,14 @@ export default function createSubdivPage(){
             name: rewardName
         }
         
-        RewardService.add({method: "POST", body:JSON.stringify(newRank)});
+        RewardService.add(newRank)
+        .then((createdReward) => {
+            alert(`Награда "${createdReward.name}" успешно создана!`);
+        })
+        .catch((err) => {
+            console.error("Ошибка при создании награды:", err);
+            alert("Не удалось создать награду. Проверьте консоль или права доступа.");
+        });
     }
 
 

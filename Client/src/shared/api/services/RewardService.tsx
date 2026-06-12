@@ -2,7 +2,13 @@ import { apiClient } from "../api";
 
 
 export const RewardService = {
-    add: (options: RequestInit) => apiClient<IReward[]>("/reward", options),
+    add: (data: IReward) => apiClient<IReward>("/reward", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+    }),
     getAll: () => apiClient<IReward[]>("/reward"),
 
     getById: (id: number) => apiClient<IReward>(`/reward/${id}`),
