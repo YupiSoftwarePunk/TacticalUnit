@@ -82,7 +82,7 @@ const SingleCard = ({ roleNode }: { roleNode: StructureNode }) => {
             style={{ borderColor: roleNode.color }}
         >
             <Link 
-                href={`/structure/roles/${encodeURIComponent(roleNode.title.toLowerCase().replace(/ /g, "-"))}`}
+                href={`/posts/review-post/${roleNode.id.replace("role-", "")}`}
                 className="block text-center font-text uppercase tracking-wider text-text-primary hover:text-accent transition-colors mb-1 mt-0.5 text-[11px] md:text-xs break-words"
             >
                 {roleNode.title}
@@ -161,12 +161,13 @@ const TreeNode = ({ node, showVacant }: { node: StructureNode; showVacant: boole
                         className="relative border-2 p-3 pt-5 flex flex-col gap-2.5 items-center bg-bg-primary transition-all duration-300"
                         style={{ borderColor: frameColor }}
                     >
-                        <div 
-                            className="absolute -top-2 left-2 bg-black dark:bg-white text-white dark:text-black text-[8px] font-text-bold uppercase tracking-widest px-1 py-0.5 border" 
+                        <Link 
+                            href={`/subdivisions/review-subdivision/${node.subdivisionId}`}
+                            className="absolute -top-2 left-2 bg-black dark:bg-white text-white dark:text-black hover:text-accent dark:hover:text-accent text-[8px] font-text-bold uppercase tracking-widest px-1 py-0.5 border transition-colors duration-300" 
                             style={{ borderColor: frameColor }}
                         >
                             {node.subdivisionName}
-                        </div>
+                        </Link>
                         {chain.map(roleNode => (
                             <SingleCard key={roleNode.id} roleNode={roleNode} />
                         ))}

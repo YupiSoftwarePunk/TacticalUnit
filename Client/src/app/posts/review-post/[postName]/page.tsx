@@ -166,6 +166,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                 rightsToGrant={canGrant} 
                 GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} 
                 GIVEN_DATA={members}
+                UrlToGrantPage={`/posts/assign-post/${post.id}`}
             />
         </RRForm>
     );
