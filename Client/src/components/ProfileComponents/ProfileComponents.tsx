@@ -65,21 +65,21 @@ export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
                                                         <img src="#" alt="" />
                                                     </div>
                                                     <div className={`text-text-primary relative px-4 self-center`}>
-                                                        <div className={`absolute min-h-2 min-w-10 inset-0 px-4 opacity-20 opacity-gradient-to-r from-100 to-0`} style={{background: `${Unit?.rank.color}`}}>{Unit?.rank.name}</div>
-                                                        <p className=" flex z-10">{Unit?.rank.name}</p>
+                                                        <a href={`/ranks/review-rank/${Unit?.rank.id}`} className={`absolute min-h-2 min-w-10 inset-0 px-4 opacity-20 opacity-gradient-to-r hover:text-text-primary-accent hover:cursor-pointer from-100 to-0 transition-all`} style={{background: `${Unit?.rank.color}`}}>{Unit?.rank.name}</a>
+                                                        <p className="flex z-10 hover:text-text-primary-accent hover:cursor-pointer transition-all">{Unit?.rank.name}</p>
                                                     </div>
                                                 </div>
                                                 <p className="text-text-secondary-accent text-3xl">{Unit?.nickname}</p>
                                             </div>
                                             <ul className="flex flex-col"> 
                                                 {Unit?.posts! && Unit?.posts.map((post)=>(
-                                                    <p key={post.id}>{post.name}</p>
+                                                    <a href={`/posts/review-post/${post.id}`} className="hover:text-text-primary-accent hover:underline transition-all" key={post.id}>{post.name}</a>
                                                 ))}
                                             </ul>
                                             <div className="flex flex-col">
                                                 <ul className="flex gap-2">
                                                     {states && states.map((state)=>(
-                                                    <p key={state.discordRoleId}>{state.name}</p>
+                                                    <a href={`/${state.discordRoleId}`} key={state.discordRoleId}>{state.name}</a>
                                                     ))}
                                                 </ul>
                                             </div>
