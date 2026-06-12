@@ -5,70 +5,6 @@ import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalT
 import { MainHeader } from "@/components/Header/MainHeader";
 import { UnitService } from "@/shared/api/services/unitService";
 
-interface Member {
-    rank: string;
-    nickname: string;
-    top_role: string;
-    roles: string[];
-    unit: string;
-    activity_week: number;
-    activity_month: number;
-    activity_year: number;
-    activity_total: number;
-    kit: string;
-    steamId: string;
-    discordId: string;
-    joinDate: string;
-}
-
-const MEMBERS_DATA: Member[] = [
-    {
-        rank: "Генерал-Майор",
-        nickname: "Дениска",
-        top_role: "Senior Developer",
-        roles: ["Senior Developer", "Пивонос"],
-        unit: "Штаб",
-        activity_week: 10,
-        activity_month: 45,
-        activity_year: 500,
-        activity_total: 1200,
-        kit: "Стрелок",
-        steamId: "632641236412378",
-        discordId: "00000000000000000",
-        joinDate: "12.04.2024"
-    },
-    {
-        rank: "Ст. Лейтенант",
-        nickname: "NikitaNet",
-        top_role: "Начальник службы связи",
-        roles: ["Начальник службы связи"],
-        unit: "Связь",
-        activity_week: 10,
-        activity_month: 75,
-        activity_year: 509,
-        activity_total: 1300,
-        kit: "Марксмен",
-        steamId: "76561198000000002",
-        discordId: "345678901234567890",
-        joinDate: "01.09.2024"
-    },
-    {
-        rank: "Полковник",
-        nickname: "Ярек",
-        top_role: "Старый пират",
-        roles: ["Старый пират", "друг флинта", "Не женат"],
-        unit: "Разведка",
-        activity_week: 20,
-        activity_month: 55,
-        activity_year: 900,
-        activity_total: 1280,
-        kit: "Пилот",
-        steamId: "76561198000000003",
-        discordId: "456789012345678901",
-        joinDate: "24.11.2023"
-    }
-];
-
 const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
     { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
@@ -92,57 +28,64 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
 ];
 
 export default function MembersPage() {
+    const [members, setMembers] = useState<any[]>([]);
 
-    const [members, setMembers] = useState<Member[]>([]);
+    useEffect(() => {
+        const fetchMembers = async () => {
+            try {
+                const units = await UnitService.getAll();
+                if (!units || !Array.isArray(units)) return;
 
-    useEffect(()=>{
-        UnitService.getAll().then((units)=>{
-            console.warn(units);
-            let un = units[0];
+                const preparedMemberArray = units.map((element: IUnit) => {
+                    const memberRoles: string[] = element.posts?.map((p) => p.name).filter(Boolean) || [];
+                    const topRole = memberRoles[0] || "Без должности";
+                    const unitName = element.posts?.[0]?.subdivision?.name || "Вне подразделения";
 
-            let preparedMemberArray : Member[] = []
+                    let formattedJoinDate = "—";
+                    if (element.joined) {
+                        const date = new Date(element.joined);
+                        if (!isNaN(date.getTime())) {
+                            const day = String(date.getDate()).padStart(2, "0");
+                            const month = String(date.getMonth() + 1).padStart(2, "0");
+                            const year = date.getFullYear();
+                            formattedJoinDate = `${day}.${month}.${year}`;
+                        }
+                    }
 
-            if(!units){return}
-            units.forEach(element => {
-                let memberRoles : string[] = []
+                    return {
+                        rank: element.rank?.name || "Без звания",
+                        nickname: element.nickname || "Неизвестный",
+                        top_role: topRole,
+                        roles: memberRoles,
+                        unit: unitName,
+                        activity_week: (element as any).activity_week ?? (element as any).activityWeek ?? 0,
+                        activity_month: (element as any).activity_month ?? (element as any).activityMonth ?? 0,
+                        activity_year: (element as any).activity_year ?? (element as any).activityYear ?? 0,
+                        activity_total: (element as any).activity_total ?? (element as any).activityTotal ?? 0,
+                        kit: (element as any).favoriteKit?.name || (element as any).kit || "Не выбран",
+                        steamId: element.steamId ? String(element.steamId) : "—",
+                        discordId: String(element.discordId),
+                        joinDate: formattedJoinDate
+                    };
+                });
 
-                if(element.posts){
+                setMembers(preparedMemberArray);
+            } 
+            catch (err) {
+                console.error("Ошибка при получении личного состава:", err);
+            }
+        };
 
-                    element.posts.forEach(post => {
-                        memberRoles.push(post!.name!)
-                    });
-                }
+        fetchMembers();
+    }, []);
 
-                let m : Member = {
-                    rank: "element.rank.name",
-                    nickname: element.nickname,
-                    top_role: "element.posts[0].name",
-                    roles: memberRoles,
-                    unit: element.nickname,
-                    activity_week: 0,
-                    activity_month: 0,
-                    activity_year: 0,
-                    activity_total: 0,
-                    kit: "",
-                    steamId: element.steamId!,
-                    discordId: element.discordId,
-                    joinDate: "`${element.joined.getDay()}.${element.joined.getMonth()}.${element.joined.getFullYear()}`"
-                }
-                preparedMemberArray.push(m);
-            });
-            setMembers(preparedMemberArray);
-
-        })
-    }, [])
-
-
-    const handleExport = (dataToExport: Member[]) => {
+    const handleExport = (dataToExport: any[]) => {
         console.log("Экспорт данных:", dataToExport);
         alert("Модальное окно выбора полей для экспорта");
     };
 
     const copyToClipboard = (text: string) => {
-        if (!text) return;
+        if (!text || text === "—") return;
         navigator.clipboard.writeText(text);
         alert("Скопировано: " + text);
     };
@@ -167,7 +110,7 @@ export default function MembersPage() {
                             columns={COLUMNS_CONFIG} 
                             onExport={handleExport}
                             defaultSort={{ key: "rank", direction: "desc" }}
-                            renderActions={(item: Member) => (
+                            renderActions={(item: any) => (
                                 <>
                                     <button 
                                         onClick={() => copyToClipboard(item.steamId)}
