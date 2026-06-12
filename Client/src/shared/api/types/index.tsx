@@ -185,3 +185,48 @@ interface activityCell {
     isCurrentMonth: boolean,
     isChecked: boolean
 }
+
+interface ISubdivision {
+    id?: string;
+    description: string;
+    appendHeadName: boolean;
+    posts?: IPost[];
+    headId?: number;
+    color: string;
+    name: string;
+}
+
+interface IPost {
+    id?: string;
+    description: string;
+    subdivisionId?: number;
+    subdivision?: ISubdivision;
+    appendSubdivisionName: boolean;
+    headId?: number;
+    units?: IUnit[];
+    color: string;
+    name: string;
+}
+
+interface IRank {
+    name: string;
+    color: string;
+}
+
+interface IUnit {
+    discordId: string;
+    nickname: string;
+    color: string;
+    rank: IRank;
+}
+
+interface StructureNode {
+    id: string;
+    title: string;
+    color: string;
+    members: string[];
+    subdivisionId: number | null;
+    subdivisionName?: string;
+    subdivisionColor?: string;
+    children: StructureNode[];
+}
