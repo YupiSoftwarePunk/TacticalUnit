@@ -8,22 +8,29 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
         token = localStorage.getItem("access_token");
     }
 
-    const headers = new Headers(options.headers);
+    const headersInit: Record<string, string> = {
+        "Content-Type": "application/json",
+    };
 
-    if (!headers.has("Content-Type")) {
-        headers.set("Content-Type", "application/json");
+    if (options.headers) {
+        const customHeaders = new Headers(options.headers);
+        customHeaders.forEach((value, key) => {
+            headersInit[key] = value;
+        });
     }
 
     const requiresAuth = method !== "GET" || endpoint.startsWith("/auth/me");
 
     if (token && requiresAuth) {
-        headers.set("Authorization", `Bearer ${token}`);
+        headersInit["Authorization"] = `Bearer ${token}`;
     }
 
+    const { headers: _, ...restOptions } = options;
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        ...options,
+        ...restOptions,
         method,
-        headers,
+        headers: headersInit,
     }).catch((er) => { 
         console.error(er); 
         throw er; 
@@ -31,23 +38,32 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
 
     if (!response.ok) {
         let errorMessage = `API Error: ${response.status}`;
+    try {
+        const textData = await response.text();
         try {
-            const textData = await response.text();
-            try {
-                const errorData = JSON.parse(textData);
-                errorMessage = errorData.message || errorData.error || errorMessage;
+            const errorData = JSON.parse(textData);
+            if (errorData.errors && typeof errorData.errors === "object") {
+                errorMessage = Object.values(errorData.errors)
+                    .flat()
+                    .join(", ");
             } 
-            catch {
-                if (textData && textData.trim()) {
-                    errorMessage = textData;
-                }
+            else {
+                errorMessage = errorData.error || errorData.message || errorData.title || errorMessage;
             }
         } 
-        catch (e) {
-            console.error("Не удалось прочитать тело ответа об ошибке:", e);
+        catch {
+            if (textData && textData.trim()) {
+                errorMessage = textData;
+            }
         }
-        throw new Error(errorMessage);
+    } 
+    catch (e) {
+        console.error("Не удалось прочитать тело ответа об ошибке:", e);
+    }
+    throw new Error(errorMessage);
     }
 
-    return response.json();
+    const rawText = await response.text();
+    const sanitizedText = rawText.replace(/:\s*(-?\d{16,})/g, ': "$1"');
+    return JSON.parse(sanitizedText);
 };
