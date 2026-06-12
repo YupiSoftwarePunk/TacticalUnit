@@ -1,3 +1,5 @@
+"use client";
+
 import { UnitService } from "@/shared/api/services/unitService"
 import { useEffect, useState } from "react"
 
