@@ -3,7 +3,7 @@ import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 
@@ -53,11 +53,15 @@ export default function createSubdivPage(){
     const [appendHeadName, setAppendHeadName] = useState<boolean>(false);
 
     const [availableHeads, setAvailableHead] = useState<ISubdivision[]>([]);
-    const [headId, setHeadId] = useState<number>();
+    const [headId, setHeadId] = useState<string>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
     const [color, setColor] = useState<string>("#ffffff");
+
+
+    const [availableHeadSubdivisions, setAvailableHeadSubdivisions] = useState<IListedInputItem[]>([]);
+
 
     let [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
@@ -87,19 +91,9 @@ export default function createSubdivPage(){
     ])
 
     function UpdateSearch(prompt : string){
-        setHeadList( [
-            {
-                Name : ""
-        },
-            {
-                Id: 0,
-                Name : "Первый"
-        },
-            {
-                Id: 1,
-                Name : "Второй"
-        }
-    ])
+        let prepList : IListedInputItem[] = []
+        prepList = availableHeadSubdivisions.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        setHeadList(prepList)
     }
 
 
@@ -119,11 +113,23 @@ export default function createSubdivPage(){
                 color: color,
                 name: subdivisionName
             }
-            SubdivisionService.add({method: "POST", body:JSON.stringify(newRank)});
+            SubdivisionService.add({method: "POST", body:JSON.stringify(newRank)}).then(()=>{alert("Вы успешно создали подразделение");navigation.reload();});
             
         }
 
-
+    useEffect(()=>{
+            SubdivisionService.getAll().then((subList) => {
+                let preparedRanks : IListedInputItem[] = [];
+                subList.forEach(subdivision => {
+                    preparedRanks.push({
+                        Name: subdivision.name,
+                        Id: subdivision.id
+                    })
+                });
+                setAvailableHeadSubdivisions([...preparedRanks]);
+                UpdateSearch("");
+            })
+        },[])
     return(<div className="flex flex-col min-h-screen">
         <MainHeader></MainHeader>
 
@@ -137,7 +143,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name);  setHeadId(el.Id); UpdateSearch(headPrompt? headPrompt : "")}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name);  setHeadId(el.Id); UpdateSearch(headPrompt? headPrompt : "")}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>

@@ -52,7 +52,7 @@ interface IPost{
     appendSubdivisionName : boolean,
     headId? : number,
     head? : IPost,
-    maxRankId : number,
+    maxRankId : string,
     units? : IUnit[],
     color : string,
     name : string,

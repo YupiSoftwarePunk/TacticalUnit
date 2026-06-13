@@ -92,7 +92,6 @@ export default function createSubdivPage(){
 
     function UpdateSearch(prompt : string){
         let prepList : IListedInputItem[] = []
-        console.warn(prompt)
         prepList = availableHeadRanks.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
         setHeadList(prepList)
     }

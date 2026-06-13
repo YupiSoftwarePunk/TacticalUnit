@@ -6,7 +6,7 @@ import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import { validateColor } from "@/typescript/colorValidator";
 import { error } from "console";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 
@@ -55,11 +55,15 @@ export default function createSubdivPage(){
     const [description, setDescription] = useState<string>("");
 
     const [availableRanks, setAvailableRanks] = useState<IRank[]>([]);
-    const [maxRankId, setMaxRankId] = useState<number>();
+    const [maxRankId, setMaxRankId] = useState<string>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
     const [color, setColor] = useState<string>("#ffffff");
+
+
+
+    const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
 
     let [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
@@ -89,19 +93,9 @@ export default function createSubdivPage(){
     ])
 
     function UpdateSearch(prompt : string){
-        setHeadList( [
-            {
-                Name : ""
-        },
-            {
-                Id: 0,
-                Name : "Первый"
-        },
-            {
-                Id: 1,
-                Name : "Второй"
-        }
-    ])
+        let prepList : IListedInputItem[] = []
+        prepList = availableHeadPosts.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        setHeadList(prepList)
     }
 
 
@@ -128,13 +122,23 @@ export default function createSubdivPage(){
             name : rankName,
             givedPermissions : permissions,
             maxRankId : maxRankId!
-
-
         }
-        PostService.add({method: "POST", body:JSON.stringify({newRank})});
+        PostService.add({method: "POST", body:JSON.stringify({newRank})}).then(()=>{alert("Вы успешно создали должность");navigation.reload();});
         
     }
-
+    useEffect(()=>{
+            PostService.getAll().then((postList) => {
+                let preparedRanks : IListedInputItem[] = [];
+                postList.forEach(post => {
+                    preparedRanks.push({
+                        Name: post.name,
+                        Id: post.id
+                    })
+                });
+                setAvailableHeadPosts([...preparedRanks]);
+                UpdateSearch("");
+            })
+        },[])
 
     return(<div className="flex flex-col min-h-screen">
         <MainHeader></MainHeader>
@@ -149,7 +153,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRankId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRankId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
