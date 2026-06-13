@@ -4,6 +4,9 @@ import React, { useEffect, useState } from "react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { UnitService } from "@/shared/api/services/unitService";
+import { RankService } from "@/shared/api/services/RankService";
+import { warn } from "console";
+import { PostService } from "@/shared/api/services/postService";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
@@ -31,7 +34,19 @@ export default function MembersPage() {
     const [members, setMembers] = useState<any[]>([]);
 
     useEffect(() => {
+        
+        let ranks : IRank[] = []
+        let posts : IPost[] = []
+
+
         const fetchMembers = async () => {
+            await RankService.getAll().then(sRanks => {
+                ranks = [...sRanks];
+            })
+            await PostService.getAll().then(sPosts => {
+                posts = [...sPosts];
+            })
+
             try {
                 const units = await UnitService.getAll();
                 if (!units || !Array.isArray(units)) return;
@@ -51,10 +66,17 @@ export default function MembersPage() {
                             formattedJoinDate = `${day}.${month}.${year}`;
                         }
                     }
+                    // console.warn(`${element.rankId}`);
+                    // console.warn(ranks.find(x=>`${x.id}` == `${element.rankId}`)?.name);
+                    
+                    let setRank = ranks.find(x=>x.id == element.rankId)
+                    let setPost = posts.find(x=>x.id == element.posts[0]?.id)
+                    
+                    // console.warn(setRank);
 
                     return {
-                        rank: element.rank?.name || "Без звания",
-                        nickname: element.nickname || "Неизвестный",
+                        rank: setRank? setRank.name : "Без звания",
+                        nickname: element.nickname,
                         top_role: topRole,
                         roles: memberRoles,
                         unit: unitName,

@@ -131,6 +131,7 @@ interface IUnit {
     joined : Date,
     color : string,
     rank : IRank,
+    rankId : string,
     ownDocs : IDoc[],
     assignedDocs : IDoc[],
     posts : IPost[],

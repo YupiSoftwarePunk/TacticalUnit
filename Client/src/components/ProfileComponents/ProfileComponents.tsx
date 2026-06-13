@@ -11,7 +11,7 @@ export const ProfileBGImage = ({Url} : IProfileBGImage)=>{
     return(
         <div className="flex size-full">
 
-            <img src="#" alt="Profile background image" className="flex object-top object-cover self-center size-full text-white"/>
+            <img src={`${Url? Url : "#"}`} alt="Profile background image" className="flex object-top object-cover self-center size-full text-white"/>
             <button className="absolute transform bg-bg-primary px-4 py-1 rounded-md transition-all hover:bg-bg-accent bottom-4 right-4">Заменить баннер</button>
         </div>
     )
