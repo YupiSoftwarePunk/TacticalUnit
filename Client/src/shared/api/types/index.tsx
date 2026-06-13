@@ -75,7 +75,7 @@ interface IDoc{
     units : IUnit[]
 }
 interface IReward{
-    id? : string,
+    id? : number,
     conditions : string,
     privileges : string,
     imagePath? : string,

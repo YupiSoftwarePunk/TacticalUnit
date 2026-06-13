@@ -22,5 +22,5 @@ export const RewardService = {
         method: "POST",
         body: JSON.stringify({ discordId: String(data.discordId) })
     }),
-    getUnitAssignment: (id: number, unitId: number) => apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}`),
+    getUnitAssignment: (id: number, unitId: string) => apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}`),
 };
