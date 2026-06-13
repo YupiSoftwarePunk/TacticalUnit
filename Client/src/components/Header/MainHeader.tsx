@@ -82,9 +82,9 @@ export const MainHeader = () => {
                         </button>
                     ) : (
                         <div className="flex items-center space-x-4 font-text">
-                            <span className="text-text-primary text-sm font-text-bold bg-bg-secondary/40 px-3 py-1 rounded border border-bg-secondary">
+                            <Link href={`/profile/${profileLink}`} className="text-text-primary hover:bg-bg-accent text-sm font-text-bold bg-bg-secondary/40 px-3 py-1 rounded border border-bg-secondary transition-all">
                                 {user?.username} <span className="text-accent ml-1 text-xs">[{user?.rank}]</span>
-                            </span>
+                            </Link>
                             <button 
                                 onClick={logout}
                                 className="text-xs text-text-secondary hover:text-accent transition-colors cursor-pointer"
@@ -103,9 +103,6 @@ export const MainHeader = () => {
               </span>
             </button>
 
-            <Link href={`/profile/${profileLink}`} className="border border-bg-secondary dark:border-[#1c1c1c] p-1.5 grayscale hover:grayscale-0 transition-all">
-              👤
-            </Link>
           </div>
         </div>
       </header>
