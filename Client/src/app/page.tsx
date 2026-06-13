@@ -95,6 +95,7 @@ function DiscordCallbackHandler() {
   const handleCloseOverlay = () => {
     setStatusText(null);
     setErrorDetails(null);
+    navigation.reload();
   };
 
   useEffect(() => {
