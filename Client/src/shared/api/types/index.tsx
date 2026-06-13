@@ -32,9 +32,9 @@ interface ISubdivision{
 interface IRank{
     id? : string,
     counterToReach : number,
-    previousId? : number,
+    higherId? : string,
     previous? : IRank,
-    nextId? : number,
+    lowerId? : string
     next? : IRank,
     units? : IUnit[],
     color : string,

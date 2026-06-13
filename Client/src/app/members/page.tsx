@@ -7,6 +7,7 @@ import { UnitService } from "@/shared/api/services/unitService";
 import { RankService } from "@/shared/api/services/RankService";
 import { warn } from "console";
 import { PostService } from "@/shared/api/services/postService";
+import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
@@ -33,6 +34,10 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
 export default function MembersPage() {
     const [members, setMembers] = useState<any[]>([]);
 
+    const [loaded, setLoaded] = useState<boolean>(false);
+    const [error, setError] = useState<string | undefined>();
+
+
     useEffect(() => {
         
         let ranks : IRank[] = []
@@ -40,14 +45,15 @@ export default function MembersPage() {
 
 
         const fetchMembers = async () => {
-            await RankService.getAll().then(sRanks => {
-                ranks = [...sRanks];
-            })
-            await PostService.getAll().then(sPosts => {
-                posts = [...sPosts];
-            })
+            
 
             try {
+                await RankService.getAll().then(sRanks => {
+                ranks = [...sRanks];
+                })
+                await PostService.getAll().then(sPosts => {
+                    posts = [...sPosts];
+                })
                 const units = await UnitService.getAll();
                 if (!units || !Array.isArray(units)) return;
 
@@ -92,9 +98,11 @@ export default function MembersPage() {
                 });
 
                 setMembers(preparedMemberArray);
+                setLoaded(true);
             } 
             catch (err) {
                 console.error("Ошибка при получении личного состава:", err);
+                setError(err as string);
             }
         };
 
@@ -111,6 +119,9 @@ export default function MembersPage() {
         navigator.clipboard.writeText(text);
         alert("Скопировано: " + text);
     };
+
+    if (error) return <ErrorScreen error={error}></ErrorScreen>
+    if (!loaded) return <LoadingScreen></LoadingScreen>
 
     return (
         <div className="flex flex-col h-full">

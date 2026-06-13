@@ -160,7 +160,7 @@ export const DescriptionInputField = ({className = "", displayOnEmpty, editingCl
 }
 
 export interface IListedInputItem{
-    Id? : number,
+    Id? : string,
     Name? : string
 }
 interface IListedInputField{
@@ -214,7 +214,7 @@ export function ListedInputField({className, editingClassName, textWhenEmpty, ed
             <div className={`absolute flex size-full ${editMode? "" : " pointer-events-none"} transition-all`} >
                 <input  value={value? value :""} type="text" onMouseLeave={()=>{if(!isFocused){setEditMode(false);}}} onFocus={()=>{setIsFocused(true);}} onBlur={()=>{setIsFocused(false); if(!isOverMenu){setEditMode(false);}}}  
                 onChange={onChange}  className={`flex absolute ${editMode? "" : "absolute opacity-0 pointer-events-none"} size-full z-10 flex flex-1 text-accent font-text-bold tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
-                <div onMouseEnter={()=>{setIsOverMenu(true)}} onMouseLeave={()=>{setIsOverMenu(false); if(!isFocused){setEditMode(false);}}} className={`cursor-pointer absolute flex font-text-bold p-2 m-2 gap-2 flex-col z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${isFocused || isOverMenu ? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${isFocused || isOverMenu? "" :"0px"}`}}>
+                <div onMouseEnter={()=>{setIsOverMenu(true)}} onMouseLeave={()=>{setIsOverMenu(false); if(!isFocused){setEditMode(false);}}} className={`cursor-pointer absolute overflow-scroll flex font-text-bold p-2 m-2 gap-2 flex-col z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${isFocused || isOverMenu ? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${isFocused || isOverMenu? "" :"0px"}`}}>
                 {
                 list.map((item)=>(
                     <div key={list.findIndex(x=>x.Id == item.Id)} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" 
