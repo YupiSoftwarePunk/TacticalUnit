@@ -50,7 +50,7 @@ interface IPost{
     subdivisionId? : number,
     subdivision? : ISubdivision,
     appendSubdivisionName : boolean,
-    headId? : number,
+    headId? : string,
     head? : IPost,
     maxRankId : string,
     units? : IUnit[],
@@ -203,7 +203,7 @@ interface IPost {
     subdivisionId?: number;
     subdivision?: ISubdivision;
     appendSubdivisionName: boolean;
-    headId?: number;
+    headId?: string;
     units?: IUnit[];
     color: string;
     name: string;

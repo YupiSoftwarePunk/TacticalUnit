@@ -55,6 +55,7 @@ export default function createSubdivPage(){
     const [description, setDescription] = useState<string>("");
 
     const [availableRanks, setAvailableRanks] = useState<IRank[]>([]);
+    const [headPostId, setHeadPostId] = useState<string>();
     const [maxRankId, setMaxRankId] = useState<string>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
@@ -121,6 +122,7 @@ export default function createSubdivPage(){
             appendSubdivisionName : true,
             name : rankName,
             givedPermissions : permissions,
+            headId : headPostId,
             maxRankId : maxRankId!
         }
         PostService.add({method: "POST", body:JSON.stringify({newRank})}).then(()=>{alert("Вы успешно создали должность");navigation.reload();});
@@ -128,14 +130,14 @@ export default function createSubdivPage(){
     }
     useEffect(()=>{
             PostService.getAll().then((postList) => {
-                let preparedRanks : IListedInputItem[] = [];
+                let preparedPosts : IListedInputItem[] = [];
                 postList.forEach(post => {
-                    preparedRanks.push({
+                    preparedPosts.push({
                         Name: post.name,
                         Id: post.id
                     })
                 });
-                setAvailableHeadPosts([...preparedRanks]);
+                setAvailableHeadPosts([...preparedPosts]);
                 UpdateSearch("");
             })
         },[])
@@ -153,7 +155,7 @@ export default function createSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRankId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setHeadPostId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
