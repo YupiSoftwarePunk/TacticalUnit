@@ -1,11 +1,12 @@
 'use client';
-import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { BaseContainer, CheckButton, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import { validateColor } from "@/typescript/colorValidator";
 import { error } from "console";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 
@@ -62,6 +63,7 @@ export default function createSubdivPage(){
 
     const [color, setColor] = useState<string>("#ffffff");
 
+    const [appendSubdivisionName, setAppendSubdivisionName] = useState<boolean>(false)
 
 
     const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
@@ -119,11 +121,13 @@ export default function createSubdivPage(){
         let newRank : IPost = {
             color : color,
             description : description,
-            appendSubdivisionName : true,
+            appendSubdivisionName : appendSubdivisionName,
             name : rankName,
             givedPermissions : permissions,
             headId : headPostId,
-            maxRankId : maxRankId!
+            maxRankId : maxRankId!,
+            
+            
         }
         PostService.add({method: "POST", body:JSON.stringify({newRank})}).then(()=>{alert("Вы успешно создали должность");navigation.reload();});
         
@@ -151,6 +155,7 @@ export default function createSubdivPage(){
             </BaseContainer>
             <BaseContainer className="flex-col">
                 <MultiroleInputField tooltip="Название должности" watermark="Название должности" value={rankName} editMode={true} onChange={(e)=>{setRankName(e.target.value)}} editable={true}></MultiroleInputField>
+                <CheckButton title="Дополнять названием подразделения" value={appendSubdivisionName} onClick={(e)=>{setAppendSubdivisionName(!appendSubdivisionName)}}></CheckButton>
                 <DescriptionInputField watermark="Описание должности" value={description} onChange={(e)=>{setDescription(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
             </BaseContainer>
 

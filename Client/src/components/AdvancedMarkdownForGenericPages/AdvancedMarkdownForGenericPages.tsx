@@ -3,7 +3,7 @@ import Tooltip from "../ToolTip/ToolTip"
 import { ScrollBehavior } from "next/dist/client/components/router-reducer/router-reducer-types"
 import TextareaAutosize from "react-textarea-autosize";
 import ToolTip from "../ToolTip/ToolTip";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import Link from "next/link";
 
@@ -368,4 +368,22 @@ export const AccordingUnitsTable = ({TableName, rightsToGrant, UrlToGrantPage, G
                         }
                         </div>
                     </div>)
+}
+
+
+
+interface ICheckButton{
+    onClick: (value : any)=>void,
+    title : string,
+    value : boolean
+}
+
+export const CheckButton = ({onClick, title = "[ Назв. не присвоено ]", value = false} : ICheckButton) => {
+    const [hovering, setHovering] = useState<boolean>();
+    return(<button className="flex hover:bg-bg-accent text-text-secondary" onClick={onClick} onMouseEnter={()=>{setHovering(true)}} onMouseLeave={()=>{setHovering(false)}}>
+                    <p className="flex flex-1">{title}</p>
+                    <div className={`flex m-1 border border-border-secondary ${hovering? "text-text-primary-accent" : ""} transition-all`}>
+                        {!value? <X></X> : <Check></Check>}
+                    </div>
+                </button>)
 }
