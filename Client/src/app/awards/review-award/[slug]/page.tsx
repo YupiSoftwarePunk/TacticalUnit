@@ -46,11 +46,11 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             setReward(rewardData);
 
             const formattedMembers = assignedData.map((item: IAssignedReward) => ({
-                discordId: item.unit.discordId,
-                nickname: item.unit.nickname,
-                rank: item.unit.rank?.name || "Без звания",
-                roles: item.unit.posts?.map(post => post.name) || [],
-                steamId: item.unit.steamId
+                discordId: item.unit?.discordId || "",
+                nickname: item.unit?.nickname || "Без никнейма",
+                rank: item.unit?.rank?.name || "Без звания",
+                roles: item.unit?.posts?.map(post => post.name) || [],
+                steamId: item.unit?.steamId || ""
             }));
 
             setAssignedMembers(formattedMembers);
