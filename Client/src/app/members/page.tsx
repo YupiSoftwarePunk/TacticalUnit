@@ -8,6 +8,7 @@ import { RankService } from "@/shared/api/services/RankService";
 import { warn } from "console";
 import { PostService } from "@/shared/api/services/postService";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
+import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
@@ -41,9 +42,10 @@ export default function MembersPage() {
     useEffect(() => {
         const fetchMembers = async () => {
             try {
-                const [ranks, posts, units] = await Promise.all([
+                const [ranks, posts, subdivisions, units] = await Promise.all([
                     RankService.getAll(),
                     PostService.getAll(),
+                    SubdivisionService.getAll(),
                     UnitService.getAll()
                 ]);
 
@@ -51,13 +53,35 @@ export default function MembersPage() {
 
                 const preparedMemberArray = units.map((element: IUnit) => {
                     const setRank = ranks.find(x => String(x.id) === String(element.rankId));
+
                     const fullUserPosts = (element.posts || [])
                         .map(p => posts.find(globalPost => String(globalPost.id) === String(p.id || p)))
                         .filter(Boolean);
 
                     const memberRoles: (string | undefined)[] = fullUserPosts.map((p) => p?.name).filter(Boolean) as (string | undefined)[];
                     const topRole = memberRoles[0] || "Без должности";
-                    const unitName = fullUserPosts[0]?.subdivision?.name || "Вне подразделения";
+
+                    let unitName = "Вне подразделения";
+                    const firstPost = fullUserPosts[0];
+
+                    if (firstPost) {
+                        if (firstPost.subdivision?.name) {
+                            unitName = firstPost.subdivision.name;
+                        } 
+                        else {
+                            const targetSubId = firstPost.subdivisionId || firstPost.subdivision;
+                            const matchedSub = subdivisions.find(s => String(s.id) === String(targetSubId));
+                            if (matchedSub) unitName = matchedSub.name;
+                        }
+                    }
+
+                    if (unitName === "Вне подразделения") {
+                        const directSubId = (element as any).subdivisionId || (element as any).subdivision?.id || (element as any).subdivision;
+                        if (directSubId) {
+                            const matchedSub = subdivisions.find(s => String(s.id) === String(directSubId));
+                            if (matchedSub) unitName = matchedSub.name;
+                        }
+                    }
 
                     let formattedJoinDate = "—";
                     if (element.joined) {
