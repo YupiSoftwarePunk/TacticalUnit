@@ -7,6 +7,7 @@ import { MainHeader } from "@/components/Header/MainHeader";
 import { AuthService } from "@/shared/api/services/authService";
 import { useAuth } from "@/context/AuthContext";
 
+
 type ThemeMode = "dark" | "light" | "system";
 
 const PRIDE_MEMBERS = [
@@ -91,11 +92,12 @@ function DiscordCallbackHandler() {
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
+  const router = useRouter();
 
   const handleCloseOverlay = () => {
     setStatusText(null);
     setErrorDetails(null);
-    navigation.reload();
+    router.refresh();
   };
 
   useEffect(() => {

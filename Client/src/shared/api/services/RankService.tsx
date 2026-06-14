@@ -15,6 +15,6 @@ export const RankService = {
     postDiscordRoleOf: (id: number, options : RequestInit) => apiClient<IRank>(`/rank/${id}/discord-role`, options),
 
     getAssigned: (id: number) => apiClient<IRank[]>(`/rank/${id}/assign`),
-    assignToUnit: (id: number, options: RequestInit) => apiClient<IRank>(`/rank/${id}/assign`, options),
+    assignToUnit: (id: number, unitDiscordId: string, options : RequestInit) => apiClient<IRank>(`/rank/${id}/assign/${unitDiscordId}`, options),
     getUnitAssignment: (id: number, unitId: number) => apiClient<IRank>(`/rank/${id}/assign/${unitId}`),
 };
