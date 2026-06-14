@@ -134,6 +134,7 @@ interface IUnit {
     ownDocs : IDoc[],
     assignedDocs : IDoc[],
     posts : IPost[],
+    postsIds : string[],
     assignedRewardsIds : string[],
     activities : IActivity[],
     unitStatuses : IUnitState[]
@@ -213,12 +214,7 @@ interface IRank {
     color: string;
 }
 
-interface IUnit {
-    discordId: string;
-    nickname: string;
-    color: string;
-    rank: IRank;
-}
+
 
 interface StructureNode {
     id: string;
