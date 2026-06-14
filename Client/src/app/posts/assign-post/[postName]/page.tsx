@@ -10,20 +10,14 @@ import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalT
 import { AssignInfoHeader } from "@/components/AssignScreens/AssignInfoHeader";
 import { AssignFooter } from "@/components/AssignScreens/AssignFooter";
 import { PostService } from "@/shared/api/services/postService";
-
-const MOCK_UNITS_DATA = [
-    { discordId: "123456789", nickname: "Дениска", rank: "Генерал-Майор", currentPost: "Senior Developer", steamId: "632641236412378" },
-    { discordId: "987654321", nickname: "NikitaNet", rank: "Ст. Лейтенант", currentPost: "Начальник службы связи", steamId: "76561198000000002" },
-    { discordId: "555555555", nickname: "Ярек", rank: "Полковник", currentPost: "Старый пират", steamId: "76561198000000003" },
-    { discordId: "444444444", nickname: "Челик", rank: "Рядовой", currentPost: "Стрелок", steamId: "76561198000000004" },
-    { discordId: "333333333", nickname: "Боец1", rank: "Рядовой", currentPost: "Разведчик", steamId: "76561198000000005" },
-];
+import { UnitService } from "@/shared/api/services/unitService";
 
 export default function AssignPostPage({ params }: { params: Promise<{ postName: string }> }) {
     const { postName } = React.use(params);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [post, setPost] = useState<IPost | null>(null);
+    const [units, setUnits] = useState<IUnit[]>([]);
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
 
@@ -31,22 +25,23 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const mockPost: IPost = {
-                    id: postName || "1",
-                    name: "Офицер", 
-                    description: "Должность офицера",
-                    color: "#0066FF",
-                    appendSubdivisionName: false,
-                    units: [],
-                    givedPermissions: [],
-                    discordRoleId: "12345",
-                    maxRankId: 0,
-                };
-                setPost(mockPost);
+                const postId = Number(postName);
+                
+                if (isNaN(postId)) {
+                    throw new Error("Некорректный идентификатор должности в URL");
+                }
+
+                const [postData, unitsData] = await Promise.all([
+                    PostService.getById(postId),
+                    UnitService.getAll()
+                ]);
+
+                setPost(postData);
+                setUnits(unitsData);
                 setLoading(false);
             } 
-            catch (err) {
-                setError("Ошибка при загрузке должности");
+            catch (err: any) {
+                setError(err?.message || "Ошибка при загрузке данных с сервера");
                 setLoading(false);
             }
         };
@@ -68,12 +63,29 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
         if (!post || selectedUnits.size === 0) return;
         try {
             setIsSaving(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const postId = Number(post.id);
+
+            // Преобразуем Set строк в массив и для каждого discordId делаем запрос к бэкенду
+            await Promise.all(
+                Array.from(selectedUnits).map((unitDiscordId) =>
+                    PostService.assignToUnit(postId, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        // ИСПРАВЛЕНО: Бэкенд требует именно 'discordId' (или 'DiscordId' в зависимости от настроек сериализации)
+                        body: JSON.stringify({ discordId: unitDiscordId }),
+                    })
+                )
+            );
+
             setIsSaving(false);
             setSelectedUnits(new Set());
+            
+            alert("Должности успешно присвоены бойцам!");
         } 
-        catch (err) {
-            setError("Ошибка при назначении должности");
+        catch (err: any) {
+            setError(err?.message || "Ошибка при сохранении: не удалось назначить должность");
             setIsSaving(false);
         }
     };
@@ -87,17 +99,18 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
             className: "w-12",
             render: (_, item: any) => (
                 <button
-                    onClick={() => toggleUnitSelection(item.discordId)}
+                    onClick={() => toggleUnitSelection(String(item.discordId))}
                     className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
                 >
-                    {selectedUnits.has(item.discordId) && (
+                    {selectedUnits.has(String(item.discordId)) && (
                         <Check className="w-4 h-4" />
                     )}
                 </button>
             )
         },
         { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
-        { key: "rank", label: "Звание", sortable: true, filterable: true },
+        // При необходимости замени ключи ниже на те, которые приходят из реальной модели IUnit
+        { key: "rank", label: "Звание", sortable: true, filterable: true }, 
         { key: "currentPost", label: "Текущая должность", sortable: false, filterable: true },
     ];
 
@@ -132,10 +145,10 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
 
                         <div className="border border-black/10 dark:border-white/5 overflow-hidden mb-6">
                             <UniversalTable 
-                                data={MOCK_UNITS_DATA}
+                                data={units} // Передаем данные из бэкенда вместо MOCK_UNITS_DATA
                                 columns={tableColumns}
                                 onExport={handleExport}
-                                defaultSort={{ key: "rank", direction: "desc" }}
+                                defaultSort={{ key: "nickname", direction: "asc" }}
                             />
                         </div>
 

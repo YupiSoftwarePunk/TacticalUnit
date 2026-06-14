@@ -86,6 +86,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
 
         setIsSaving(false);
         setSelectedUnits(new Set());
+        alert("Звания успешно присвоены бойцам!");
     } 
     catch (err: any) {
         console.error("Ошибка при сохранении:", err);
