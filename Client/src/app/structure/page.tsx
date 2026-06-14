@@ -21,7 +21,7 @@ class ApiStructureTransformer {
                 title: post.name,
                 color: post.color || "#d1d5db",
                 members: members,
-                subdivisionId: post.subdivisionId || null,
+                subdivisionId: (Number)(post.subdivisionId) || null,
                 subdivisionName: post.subdivision?.name,
                 subdivisionColor: post.subdivision?.color,
                 children: []
