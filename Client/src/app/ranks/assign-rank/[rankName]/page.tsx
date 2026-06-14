@@ -10,20 +10,14 @@ import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalT
 import { AssignInfoHeader } from "@/components/AssignScreens/AssignInfoHeader";
 import { AssignFooter } from "@/components/AssignScreens/AssignFooter";
 import { RankService } from "@/shared/api/services/RankService";
-
-const MOCK_UNITS_DATA = [
-    { discordId: "123456789", nickname: "Дениска", currentRank: "Генерал-Майор", roles: ["Senior Developer", "Пивонос"], steamId: "632641236412378" },
-    { discordId: "987654321", nickname: "NikitaNet", currentRank: "Ст. Лейтенант", roles: ["Начальник службы связи"], steamId: "76561198000000002" },
-    { discordId: "555555555", nickname: "Ярек", currentRank: "Полковник", roles: ["Старый пират", "друг флинта"], steamId: "76561198000000003" },
-    { discordId: "444444444", nickname: "Челик", currentRank: "Рядовой", roles: ["Стрелок"], steamId: "76561198000000004" },
-    { discordId: "333333333", nickname: "Боец1", currentRank: "Рядовой", roles: ["Разведчик"], steamId: "76561198000000005" },
-];
+import { UnitService } from "@/shared/api/services/unitService";
 
 export default function AssignRankPage({ params }: { params: Promise<{ rankName: string }> }) {
     const { rankName } = React.use(params);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [rank, setRank] = useState<IRank | null>(null);
+    const [units, setUnits] = useState<IUnit[]>([]);
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
 
@@ -31,20 +25,25 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const mockRank: IRank = {
-                    id: rankName || "1",
-                    name: "Генерал-Майор",
-                    color: "#FFD700",
-                    counterToReach: 10,
-                    units: [],
-                    givedPermissions: [],
-                    giscordRoleId: 12345,
-                };
-                setRank(mockRank);
+                setError(null);
+
+                const numericRankId = parseInt(rankName, 10);
+                if (isNaN(numericRankId)) {
+                    throw new Error("Некорректный ID звания в URL");
+                }
+
+                const [rankData, unitsData] = await Promise.all([
+                    RankService.getById(numericRankId),
+                    UnitService.getAll()
+                ]);
+
+                setRank(rankData);
+                setUnits(unitsData);
                 setLoading(false);
             } 
-            catch (err) {
-                setError("Ошибка при загрузке звания");
+            catch (err: any) {
+                console.error("Ошибка при получении данных:", err);
+                setError(err.message || "Ошибка при загрузке данных с сервера");
                 setLoading(false);
             }
         };
@@ -63,18 +62,37 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
     };
 
     const handleAssign = async () => {
-        if (!rank || selectedUnits.size === 0) return;
-        try {
-            setIsSaving(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setIsSaving(false);
-            setSelectedUnits(new Set());
-        } 
-        catch (err) {
-            setError("Ошибка при присвоении звания");
-            setIsSaving(false);
+    if (!rank || !rank.id || selectedUnits.size === 0) return;
+    
+    try {
+        setIsSaving(true);
+        setError(null);
+
+        const numericRankId = parseInt(rank.id, 10);
+        if (isNaN(numericRankId)) {
+            throw new Error("Не удалось определить ID текущего звания");
         }
-    };
+
+        const assignPromises = Array.from(selectedUnits).map((discordId) =>
+            RankService.assignToUnit(numericRankId, discordId, {
+                method: "POST",
+            })
+        );
+
+        await Promise.all(assignPromises);
+
+        const updatedUnits = await UnitService.getAll();
+        setUnits(updatedUnits);
+
+        setIsSaving(false);
+        setSelectedUnits(new Set());
+    } 
+    catch (err: any) {
+        console.error("Ошибка при сохранении:", err);
+        setError(err.message || "Ошибка при присвоении звания");
+        setIsSaving(false);
+    }
+};
 
     const tableColumns: ColumnConfig[] = [
         {
@@ -83,7 +101,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
             sortable: false,
             filterable: false,
             className: "w-12",
-            render: (_, item: any) => (
+            render: (_, item: IUnit) => (
                 <button
                     onClick={() => toggleUnitSelection(item.discordId)}
                     className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
@@ -95,13 +113,19 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
             )
         },
         { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
-        { key: "currentRank", label: "Текущее звание", sortable: true, filterable: true },
         { 
-            key: "roles", 
+            key: "rank", 
+            label: "Текущее звание", 
+            sortable: true, 
+            filterable: true,
+            render: (rank: IRank) => rank?.name || "Без звания"
+        },
+        { 
+            key: "posts", 
             label: "Должность", 
             sortable: false, 
             filterable: true,
-            render: (roles: string[]) => roles.join(", ")
+            render: (posts: IPost[]) => posts?.map(p => p.name).join(", ") || "Нет должности"
         },
     ];
 
@@ -146,10 +170,10 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
 
                         <div className="border border-black/10 dark:border-white/5 overflow-hidden mb-6">
                             <UniversalTable 
-                                data={MOCK_UNITS_DATA}
+                                data={units}
                                 columns={tableColumns}
                                 onExport={handleExport}
-                                defaultSort={{ key: "currentRank", direction: "desc" }}
+                                defaultSort={{ key: "rank", direction: "desc" }}
                             />
                         </div>
 

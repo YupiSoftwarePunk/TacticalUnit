@@ -159,6 +159,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                 rightsToGrant={canGrant} 
                 GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} 
                 GIVEN_DATA={members}
+                UrlToGrantPage={`/ranks/assign-rank/${rank.id}`}
             />
         </RRForm>
     );
