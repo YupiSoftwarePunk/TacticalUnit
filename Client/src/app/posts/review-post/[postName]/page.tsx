@@ -28,7 +28,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
 
-
     const [post, setPost] = useState<IPost>({
         id: "0",
         description: "Загрузка описания...",
@@ -49,83 +48,11 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [postPrompt, setPostPrompt] = useState<string>("");
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
 
-
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
-    const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
+    const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([]);
     
-    useEffect(() => {
-    if (isNaN(numericPostId)) {
-        setError("Некорректный ID должности");
-        setIsLoading(false);
-        return;
-    }
-
-    setIsLoading(true);
-
-    Promise.all([
-        PostService.getById(numericPostId),
-        PostService.getAssigned(numericPostId)
-        ])
-        .then(([postData, membersData]) => {
-            setPost(postData);
-            setPostPrompt(postData.head?.name || "");
-            setSubdivisionPrompt(postData.subdivision?.name || "");
-
-            const rawUnits = Array.isArray(membersData) ? membersData : (membersData as any)?.value || [];
-            
-            const prepared = rawUnits.map((element: any) => {
-                const memberRoles = element.posts?.map((p: any) => p.name).filter(Boolean) || [];
-                return {
-                    rank: element.rank?.name || "Без звания",
-                    nickname: element.nickname,
-                    top_role: memberRoles[0] || "Без должности",
-                    roles: memberRoles,
-                    unit: element.posts?.[0]?.subdivision?.name || "Вне подразделения",
-                    kit: element.favoriteKit?.name || "Не выбран",
-                    steamId: element.steamId ? String(element.steamId) : "—",
-                    discordId: String(element.discordId),
-                };
-            });
-
-            setMembers(prepared);
-        })
-        .catch((er) => {
-            setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
-        })
-        .finally(() => {
-            setIsLoading(false);
-        });
-    }, [numericPostId]);
-
-    function UpdateHeadSearch(prompt : string){
-        let prepList : IListedInputItem[] = []
-        prepList = availableHeadPosts.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
-        setHeadList(prepList)
-    }
-
     const [subdivisionList, setSubdivisionList] = useState<IListedInputItem[]>([]);
-    const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([])
-    
-    useEffect(()=>{
-            SubdivisionService.getAll().then((postList) => {
-                let preparedPosts : IListedInputItem[] = [];
-                postList.forEach(subdiv => {
-                    preparedPosts.push({
-                        Name: subdiv.name,
-                        Id: subdiv.id
-                    })
-                });
-                setAvailableSubdivisions([...preparedPosts]);
-                UpdateSubdivisionSearch("");
-            })
-        },[])
-
-    function UpdateSubdivisionSearch(prompt : string){
-        let prepList : IListedInputItem[] = []
-        prepList = availableSubdivisions.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
-        setSubdivisionList(prepList)
-    }
-
+    const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([]);
 
 
     useEffect(() => {
@@ -139,106 +66,83 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
 
         Promise.all([
             PostService.getById(numericPostId),
-            PostService.getAssigned(numericPostId)
+            RankService.getAll(),
+            PostService.getAll(),
+            UnitService.getAll()
         ])
-        .then(([postData, membersData]) => {
+        .then(([postData, ranksData, postsData, unitsData]) => {
             setPost(postData);
-            
-            if (Array.isArray(membersData)) {
-                setMembers(membersData);
-            } else if (membersData && (membersData as any).value) {
-                setMembers((membersData as any).value);
-            }
-
             setPostPrompt(postData.head?.name || "");
             setSubdivisionPrompt(postData.subdivision?.name || "");
+
+            const preparedPosts = postsData.map(p => ({ Name: p.name, Id: p.id }));
+            setAvailableHeadPosts(preparedPosts);
+
+            if (Array.isArray(unitsData)) {
+                const targetPostIdStr = String(numericPostId);
+
+                const filteredUnits = unitsData.filter(unit => 
+                    unit.posts?.some(postId => String(postId) === targetPostIdStr)
+                );
+
+                const preparedMembers = filteredUnits.map((element: IUnit) => {
+                    const memberRoles = element.posts?.map((postId) => {
+                        const foundPost = postsData.find(p => String(p.id) === String(postId));
+                        return foundPost ? foundPost.name : null;
+                    }).filter(Boolean) || [];
+                    
+                    const currentRank = ranksData.find(r => String(r.id) === String(element.rankId));
+
+                    return {
+                        rank: currentRank ? currentRank.name : "Без звания",
+                        nickname: element.nickname,
+                        roles: memberRoles.join(", ") || "Без должности", 
+                        top_role: memberRoles[0] || "Без должности",
+                        unit: "В разработке",
+                        kit: element.favoriteKitId || "Не выбран", 
+                        steamId: element.steamId ? String(element.steamId) : "—",
+                        discordId: String(element.discordId),
+                    };
+                });
+
+                setMembers(preparedMembers);
+            }
         })
         .catch((er) => {
+            console.error("Ошибка загрузки данных страницы должности:", er);
             setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
         })
         .finally(() => {
             setIsLoading(false);
         });
-
-
-
-
-
-
-        let ranks : IRank[] = []
-            let posts : IPost[] = []
-    
-    
-            const fetchMembers = async () => {
-                
-    
-                try {
-                    await RankService.getAll().then(sRanks => {
-                    ranks = [...sRanks];
-                    })
-                    await PostService.getAll().then(sPosts => {
-                        posts = [...sPosts];
-                    })
-                    const units = await UnitService.getAll();
-                    if (!units || !Array.isArray(units)) return;
-
-                    let filteredUnits : IUnit[] = []
-                    units.forEach(unit => {
-                        if (unit.posts.find(x=>x.id == post.id)){
-                            filteredUnits.push(unit);
-                        }
-                    });
-    
-                    const preparedMemberArray = filteredUnits.map((element: IUnit) => {
-                        const memberRoles: string[] = element.posts?.map((p) => p.name).filter(Boolean) || [];
-                        const topRole = memberRoles[0] || "Без должности";
-                        const unitName = element.posts?.[0]?.subdivision?.name || "Вне подразделения";
-    
-                        let formattedJoinDate = "—";
-                        if (element.joined) {
-                            const date = new Date(element.joined);
-                            if (!isNaN(date.getTime())) {
-                                const day = String(date.getDate()).padStart(2, "0");
-                                const month = String(date.getMonth() + 1).padStart(2, "0");
-                                const year = date.getFullYear();
-                                formattedJoinDate = `${day}.${month}.${year}`;
-                            }
-                        }
-                        let setRank = ranks.find(x=>x.id == element.rankId)
-                        let setPost = posts.find(x=>x.id == element.posts[0]?.id)
-                        // console.warn(setRank);
-    
-                        return {
-                            rank: setRank? setRank.name : "Без звания",
-                            nickname: element.nickname,
-                            top_role: topRole,
-                            roles: memberRoles,
-                            unit: unitName,
-                            activity_week: (element as any).activity_week ?? (element as any).activityWeek ?? 0,
-                            activity_month: (element as any).activity_month ?? (element as any).activityMonth ?? 0,
-                            activity_year: (element as any).activity_year ?? (element as any).activityYear ?? 0,
-                            activity_total: (element as any).activity_total ?? (element as any).activityTotal ?? 0,
-                            kit: (element as any).favoriteKit?.name || (element as any).kit || "Не выбран",
-                            steamId: element.steamId ? String(element.steamId) : "—",
-                            discordId: String(element.discordId),
-                            joinDate: formattedJoinDate
-                        };
-                    });
-    
-                    setMembers(preparedMemberArray);
-                    setIsLoading(false);
-                } 
-                catch (err) {
-                    console.error("Ошибка при получении личного состава:", err);
-                    setError(err as string);
-                }
-            };
-    
-            fetchMembers();
-
-
-
     }, [numericPostId]);
+
+    useEffect(() => {
+        SubdivisionService.getAll()
+            .then((subdivList) => {
+                const preparedSubdivs = subdivList.map(subdiv => ({
+                    Name: subdiv.name,
+                    Id: subdiv.id
+                }));
+                setAvailableSubdivisions(preparedSubdivs);
+                setSubdivisionList(preparedSubdivs);
+            })
+            .catch(err => console.error("Ошибка загрузки подразделений:", err));
+    }, []);
+
+    function UpdateHeadSearch(prompt: string) {
+        const prepList = availableHeadPosts.filter(x => 
+            x.Name?.toLowerCase().includes(prompt.toLowerCase())
+        );
+        setHeadList(prepList);
+    }
+
+    function UpdateSubdivisionSearch(prompt: string) {
+        const prepList = availableSubdivisions.filter(x => 
+            x.Name?.toLowerCase().includes(prompt.toLowerCase())
+        );
+        setSubdivisionList(prepList);
+    }
 
     if (error !== undefined) {
         return <ErrorScreen error={error} />;
@@ -294,9 +198,9 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                                 setPostPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
-                            onChoice={(e)=>{
+                            onChoice={(e) => {
                                 setIsNotSaved(true);
-                                setPost({...post, headId: e.Id})
+                                setPost({ ...post, headId: e.Id });
                                 setPostPrompt(e.Name!);
                             }}
                             list={headList}
@@ -311,16 +215,21 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                                 setSubdivisionPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
-                            onChoice={(e)=>{
-                                setPost({...post, subdivisionId: e.Id})
+                            onChoice={(e) => {
+                                setPost({ ...post, subdivisionId: e.Id });
                                 setSubdivisionPrompt(e.Name!);
-
+                                setIsNotSaved(true);
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 
                             textWhenEmpty="[ Подразделение не указано ]"
                         />
-                        <PermissionRollDownList />
+                        <PermissionRollDownList 
+                            givedPermissionList={post.givedPermissions} 
+                            allPermissionsList={[]}
+                            editable={canEdit} 
+                            editMode={true}
+                        />
                     </BaseContainer>
                 </div>
             </div>
