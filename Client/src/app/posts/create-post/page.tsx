@@ -5,7 +5,7 @@ import { MainHeader } from "@/components/Header/MainHeader";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import { validateColor } from "@/typescript/colorValidator";
-import { error } from "console";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -60,13 +60,11 @@ export default function createSubdivPage(){
     const [maxRankId, setMaxRankId] = useState<string>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
-
     const [color, setColor] = useState<string>("#ffffff");
-
     const [appendSubdivisionName, setAppendSubdivisionName] = useState<boolean>(false)
-
-
     const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
+
+    const router = useRouter();
 
     let [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
@@ -129,7 +127,9 @@ export default function createSubdivPage(){
             
             
         }
-        PostService.add({method: "POST", body:JSON.stringify({newRank})}).then(()=>{alert("Вы успешно создали должность");navigation.reload();});
+        PostService.add({method: "POST", body:JSON.stringify({newRank})})
+        .then(()=>{alert("Вы успешно создали должность");
+        router.refresh();});
         
     }
     useEffect(()=>{
