@@ -40,7 +40,7 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                     units: [],
                     givedPermissions: [],
                     discordRoleId: "12345",
-                    maxRankId: 0,
+                    maxRankId: "0",
                 };
                 setPost(mockPost);
                 setLoading(false);

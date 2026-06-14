@@ -4,7 +4,10 @@ import { AccordingUnitsTable, BaseContainer, ColorInputField, DescriptionInputFi
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
+import { PostService } from "@/shared/api/services/postService";
+import { RankService } from "@/shared/api/services/RankService";
 import { RewardService } from "@/shared/api/services/RewardService";
+import { UnitService } from "@/shared/api/services/unitService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -54,7 +57,87 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             }));
 
             setAssignedMembers(formattedMembers);
+
+
+
+            let ranks : IRank[] = []
+                        let posts : IPost[] = []
+                
+                
+                        const fetchMembers = async () => {
+                            
+                
+                            try {
+                                await RankService.getAll().then(sRanks => {
+                                ranks = [...sRanks];
+                                })
+                                await PostService.getAll().then(sPosts => {
+                                    posts = [...sPosts];
+                                })
+                                const units = await UnitService.getAll();
+                                if (!units || !Array.isArray(units)) return;
+            
+                                let filteredUnits : IUnit[] = []
+                                units.forEach(unit => {
+                                    if (unit.assignedRewardsIds.find(x=>x == reward.id)){
+                                        filteredUnits.push(unit);
+                                    }
+                                });
+                
+                                const preparedMemberArray = filteredUnits.map((element: IUnit) => {
+                                    const memberRoles: string[] = element.posts?.map((p) => p.name).filter(Boolean) || [];
+                                    const topRole = memberRoles[0] || "Без должности";
+                                    const unitName = element.posts?.[0]?.subdivision?.name || "Вне подразделения";
+                
+                                    let formattedJoinDate = "—";
+                                    if (element.joined) {
+                                        const date = new Date(element.joined);
+                                        if (!isNaN(date.getTime())) {
+                                            const day = String(date.getDate()).padStart(2, "0");
+                                            const month = String(date.getMonth() + 1).padStart(2, "0");
+                                            const year = date.getFullYear();
+                                            formattedJoinDate = `${day}.${month}.${year}`;
+                                        }
+                                    }
+                                    // console.warn(`${element.rankId}`);
+                                    // console.warn(ranks.find(x=>`${x.id}` == `${element.rankId}`)?.name);
+                                    
+                                    let setRank = ranks.find(x=>x.id == element.rankId)
+                                    let setPost = posts.find(x=>x.id == element.posts[0]?.id)
+                                    
+                                    // console.warn(setRank);
+                
+                                    return {
+                                        rank: setRank? setRank.name : "Без звания",
+                                        nickname: element.nickname,
+                                        top_role: topRole,
+                                        roles: memberRoles,
+                                        unit: unitName,
+                                        activity_week: (element as any).activity_week ?? (element as any).activityWeek ?? 0,
+                                        activity_month: (element as any).activity_month ?? (element as any).activityMonth ?? 0,
+                                        activity_year: (element as any).activity_year ?? (element as any).activityYear ?? 0,
+                                        activity_total: (element as any).activity_total ?? (element as any).activityTotal ?? 0,
+                                        kit: (element as any).favoriteKit?.name || (element as any).kit || "Не выбран",
+                                        steamId: element.steamId ? String(element.steamId) : "—",
+                                        discordId: String(element.discordId),
+                                        joinDate: formattedJoinDate
+                                    };
+                                });
+                
+                                setAssignedMembers(preparedMemberArray);
+                                setLoaded(true);
+                            } 
+                            catch (err) {
+                                console.error("Ошибка при получении личного состава:", err);
+                                setError(err as string);
+                            }
+                        };
+                
+                        fetchMembers();
             setLoaded(true);
+            
+            
+
         } 
         catch (er: any) {
             console.warn(er);
