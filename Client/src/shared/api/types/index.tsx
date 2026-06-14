@@ -191,7 +191,7 @@ interface ISubdivision {
     description: string;
     appendHeadName: boolean;
     posts?: IPost[];
-    headId?: number;
+    headId?: string;
     color: string;
     name: string;
 }
@@ -199,7 +199,7 @@ interface ISubdivision {
 interface IPost {
     id?: string;
     description: string;
-    subdivisionId?: number;
+    subdivisionId?: string;
     subdivision?: ISubdivision;
     appendSubdivisionName: boolean;
     headId?: string;
