@@ -18,8 +18,8 @@ export const MainHeader = () => {
 
     function userFromLocalStrorage(){
         let userId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
-        console.warn("awdawdawd");
-        console.warn(userId);
+        // console.warn("awdawdawd");
+        // console.warn(userId);
         return userId;
     }
     useEffect(()=>{

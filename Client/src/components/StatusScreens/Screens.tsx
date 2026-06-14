@@ -43,7 +43,16 @@ interface IErrorScreen{
 }
 export const ErrorScreen = ({error} : IErrorScreen) =>{
     const router = useRouter();
+    const textCut = (text : string) =>{
+        let modText = structuredClone(text);
+        let displayLength = 120;
 
+        if (modText.length > displayLength){
+            modText = modText.slice(0, displayLength);
+            modText = modText + "...";
+        }
+        return modText;
+    }
 
     return(
     <div className="flex absolute flex-col gap-20 align-middle content-center justify-center text-text-primary bg-bg-primary w-screen h-screen font-text-bold overflow-clip">
@@ -56,7 +65,7 @@ export const ErrorScreen = ({error} : IErrorScreen) =>{
                     {
                         error &&
                         <div className="flex top-50 absolute justify-center w-screen px-20 text-center self-center z-10 text-xl  flex-col" >
-                            <p>Текст ошибки:</p><p className="hover:underline cursor-copy" onClick={()=>{navigator.clipboard.writeText(error)}}>{error}</p>
+                            <p>Текст ошибки:</p><p className="hover:underline cursor-copy" onClick={()=>{navigator.clipboard.writeText(error)}}>{textCut(error)}</p>
                         </div>
                     }
                 </div>

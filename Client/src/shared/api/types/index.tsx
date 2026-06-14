@@ -32,9 +32,9 @@ interface ISubdivision{
 interface IRank{
     id? : string,
     counterToReach : number,
-    previousId? : number,
+    higherId? : string,
     previous? : IRank,
-    nextId? : number,
+    lowerId? : string
     next? : IRank,
     units? : IUnit[],
     color : string,
@@ -50,9 +50,9 @@ interface IPost{
     subdivisionId? : number,
     subdivision? : ISubdivision,
     appendSubdivisionName : boolean,
-    headId? : number,
+    headId? : string,
     head? : IPost,
-    maxRankId : number,
+    maxRankId : string,
     units? : IUnit[],
     color : string,
     name : string,
@@ -131,6 +131,7 @@ interface IUnit {
     joined : Date,
     color : string,
     rank : IRank,
+    rankId : string,
     ownDocs : IDoc[],
     assignedDocs : IDoc[],
     posts : IPost[],
@@ -202,7 +203,7 @@ interface IPost {
     subdivisionId?: number;
     subdivision?: ISubdivision;
     appendSubdivisionName: boolean;
-    headId?: number;
+    headId?: string;
     units?: IUnit[];
     color: string;
     name: string;

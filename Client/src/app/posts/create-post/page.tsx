@@ -1,12 +1,13 @@
 'use client';
-import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { BaseContainer, CheckButton, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import { validateColor } from "@/typescript/colorValidator";
 import { error } from "console";
-import { useState } from "react";
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 
 
@@ -55,11 +56,17 @@ export default function createSubdivPage(){
     const [description, setDescription] = useState<string>("");
 
     const [availableRanks, setAvailableRanks] = useState<IRank[]>([]);
-    const [maxRankId, setMaxRankId] = useState<number>();
+    const [headPostId, setHeadPostId] = useState<string>();
+    const [maxRankId, setMaxRankId] = useState<string>();
     const [headPrompt, setHeadPrompt] = useState<string>();
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
     const [color, setColor] = useState<string>("#ffffff");
+
+    const [appendSubdivisionName, setAppendSubdivisionName] = useState<boolean>(false)
+
+
+    const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
 
     let [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
@@ -89,19 +96,9 @@ export default function createSubdivPage(){
     ])
 
     function UpdateSearch(prompt : string){
-        setHeadList( [
-            {
-                Name : ""
-        },
-            {
-                Id: 0,
-                Name : "Первый"
-        },
-            {
-                Id: 1,
-                Name : "Второй"
-        }
-    ])
+        let prepList : IListedInputItem[] = []
+        prepList = availableHeadPosts.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        setHeadList(prepList)
     }
 
 
@@ -124,17 +121,30 @@ export default function createSubdivPage(){
         let newRank : IPost = {
             color : color,
             description : description,
-            appendSubdivisionName : true,
+            appendSubdivisionName : appendSubdivisionName,
             name : rankName,
             givedPermissions : permissions,
-            maxRankId : maxRankId!
-
-
+            headId : headPostId,
+            maxRankId : maxRankId!,
+            
+            
         }
-        PostService.add({method: "POST", body:JSON.stringify({newRank})});
+        PostService.add({method: "POST", body:JSON.stringify({newRank})}).then(()=>{alert("Вы успешно создали должность");navigation.reload();});
         
     }
-
+    useEffect(()=>{
+            PostService.getAll().then((postList) => {
+                let preparedPosts : IListedInputItem[] = [];
+                postList.forEach(post => {
+                    preparedPosts.push({
+                        Name: post.name,
+                        Id: post.id
+                    })
+                });
+                setAvailableHeadPosts([...preparedPosts]);
+                UpdateSearch("");
+            })
+        },[])
 
     return(<div className="flex flex-col min-h-screen">
         <MainHeader></MainHeader>
@@ -145,11 +155,12 @@ export default function createSubdivPage(){
             </BaseContainer>
             <BaseContainer className="flex-col">
                 <MultiroleInputField tooltip="Название должности" watermark="Название должности" value={rankName} editMode={true} onChange={(e)=>{setRankName(e.target.value)}} editable={true}></MultiroleInputField>
+                <CheckButton title="Дополнять названием подразделения" value={appendSubdivisionName} onClick={(e)=>{setAppendSubdivisionName(!appendSubdivisionName)}}></CheckButton>
                 <DescriptionInputField watermark="Описание должности" value={description} onChange={(e)=>{setDescription(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setMaxRankId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(headPrompt? headPrompt : "")}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setHeadPostId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
