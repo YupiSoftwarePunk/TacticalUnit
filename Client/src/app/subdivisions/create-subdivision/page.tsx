@@ -4,7 +4,7 @@ import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { useEffect, useState } from "react";
-
+import { useRouter } from "next/navigation";
 
 
 const mockG : IGivedPermission[] = [
@@ -48,6 +48,7 @@ const mockG : IGivedPermission[] = [
 
 
 export default function createSubdivPage(){
+    const router = useRouter();
     const [subdivisionName, setSubdivisionName] = useState<string>("");
     const [subdivisionDescription, setSubdivisionDescription] = useState<string>("");
     const [appendHeadName, setAppendHeadName] = useState<boolean>(false);
@@ -113,7 +114,9 @@ export default function createSubdivPage(){
                 color: color,
                 name: subdivisionName
             }
-            SubdivisionService.add({method: "POST", body:JSON.stringify(newRank)}).then(()=>{alert("Вы успешно создали подразделение");navigation.reload();});
+            SubdivisionService.add({method: "POST", body:JSON.stringify(newRank)})
+            .then(()=>{alert("Вы успешно создали подразделение");
+                router.refresh();});
             
         }
 

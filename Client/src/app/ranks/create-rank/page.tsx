@@ -3,10 +3,8 @@ import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { RankService } from "@/shared/api/services/RankService";
-import { error } from "console";
 import { useEffect, useState } from "react";
-
-
+import { useRouter } from "next/navigation";
 
 const mockG : IGivedPermission[] = [
     {
@@ -49,6 +47,7 @@ const mockG : IGivedPermission[] = [
 
 
 export default function createSubdivPage(){
+    const router = useRouter();
     const [rankName, setRankName] = useState<string>("");
     const [activityToPromotion, setActivityToPromotion] = useState<number>(1);
 
@@ -117,7 +116,9 @@ export default function createSubdivPage(){
             givedPermissions : permissions,
 
         }
-        RankService.add({method: "POST", body:JSON.stringify(newRank)}).then(()=>{alert("Вы успешно создали звание");navigation.reload();});
+        RankService.add({method: "POST", body:JSON.stringify(newRank)})
+        .then(()=>{alert("Вы успешно создали звание");
+        router.refresh();});
         
     }
     useEffect(()=>{
