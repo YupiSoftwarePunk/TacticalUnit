@@ -79,21 +79,26 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
             RankService.getById(numericRankId),
             RankService.getAssigned(numericRankId)
         ])
-        .then(([rankData, membersData]) => {
+            .then(([rankData, membersData]) => {
             setRank(rankData);
-            if (Array.isArray(membersData)) {
-                setMembers(membersData);
-            } 
-            else if (membersData && (membersData as any).value) {
-                setMembers((membersData as any).value);
-            }
-            
-            if (rankData.previous?.name) {
-                setRankPrompt(rankData.previous.name);
-            } 
-            else {
-                setRankPrompt("");
-            }
+            setRankPrompt(rankData.previous?.name || "");
+
+            const rawUnits = Array.isArray(membersData) ? membersData : (membersData as any)?.value || [];
+
+            const preparedMembers = rawUnits.map((element: any) => {
+                const unit = element.unit || element; 
+                const memberRoles = unit.posts?.map((p: any) => p.name).filter(Boolean) || [];
+
+                return {
+                    nickname: unit.nickname || "Без никнейма",
+                    top_role: memberRoles[0] || "Без должности",
+                    kit: unit.favoriteKit?.name || unit.kit || "Не выбран",
+                    steamId: unit.steamId ? String(unit.steamId) : "—",
+                    discordId: String(unit.discordId)
+                };
+            });
+
+            setMembers(preparedMembers);
         })
         .catch((er) => {
             setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
@@ -101,11 +106,6 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
         .finally(() => {
             setIsLoading(false);
         });
-
-
-
-
-        
     }, [numericRankId]);
 
     if (error !== undefined) {

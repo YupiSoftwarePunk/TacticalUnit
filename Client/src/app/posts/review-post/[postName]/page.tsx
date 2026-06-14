@@ -53,19 +53,49 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
     const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
     
-    useEffect(()=>{
-            PostService.getAll().then((postList) => {
-                let preparedPosts : IListedInputItem[] = [];
-                postList.forEach(post => {
-                    preparedPosts.push({
-                        Name: post.name,
-                        Id: post.id
-                    })
-                });
-                setAvailableHeadPosts([...preparedPosts]);
-                UpdateHeadSearch("");
-            })
-        },[])
+    useEffect(() => {
+    if (isNaN(numericPostId)) {
+        setError("Некорректный ID должности");
+        setIsLoading(false);
+        return;
+    }
+
+    setIsLoading(true);
+
+    Promise.all([
+        PostService.getById(numericPostId),
+        PostService.getAssigned(numericPostId)
+        ])
+        .then(([postData, membersData]) => {
+            setPost(postData);
+            setPostPrompt(postData.head?.name || "");
+            setSubdivisionPrompt(postData.subdivision?.name || "");
+
+            const rawUnits = Array.isArray(membersData) ? membersData : (membersData as any)?.value || [];
+            
+            const prepared = rawUnits.map((element: any) => {
+                const memberRoles = element.posts?.map((p: any) => p.name).filter(Boolean) || [];
+                return {
+                    rank: element.rank?.name || "Без звания",
+                    nickname: element.nickname,
+                    top_role: memberRoles[0] || "Без должности",
+                    roles: memberRoles,
+                    unit: element.posts?.[0]?.subdivision?.name || "Вне подразделения",
+                    kit: element.favoriteKit?.name || "Не выбран",
+                    steamId: element.steamId ? String(element.steamId) : "—",
+                    discordId: String(element.discordId),
+                };
+            });
+
+            setMembers(prepared);
+        })
+        .catch((er) => {
+            setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+    }, [numericPostId]);
 
     function UpdateHeadSearch(prompt : string){
         let prepList : IListedInputItem[] = []
@@ -174,12 +204,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                                 formattedJoinDate = `${day}.${month}.${year}`;
                             }
                         }
-                        // console.warn(`${element.rankId}`);
-                        // console.warn(ranks.find(x=>`${x.id}` == `${element.rankId}`)?.name);
-                        
                         let setRank = ranks.find(x=>x.id == element.rankId)
                         let setPost = posts.find(x=>x.id == element.posts[0]?.id)
-                        
                         // console.warn(setRank);
     
                         return {

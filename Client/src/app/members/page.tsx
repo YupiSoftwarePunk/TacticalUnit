@@ -39,28 +39,25 @@ export default function MembersPage() {
 
 
     useEffect(() => {
-        
-        let ranks : IRank[] = []
-        let posts : IPost[] = []
-
-
         const fetchMembers = async () => {
-            
-
             try {
-                await RankService.getAll().then(sRanks => {
-                ranks = [...sRanks];
-                })
-                await PostService.getAll().then(sPosts => {
-                    posts = [...sPosts];
-                })
-                const units = await UnitService.getAll();
+                const [ranks, posts, units] = await Promise.all([
+                    RankService.getAll(),
+                    PostService.getAll(),
+                    UnitService.getAll()
+                ]);
+
                 if (!units || !Array.isArray(units)) return;
 
                 const preparedMemberArray = units.map((element: IUnit) => {
-                    const memberRoles: string[] = element.posts?.map((p) => p.name).filter(Boolean) || [];
+                    const setRank = ranks.find(x => String(x.id) === String(element.rankId));
+                    const fullUserPosts = (element.posts || [])
+                        .map(p => posts.find(globalPost => String(globalPost.id) === String(p.id || p)))
+                        .filter(Boolean);
+
+                    const memberRoles: (string | undefined)[] = fullUserPosts.map((p) => p?.name).filter(Boolean) as (string | undefined)[];
                     const topRole = memberRoles[0] || "Без должности";
-                    const unitName = element.posts?.[0]?.subdivision?.name || "Вне подразделения";
+                    const unitName = fullUserPosts[0]?.subdivision?.name || "Вне подразделения";
 
                     let formattedJoinDate = "—";
                     if (element.joined) {
@@ -72,16 +69,9 @@ export default function MembersPage() {
                             formattedJoinDate = `${day}.${month}.${year}`;
                         }
                     }
-                    // console.warn(`${element.rankId}`);
-                    // console.warn(ranks.find(x=>`${x.id}` == `${element.rankId}`)?.name);
-                    
-                    let setRank = ranks.find(x=>x.id == element.rankId)
-                    let setPost = posts.find(x=>x.id == element.posts[0]?.id)
-                    
-                    // console.warn(setRank);
 
                     return {
-                        rank: setRank? setRank.name : "Без звания",
+                        rank: setRank ? setRank.name : "Без звания",
                         nickname: element.nickname,
                         top_role: topRole,
                         roles: memberRoles,
