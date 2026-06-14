@@ -1,6 +1,6 @@
 "use client";
 
-import { AccordingUnitsTable, BaseContainer, ColorInputField, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { AccordingUnitsTable, BaseContainer, ColorInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
@@ -39,6 +39,33 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const [members, setMembers] = useState<any[]>([]);
     const [rankPrompt, setRankPrompt] = useState<string>("");
 
+
+
+
+
+    const [headList, setHeadList] = useState<IListedInputItem[]>([]);
+        const [availableHeadRanks, setAvailableHeadRanks] = useState<IListedInputItem[]>([])
+        
+        useEffect(()=>{
+                RankService.getAll().then((postList) => {
+                    let preparedPosts : IListedInputItem[] = [];
+                    postList.forEach(post => {
+                        preparedPosts.push({
+                            Name: post.name,
+                            Id: post.id
+                        })
+                    });
+                    setAvailableHeadRanks([...preparedPosts]);
+                    UpdateHeadSearch("");
+                })
+            },[])
+    
+        function UpdateHeadSearch(prompt : string){
+            let prepList : IListedInputItem[] = []
+            prepList = availableHeadRanks.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+            setHeadList(prepList)
+        }
+
     useEffect(() => {
         if (isNaN(numericRankId)) {
             setError("Некорректный ID звания");
@@ -74,6 +101,11 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
         .finally(() => {
             setIsLoading(false);
         });
+
+
+
+
+        
     }, [numericRankId]);
 
     if (error !== undefined) {
@@ -145,8 +177,15 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                             value={rankPrompt} 
                             onChange={(e) => {
                                 setRankPrompt(e.target.value);
+                                UpdateHeadSearch(e.target.value);
                                 setIsNotSaved(true);
                             }} 
+                            onChoice={(e)=>{
+                                setIsNotSaved(true);
+                                setRank({...rank, lowerId: e.Id})
+                                setRankPrompt(e.Name!);
+                            }}
+                            list={headList}
                             tooltip="Нижестоящее по иерархии звание" 
                             textWhenEmpty="[ Нижестоящее звание не указано ]"
                         />

@@ -65,7 +65,6 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
             setIsSaving(true);
             const postId = Number(post.id);
 
-            // Преобразуем Set строк в массив и для каждого discordId делаем запрос к бэкенду
             await Promise.all(
                 Array.from(selectedUnits).map((unitDiscordId) =>
                     PostService.assignToUnit(postId, {
@@ -73,7 +72,6 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        // ИСПРАВЛЕНО: Бэкенд требует именно 'discordId' (или 'DiscordId' в зависимости от настроек сериализации)
                         body: JSON.stringify({ discordId: unitDiscordId }),
                     })
                 )
@@ -109,7 +107,6 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
             )
         },
         { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
-        // При необходимости замени ключи ниже на те, которые приходят из реальной модели IUnit
         { key: "rank", label: "Звание", sortable: true, filterable: true }, 
         { key: "currentPost", label: "Текущая должность", sortable: false, filterable: true },
     ];
@@ -145,7 +142,7 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
 
                         <div className="border border-black/10 dark:border-white/5 overflow-hidden mb-6">
                             <UniversalTable 
-                                data={units} // Передаем данные из бэкенда вместо MOCK_UNITS_DATA
+                                data={units}
                                 columns={tableColumns}
                                 onExport={handleExport}
                                 defaultSort={{ key: "nickname", direction: "asc" }}

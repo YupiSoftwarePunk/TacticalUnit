@@ -1,6 +1,6 @@
 "use client";
 
-import { AccordingUnitsTable, BaseContainer, ColorInputField, DescriptionInputField, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { AccordingUnitsTable, BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
@@ -18,6 +18,8 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     const numericSubdivisionId = Number(subdivisionName);
 
     const [isLoading, setIsLoading] = useState(true);
+    const [isNotSaved, setIsNotSaved] = useState(false);
+    
     const [error, setError] = useState<string | undefined>();
 
     const [subdivision, setSubdivision] = useState<ISubdivision>({
@@ -37,6 +39,36 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
     const [members, setMembers] = useState<any[]>([]);
 
+
+
+    const [headList, setHeadList] = useState<IListedInputItem[]>([]);
+    const [availableHeadSubdivisions, setAvailableHeadSubdivisions] = useState<IListedInputItem[]>([])
+    
+    useEffect(()=>{
+            SubdivisionService.getAll().then((postList) => {
+                let preparedPosts : IListedInputItem[] = [];
+                postList.forEach(post => {
+                    preparedPosts.push({
+                        Name: post.name,
+                        Id: post.id
+                    })
+                });
+                setAvailableHeadSubdivisions([...preparedPosts]);
+                UpdateHeadSearch("");
+            })
+        },[])
+
+    function UpdateHeadSearch(prompt : string){
+        let prepList : IListedInputItem[] = []
+        prepList = availableHeadSubdivisions.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        setHeadList(prepList)
+    }
+
+
+
+
+
+    
     useEffect(() => {
         if (isNaN(numericSubdivisionId)) {
             setError("Некорректный ID подразделения");
@@ -112,6 +144,19 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                             value={subdivisionPrompt} 
                             tooltip="Подразделение к которому относится это подразделение" 
                             textWhenEmpty="[ Подразделение не указано ]" 
+                            onChange={(e)=>{
+                                setSubdivisionPrompt(e.target.value);
+                                UpdateHeadSearch(e.target.value);
+                                setIsNotSaved(true);
+                            }}
+                            onChoice={(e)=>{
+                                
+                                setIsNotSaved(true);
+                                setSubdivision({...subdivision, headId: e.Id})
+                                setSubdivisionPrompt(e.Name!);
+                                
+                            }}
+                            list={headList}
                         />
                         <PermissionRollDownList />
                     </BaseContainer>

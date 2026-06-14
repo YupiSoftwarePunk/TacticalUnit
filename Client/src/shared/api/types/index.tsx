@@ -20,7 +20,7 @@ interface ISubdivision{
     description : string,
     appendHeadName : boolean,
     posts? : IPost[],
-    headId? : number,
+    headId? : string,
     head? : ISubdivision,
     subordinates? : ISubdivision[],
     givedPermissions : IGivedPermission[],
@@ -47,8 +47,7 @@ interface IRank{
 interface IPost{
     id? : string,
     description : string,
-    subdivisionId? : number,
-    subdivision? : ISubdivision,
+    subdivisionId? : string,
     appendSubdivisionName : boolean,
     headId? : string,
     head? : IPost,
@@ -135,7 +134,7 @@ interface IUnit {
     ownDocs : IDoc[],
     assignedDocs : IDoc[],
     posts : IPost[],
-    assignedRewards : IAssignedReward[],
+    assignedRewardsIds : string[],
     activities : IActivity[],
     unitStatuses : IUnitState[]
 }
@@ -192,7 +191,7 @@ interface ISubdivision {
     description: string;
     appendHeadName: boolean;
     posts?: IPost[];
-    headId?: number;
+    headId?: string;
     color: string;
     name: string;
 }
@@ -200,7 +199,7 @@ interface ISubdivision {
 interface IPost {
     id?: string;
     description: string;
-    subdivisionId?: number;
+    subdivisionId?: string;
     subdivision?: ISubdivision;
     appendSubdivisionName: boolean;
     headId?: string;
