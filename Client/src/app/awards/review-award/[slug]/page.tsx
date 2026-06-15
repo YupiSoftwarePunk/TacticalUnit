@@ -11,6 +11,7 @@ import { UnitService } from "@/shared/api/services/unitService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { getRewardImage } from "@/shared/config/imagesMapper";
 
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
@@ -79,7 +80,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                     <div className="flex flex-col flex-1 h-full">
                         <div className="relative bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group">
                             <img 
-                                src={reward.imagePath || "/-_-.jpg"}
+                                src={getRewardImage(reward.id, reward.imagePath)}
                                 alt="Award" 
                                 className="flex self-start object-top object-contain overflow-hidden"
                             />

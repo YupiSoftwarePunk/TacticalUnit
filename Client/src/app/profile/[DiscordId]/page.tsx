@@ -8,6 +8,7 @@ import { getBaseVariables } from "@/typescript/variables";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import { useEffect, useState } from "react";
+import { getUnitImage } from "@/shared/config/imagesMapper";
 
 interface IActionMenuOption{
     name : string,
@@ -95,7 +96,9 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                             <div className="flex flex-col flex-3 justify-start gap-4">
                                 <div className="flex flex-col">
                                     <div className="flex size-80 border-b border-border-primary">
-                                        <img src="/AK-74__163.png" alt="Soldier of heaven" className="object-top object-cover self-center size-full text-white"/>
+                                        <img src={getUnitImage(unitData?.rank?.name || unitData?.posts?.[0]?.name)} 
+                                        alt="Soldier of heaven" 
+                                        className="object-top object-cover self-center size-full text-white"/>
                                     </div>
                                     <p className="text-text-secondary">Избранный кит :</p>
                                     <p className="text-text-secondary-accent -mt-2">Командир отряда</p>
