@@ -3,6 +3,7 @@
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import { UnitService } from "@/shared/api/services/unitService"
+import { SquareUser } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react"
 
@@ -13,7 +14,12 @@ export const ProfileBGImage = ({Url} : IProfileBGImage)=>{
     return(
         <div className="flex size-full">
 
-            <img src={`${Url? Url : "#"}`} alt="Profile background image" className="flex object-top object-cover self-center size-full text-white"/>
+            <img src={`${Url? Url : "/bgPlaceholder.png"}`} alt="Profile background image" className="flex object-top grayscale-40 object-cover self-center size-full text-white"/>
+            <div className="absolute inset-0 flex flex-col  ">
+                <div className="flex flex-1 bg-linear-to-b opacity-30 from-bg-primary tp-transparent"></div>
+                <div className="flex flex-1 "></div>
+                <div className="flex flex-1 bg-linear-to-t opacity-100 from-bg-primary tp-transparent"></div>
+            </div>
             <button className="absolute transform bg-bg-primary px-4 py-1 rounded-md transition-all hover:bg-bg-accent bottom-4 right-4">Заменить баннер</button>
         </div>
     )
@@ -33,12 +39,15 @@ export const ProfileSidePanel = ({imageUrl, availableOptions, Unit} : IProfileSi
     <div className="flex border-r border-border-secondary">
         <div className="flex size-full">
             <div className="flex flex-col text-end gap-2">
-                                    <div className="flex size-60 bg-black self-end relative">
-                                        <img src="#" alt="Profile image" className="object-top object-cover self-center size-full text-white"/>
+                                    <div className="flex size-60 self-end relative">
+                                        {imageUrl?
+                                        <img src={`${imageUrl}`} alt="Profile image" className="object-top bg-black object-cover self-center size-full text-white"/>
+                                        : <SquareUser className="size-full  text-text-secondary"></SquareUser>
+                                        }
                                     </div>
                                     <ul className="flex flex-col gap-1 pr-4 items-end">
                                         {availableOptions&& availableOptions.map((item)=>(
-                                            <a href={item.Url} key={availableOptions.indexOf(item)} className=" hover:text-accent transition-all">{item.Name}</a>
+                                            <Link href={item.Url} key={availableOptions.indexOf(item)} className=" hover:text-accent transition-all">{item.Name}</Link>
                                         ))}
                                     </ul>
                                 </div>

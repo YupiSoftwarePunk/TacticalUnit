@@ -95,7 +95,7 @@ export default function createSubdivPage(){
         }
     ])
 
-    function UpdateSearch(prompt : string){
+    function UpdateSearch(prompt : string, list : IListedInputItem[] = headList){
         let prepList : IListedInputItem[] = []
         prepList = availableHeadPosts.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
         setHeadList(prepList)
@@ -107,9 +107,9 @@ export default function createSubdivPage(){
         if(rankName.replace(' ', '').length == 0){
             problems += "Название должности\n";
         }
-        if(maxRankId == undefined){
-            problems += "Высшее звание\n";
-        }
+        // if(maxRankId == undefined){
+        //     problems += "Высшее звание\n";
+        // }
         if (problems){
             alert("Вы забыли указать:\n"+problems)
             return;
@@ -142,7 +142,7 @@ export default function createSubdivPage(){
                     })
                 });
                 setAvailableHeadPosts([...preparedPosts]);
-                UpdateSearch("");
+                UpdateSearch("", preparedPosts);
             })
         },[])
 

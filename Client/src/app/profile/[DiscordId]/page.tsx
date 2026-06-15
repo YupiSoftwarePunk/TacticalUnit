@@ -70,7 +70,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
     return(
         <div className="flex flex-col min-h-screen text-text-secondary font-text">
             <MainHeader></MainHeader>
-            <div className="flex min-h-[250px] h-[30vh] bg-black relative">
+            <div className="flex min-h-[300px] h-[30vh] bg-black relative">
                 <ProfileBGImage></ProfileBGImage>
             </div>
             <div className="flex   flex-1 justify-center bg-bg-primary py-8 text-xl">
@@ -103,18 +103,6 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                                 
                                 <div className="flex flex-col">
                                     <div className="flex flex-wrap max-w-77 gap-1">
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
-                                        <div className="w-10 h-18 bg-bg-dark"><img src="-_-.jpg" alt="" className="size-full object-center object-cover" /></div>
                                     </div>
                                 </div>
                             </div>

@@ -36,7 +36,7 @@ export const ActivityCalendarCell: React.FC<IActivityCalendarCell> = ({isActive,
     }
     return(
         <InfoContainer containedInfoList={prepareGivenInfo()} className={`flex size-full border-2 rounded-lg border-border-secondary ${isCurrentMonth? "":"hidden"}`}>
-            <div className={`flex size-full ${isActive? "bg-green-400" : "bg-transparent"}`}>
+            <div className={`flex size-full ${isActive? "bg-green-400" : "bg-transparent"} rounded-md opacity-80`}>
 
             </div>
         </InfoContainer>
