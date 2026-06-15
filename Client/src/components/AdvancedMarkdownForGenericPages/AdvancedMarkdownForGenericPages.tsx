@@ -150,7 +150,7 @@ export const DescriptionInputField = ({className = "", displayOnEmpty, editingCl
                 </p>
                 </div>
                 {editable &&
-                <div className={`flex relative  ${editingClassName} ${editMode? "" : "absolute opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
+                <div className={`flex text-text-secondary relative text-[${textSize}px] ${editingClassName} ${editMode? "" : "absolute opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
                     <TextareaAutosize minRows={3} value={value} onChange={(e)=>{onChange!(e); setFilling(`${e.target.value}`.length != 0)}} className={`flex ${editMode? "" : " opacity-0 pointer-events-none"} inset-x-4  flex flex-1  tracking-wider  py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                     {watermark&& <p className={`absolute size-full px-3 py-2 pointer-events-none ext-primary  transition-all`} style={{opacity: `${filling? "0" : "0.5"}`}}>{watermark}</p>}
                 </div>

@@ -10,25 +10,26 @@ import { PostService } from "@/shared/api/services/postService";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
+    
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
-    { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
-    { 
-        key: "roles", 
-        label: "Должность", 
-        sortable: false, 
-        filterable: true, 
-        className: "text-text-secondary text-sm italic",
-        render: (value) => Array.isArray(value) ? value.join(", ") : value
-    },
-    { key: "unit", label: "Подразделение", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
-    { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true, className: "text-accent font-bold" },
+    { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
+    // { 
+    //     key: "roles", 
+    //     label: "Должность", 
+    //     sortable: false, 
+    //     filterable: true, 
+    //     className: "text-text-secondary text-sm italic",
+    //     render: (value) => Array.isArray(value) ? value.join(", ") : value
+    // },
+    // { key: "unit", label: "Подразделение", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
+    { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
     
     { key: "activity_week", label: "Активность за неделю", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_month", label: "Активность за месяц", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_year", label: "Активность за год", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
-    { key: "joinDate", label: "Дата вступления", sortable: true, filterable: true, className: "text-text-secondary text-sm font-mono" }
+    // { key: "joinDate", label: "Дата вступления", sortable: true, filterable: true, className: "text-text-secondary text-sm font-mono" }
 ];
 
 export default function MembersPage() {
@@ -42,6 +43,7 @@ export default function MembersPage() {
         
         let ranks : IRank[] = []
         let posts : IPost[] = []
+        let subdivisions : ISubdivision[] = []
 
 
         const fetchMembers = async () => {
@@ -50,6 +52,9 @@ export default function MembersPage() {
             try {
                 await RankService.getAll().then(sRanks => {
                 ranks = [...sRanks];
+                })
+                await PostService.getAll().then(sPosts => {
+                    posts = [...sPosts];
                 })
                 await PostService.getAll().then(sPosts => {
                     posts = [...sPosts];
@@ -76,16 +81,15 @@ export default function MembersPage() {
                     // console.warn(ranks.find(x=>`${x.id}` == `${element.rankId}`)?.name);
                     
                     let setRank = ranks.find(x=>x.id == element.rankId)
-                    let setPost = posts.find(x=>x.id == element.posts[0]?.id)
+                    let setPost = posts.find(x=>x.id == element.postsIds[0])
                     
                     // console.warn(setRank);
 
                     return {
                         rank: setRank? setRank.name : "Без звания",
                         nickname: element.nickname,
-                        top_role: topRole,
+                        top_role: setPost? setPost.name : "Без должности",
                         roles: memberRoles,
-                        unit: unitName,
                         activity_week: (element as any).activity_week ?? (element as any).activityWeek ?? 0,
                         activity_month: (element as any).activity_month ?? (element as any).activityMonth ?? 0,
                         activity_year: (element as any).activity_year ?? (element as any).activityYear ?? 0,

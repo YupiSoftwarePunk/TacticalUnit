@@ -21,7 +21,7 @@ const CreationForm = ({children, title, onClickSend} : ICreationForm) =>{
 
                 </div>
                 <div className="flex justify-center">
-                    <button onClick={onClickSend} type="submit" className="text-2xl px-15 py-5 bg-bg-secondary hover:bg-accent hover:text-black transition-all cursor-pointer">Отправить</button>
+                    <button onClick={onClickSend} type="submit" className="text-2xl px-15 py-5 bg-bg-secondary hover:bg-accent text-text-primary hover:text-black transition-all cursor-pointer">Отправить</button>
                 </div>
             </div>
         </div>
