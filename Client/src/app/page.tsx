@@ -274,28 +274,6 @@ export default function LandingPage() {
         </p>
       </section>
 
-      <section className="bg-bg-secondary border-y border-black/10 dark:border-white/5">
-        <div className="max-w-3xl mx-auto px-6 py-24">
-          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">
-            Внутренняя иерархия
-          </h2>
-          <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
-            Структура подразделения построена на строгой субординации и системе воинских званий. Назначение на должности и продвижение по службе напрямую зависят от вашей личной активности, посещения тренировок и проявления лидерских качеств в операциях. От рекрута до командира отделения — каждый вносит вклад в общую цепь командования.
-          </p>
-        </div>
-      </section>
-
-      <section className="bg-bg-primary">
-        <div className="max-w-3xl mx-auto px-6 py-24 border-t border-black/5 dark:border-white/5">
-          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">
-            Меры поощрения
-          </h2>
-          <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
-            Заслуги на поле боя не остаются незамеченными. Бойцы, проявившие исключительную доблесть, тактическую грамотность или хладнокровие в критических ситуациях, награждаются уникальными знаками отличия в личный профиль, заносятся на Доску Гордости и получают приоритетный доступ к редким специальностям.
-          </p>
-        </div>
-      </section>
-
       {/* === GALLERY: ГОРДОСТЬ === */}
       <section className="py-24 bg-bg-secondary border-y border-black/10">
         <div className="text-center mb-16">
@@ -369,6 +347,28 @@ export default function LandingPage() {
           <Link href="/members" className="text-[12px] font-text-bold text-text-primary uppercase font-black tracking-widest border-b-2 border-black dark:border-white pb-1 hover:text-text-secondary-accent hover:border-text-secondary-accent transition-all">
             Показать весь состав
           </Link>
+        </div>
+      </section>
+
+      <section className="bg-bg-primary">
+        <div className="max-w-3xl mx-auto px-6 py-24 border-t border-black/5 dark:border-white/5">
+          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">
+            Меры поощрения
+          </h2>
+          <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
+            Заслуги перед полком не остаются незамеченными. Бойцы, проявившие исключительную доблесть в бою или безупречно исполняющие должностные обязанности, награждаются знаками отличия в личный профиль, оформлением официальных благодарностей, покупкой DLC в Squad или доставкой съедобных подарков на дом.
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-bg-secondary border-y border-black/10 dark:border-white/5">
+        <div className="max-w-3xl mx-auto px-6 py-24">
+          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">
+            Внутренняя иерархия
+          </h2>
+          <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
+            Структура полка построена на системе должностей и воинских званий. Продвижение по службе напрямую зависят от вашей личной активности, посещения сборов и проявления лидерских качеств в операциях. Должностная иерархия воспитывает в бойцах ответственность, выдержку и поддержание субординации.
+          </p>
         </div>
       </section>
 
