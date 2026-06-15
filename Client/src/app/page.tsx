@@ -274,6 +274,28 @@ export default function LandingPage() {
         </p>
       </section>
 
+      <section className="bg-bg-secondary border-y border-black/10 dark:border-white/5">
+        <div className="max-w-3xl mx-auto px-6 py-24">
+          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">
+            Внутренняя иерархия
+          </h2>
+          <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
+            Структура подразделения построена на строгой субординации и системе воинских званий. Назначение на должности и продвижение по службе напрямую зависят от вашей личной активности, посещения тренировок и проявления лидерских качеств в операциях. От рекрута до командира отделения — каждый вносит вклад в общую цепь командования.
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-bg-primary">
+        <div className="max-w-3xl mx-auto px-6 py-24 border-t border-black/5 dark:border-white/5">
+          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">
+            Меры поощрения
+          </h2>
+          <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
+            Заслуги на поле боя не остаются незамеченными. Бойцы, проявившие исключительную доблесть, тактическую грамотность или хладнокровие в критических ситуациях, награждаются уникальными знаками отличия в личный профиль, заносятся на Доску Гордости и получают приоритетный доступ к редким специальностям.
+          </p>
+        </div>
+      </section>
+
       {/* === GALLERY: ГОРДОСТЬ === */}
       <section className="py-24 bg-bg-secondary border-y border-black/10">
         <div className="text-center mb-16">
@@ -351,8 +373,8 @@ export default function LandingPage() {
       </section>
 
       {/* === JOIN BUTTON === */}
-      <section className="py-32 text-center">
-        <Link href="#" className="inline-block relative group">
+      <section className="py-32 text-center flex flex-col items-center justify-center">
+        <Link href={`https://discord.gg/sSSVdSAB99`} target="_blank" rel="noopener noreferrer" className="inline-block relative group mb-8">
           <div className="absolute inset-0 bg-accent translate-x-2 translate-y-2 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
           <div className="relative border-2 border-border-secondary bg-bg-accent px-12 py-6 text-xl font-text-bold font-black text-text-primary uppercase tracking-widest group-hover:bg-accent group-hover:text-black transition-colors">
             Я хочу вступить
