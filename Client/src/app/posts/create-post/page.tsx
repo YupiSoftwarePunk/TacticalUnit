@@ -105,9 +105,9 @@ export default function createSubdivPage(){
         if(rankName.replace(' ', '').length == 0){
             problems += "Название должности\n";
         }
-        if(maxRankId == undefined){
-            problems += "Высшее звание\n";
-        }
+        // if(maxRankId == undefined){
+        //     problems += "Высшее звание\n";
+        // }
         if (problems){
             alert("Вы забыли указать:\n"+problems)
             return;
@@ -116,21 +116,27 @@ export default function createSubdivPage(){
             alert("Цвет указан с ошибками, проверьте, что цвет начинается с \"#\" и содержит 6 символов после \"#\"");
             return
         }
-        let newRank : IPost = {
-            color : color,
-            description : description,
-            appendSubdivisionName : appendSubdivisionName,
-            name : rankName,
-            givedPermissions : permissions,
-            headId : headPostId,
-            maxRankId : maxRankId!,
-            
-            
-        }
-        PostService.add({method: "POST", body:JSON.stringify({newRank})})
-        .then(()=>{alert("Вы успешно создали должность");
-        router.refresh();});
-        
+        const postDto = {
+            name: rankName,
+            description: description,
+            subdivisionId: null,
+            headId: headPostId ? parseInt(headPostId, 10) : 0,
+            maxRankId: maxRankId ? parseInt(maxRankId, 10) : 19,
+            color: color,
+            appendSubdivisionName: appendSubdivisionName,
+            permissionsId: permissions.map(p => parseInt(p.id || '0', 10)) 
+        };
+        PostService.add({ 
+            method: "POST", 
+            body: JSON.stringify(postDto) 
+        })
+        .then(() => {
+            alert("Вы успешно создали должность");
+            router.refresh();
+        })
+        .catch((error) => {
+            console.error("Ошибка при создании должности:", error);
+        });
     }
     useEffect(()=>{
             PostService.getAll().then((postList) => {
