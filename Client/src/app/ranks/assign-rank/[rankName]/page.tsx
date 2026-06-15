@@ -68,7 +68,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
         setIsSaving(true);
         setError(null);
 
-        const numericRankId = parseInt(rank.id, 10);
+        const numericRankId = parseInt(rank.id?.toString() || "", 10);
         if (isNaN(numericRankId)) {
             throw new Error("Не удалось определить ID текущего звания");
         }

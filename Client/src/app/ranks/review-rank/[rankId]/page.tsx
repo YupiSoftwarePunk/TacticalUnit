@@ -27,7 +27,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const [error, setError] = useState<string | undefined>();
 
     const [rank, setRank] = useState<IRank>({
-        id: "0",
+        id: 0,
         counterToReach: 0,
         color: "#f3f3f3",
         name: "Загрузка...",
@@ -52,7 +52,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                     postList.forEach(post => {
                         preparedPosts.push({
                             Name: post.name,
-                            Id: post.id
+                            Id: post.id?.toString()  
                         })
                     });
                     setAvailableHeadRanks([...preparedPosts]);
@@ -182,7 +182,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                             }} 
                             onChoice={(e)=>{
                                 setIsNotSaved(true);
-                                setRank({...rank, lowerId: e.Id})
+                                setRank({...rank, lowerId: e.Id ? parseInt(e.Id, 10) : undefined});
                                 setRankPrompt(e.Name!);
                             }}
                             list={headList}
