@@ -80,7 +80,7 @@ export default function MembersPage() {
                     // console.warn(`${element.rankId}`);
                     // console.warn(ranks.find(x=>`${x.id}` == `${element.rankId}`)?.name);
                     
-                    let setRank = ranks.find(x=>x.id == element.rankId)
+                    let setRank = ranks.find(x=>x.id?.toString() == element.rankId.toString())
                     let setPost = posts.find(x=>x.id == element.postsIds[0])
                     
                     // console.warn(setRank);

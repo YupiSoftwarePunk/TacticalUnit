@@ -30,18 +30,18 @@ interface ISubdivision{
 }
 
 interface IRank{
-    id? : string,
+    id?: number,
     counterToReach : number,
-    higherId? : string,
-    previous? : IRank,
-    lowerId? : string
-    next? : IRank,
-    units? : IUnit[],
+    higherId?: number,
+    previous?: IRank,
+    lowerId?: number,
+    next?: IRank,
+    units?: IUnit[],
     color : string,
     name : string,
-    rankChevronURL? : string,
+    rankChevronURL?: string,
     givedPermissions : IGivedPermission[],
-    giscordRoleId? : number
+    giscordRoleId?: number
 }
 
 interface IPost{

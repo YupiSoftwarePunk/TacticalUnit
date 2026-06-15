@@ -56,11 +56,7 @@ export default function createSubdivPage(){
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
 
     const [color, setColor] = useState<string>("#ffffff");
-
-
     const [availableHeadRanks, setAvailableHeadRanks] = useState<IListedInputItem[]>([]);
-
-
 
     let [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
@@ -106,13 +102,14 @@ export default function createSubdivPage(){
 
         }
         if (problems){
-            alert("Вы забыли указать:\n"+problems)
+            alert("Вы забыли указать:\n"+problems);
+            return;
         }
         let newRank : IRank = {
             counterToReach : activityToPromotion,
             color : color,
             name : rankName,
-            lowerId : headId,
+            lowerId : headId ? parseInt(headId, 10) : undefined,
             givedPermissions : permissions,
 
         }
@@ -127,7 +124,7 @@ export default function createSubdivPage(){
             rankList.forEach(rank => {
                 preparedRanks.push({
                     Name: rank.name,
-                    Id: rank.id
+                    Id: rank.id?.toString()
                 })
             });
             setAvailableHeadRanks([...preparedRanks]);
