@@ -17,6 +17,8 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     const { subdivisionName: subdivisionName } = React.use(params);
     const numericSubdivisionId = Number(subdivisionName);
 
+    const [canEdit, setCanEdit] = useState<boolean>(false);
+
     const [isLoading, setIsLoading] = useState(true);
     const [isNotSaved, setIsNotSaved] = useState(false);
     
@@ -114,13 +116,12 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     }
 
     return (
-        <RRForm title="Подразделение">
+        <RRForm showSaveChangesButton={isNotSaved} title="Подразделение">
             <div className="flex flex-1 gap-3">
                 <div className="flex flex-col flex-4">
                     <BaseContainer>
                         <ColorInputField 
-                            editable={false} 
-                            editMode={false} 
+                            editable={canEdit} 
                             value={subdivision.color} 
                         />
                     </BaseContainer>
@@ -129,18 +130,18 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                         <MultiroleInputField 
                             value={subdivision.name} 
                             tooltip="Наименование подразделения" 
-                            editable={false} 
+                            editable={canEdit} 
                         />
                         <DescriptionInputField 
                             value={subdivision.description} 
                             tooltip="Описание подразделения" 
-                            editable={false} 
+                            editable={canEdit} 
                         />
                     </BaseContainer>
                     
                     <BaseContainer className="flex-col">
                         <ListedInputField 
-                            editable={false} 
+                            editable={canEdit} 
                             value={subdivisionPrompt} 
                             tooltip="Подразделение к которому относится это подразделение" 
                             textWhenEmpty="[ Подразделение не указано ]" 
@@ -158,7 +159,7 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                             }}
                             list={headList}
                         />
-                        <PermissionRollDownList />
+                        <PermissionRollDownList editable={canEdit}></PermissionRollDownList>
                     </BaseContainer>
                 </div>
             </div>

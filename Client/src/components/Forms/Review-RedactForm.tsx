@@ -20,7 +20,7 @@ export const RRForm = ({saveChangesMethod, title, setEditModeMethod, setShowSave
 
     return(<div className="flex flex-col min-h-screen " >
             {editable&&
-            <button onClick={saveChangesMethod!} className={`fixed bottom-10 self-center text-text-primary bg-bg-primary border border-accent px-10 py-3 text-2xl hover:bg-accent hover:text-black cursor-pointer transition-all `} style={{bottom: `${showSaveChangesButton?  "40px" : "-80px"}`}}>Сохранить изменения</button>
+            <button onClick={saveChangesMethod!} className={`fixed z-10 bottom-10 self-center text-text-primary bg-bg-primary border border-accent px-10 py-3 text-2xl hover:bg-accent hover:text-black cursor-pointer transition-all `} style={{bottom: `${showSaveChangesButton?  "40px" : "-80px"}`}}>Сохранить изменения</button>
             }
             <div className="flex">
                 <MainHeader></MainHeader>

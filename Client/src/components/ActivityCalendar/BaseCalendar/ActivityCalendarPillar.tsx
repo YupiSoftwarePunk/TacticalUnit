@@ -15,13 +15,14 @@ export const ActivityCalendarPillar: React.FC<IActivityCalendarPillar> = ({filli
 
     function onClickDo(){
         if (switchMonthMethod && Id != null && isBlank == false) switchMonthMethod(Id);
+        // console.warn(Id)
     }
 
 
     return(
         <div className="flex flex-col" onClick={()=>{onClickDo(); }} onMouseEnter={()=>{setHighlight(true)}} onMouseLeave={()=>{setHighlight(false)}}>
             <div className={"flex"} style={{height: `${100 - filling}%`}}></div>
-            <div className={`flex rounded-md justify-center ${isSelected?  highlight? "bg-green-300" : "bg-green-500" : highlight? "bg-green-700" : "bg-green-800"}`} style={{height: `${filling}%`}}></div>  
+            <div className={`flex rounded-md justify-center ${isSelected?  highlight? "bg-green-300" : "bg-green-500" : highlight? "bg-green-700" : "bg-green-800 opacity-70"}`} style={{height: `${filling}%`}}></div>  
         </div>
     );
 }

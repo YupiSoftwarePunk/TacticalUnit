@@ -5,97 +5,6 @@ import { ActivityCalendarPillar, IActivityCalendarPillar } from "./ActivityCalen
 import { UnitService } from "@/shared/api/services/unitService";
 
 
-
-
-
-const _today = new Date();
-const _currentYear = _today.getFullYear();
-const _currentMonth = _today.getMonth();
-
-const BlankMonths : IActivityCalendarPillar[] = [
-        {
-            Id : 0,
-            monthName : "Апрель",
-            year : 2026,
-            isSelected : false,
-            isBlank : false,
-            filling : 50,
-            Date : new Date(_currentYear, _currentMonth-1, 1 )
-        },
-        {
-            Id : 1,
-            monthName : "Май",
-            year : 2026,
-            isSelected : false,
-            isBlank : false,
-            filling : 80,
-            Date : new Date(_currentYear, _currentMonth-2, 1 )
-        },
-        {
-            Id : 2,
-            monthName : "Июнь",
-            year : 2026,
-            isSelected : false,
-            isBlank : false,
-            filling : 100,
-            Date : new Date(_currentYear, _currentMonth-3, 1 )
-        },
-        {
-            Id : 3,
-            monthName : "Август",
-            year : 2026,
-            isSelected : false,
-            isBlank : false,
-            filling : 90,
-            Date : new Date(_currentYear, _currentMonth-4, 1 )
-        },
-        {
-            Id : 4,
-            monthName : "Огрызок",
-            year : 2026,
-            isSelected : false,
-            isBlank : false,
-            filling : 50,
-            Date : new Date(_currentYear, _currentMonth-5, 1 )
-        },
-        {
-            Id : 5,
-            monthName : "Огузок",
-            year : 2026,
-            isSelected : false,
-            isBlank : false,
-            filling : 60,
-            Date : new Date(_currentYear, _currentMonth-6, 1 )
-        },
-        {
-            Id : 6,
-            monthName : "Май",
-            year : 2026,
-            isSelected : false,
-            isBlank : false,
-            filling : 65,
-            Date : new Date(_currentYear, _currentMonth-7, 1 )
-        },
-        {
-            Id : 7,
-            monthName : "Май",
-            year : 2026,
-            isSelected : false,
-            isBlank : false,
-            filling : 65,
-            Date : new Date(_currentYear, _currentMonth, 1 )
-        },
-        {
-            Id : 8,
-            monthName : "Май",
-            year : 2026,
-            isSelected : true,
-            isBlank : false,
-            filling : 65,
-            Date : new Date(_currentYear, _currentMonth+1, 1 )
-        }
-    ];
-
 const monthsStr = [
         "Январь", "Февраль", "Март", 
         "Апрель","Май","Июнь",
@@ -108,11 +17,11 @@ interface IActivityCalendar{
 }
 export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
     const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
-    const [monthsMatrix, setMonthsMatrix] = useState<IActivityCalendarPillar[]>([])
+    let [monthsMatrix, setMonthsMatrix] = useState<IActivityCalendarPillar[]>([])
     const [selectedMonthDisplay, setSelectedMonthDisplay] = useState<string>();
     const [pillarsOffset, setPillarsOffset] = useState<number>(0);
     const [pillarsTransitionStatus, setPillarsTransitionStatus] = useState<boolean> (false);
-    const [activityDates, setActivityDates] = useState<Date[]>([]);
+    let [activityDates, setActivityDates] = useState<Date[]> ([]);
 
     let preparedMonths : IActivityCalendarPillar[] = [];
     
@@ -130,8 +39,42 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
     let previouslySelectedMonthIndexOffset = -1;
 
     
+
+    function createPillars(){
+        let activityMonths : Date[] = [];
+        activityDates.forEach(d => {
+            
+            if (activityMonths.find(x=>x.getMonth() == d.getMonth() && x.getFullYear() == d.getFullYear()) == undefined){
+                activityMonths.push(d);
+
+            }
+        });
+        let pillars : IActivityCalendarPillar[] = [];
+        activityMonths.forEach(d => {
+
+
+
+            let monthDays = new Date(d.getFullYear(), d.getMonth(), 0).getDate();
+            let monthActivity = activityDates.filter(x=>(x.getMonth() == d.getMonth() && x.getFullYear() == d.getFullYear()))
+            let totalActivity : number = (monthActivity.length / monthDays) * 100;
+
+            pillars.push({
+                Id: pillars.length,
+            year : 2026,
+            isSelected : false,
+            isBlank : false,
+            filling : totalActivity,
+            Date : new Date(d.getFullYear(), d.getMonth(), 1 )
+            })
+        });
+        pillars = pillars.sort((a,b)=>a.Date!.getTime() - b.Date!.getTime())
+        pillars[pillars.length-1].isSelected = true;
+        return pillars;
+    }
+
+
     function refreshMonthsDisplay(){
-        const monthsToSet : IActivityCalendarPillar[] = BlankMonths.sort((a,b)=>a.Date!.getTime() - b.Date!.getTime());
+        const monthsToSet : IActivityCalendarPillar[] = monthsMatrix;
         let selectedMonthIndex = monthsToSet.findIndex(x=>x.isSelected == true);
 
             const monthsMargin = 4; //both directions
@@ -161,7 +104,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
                     let blank : IActivityCalendarPillar = {
                         isBlank : true,
-                        filling : 2,
+                        filling : 0,
                         isSelected : false,
                     }
                     preparedMonths.push(blank);
@@ -246,15 +189,21 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                 const [day, month, year] = act.split(".").map(Number);
                 list.push(new Date(year, month-1, day))
             });
+            activityDates = list;
             setActivityDates(list);
+            setMonthsMatrix(createPillars());
+            monthsMatrix = createPillars();
+            
 
             setActivityMatrix(fillMonthMatrix(currentYear, currentMonth, list));
+            refreshMonthsDisplay();
+
             //console.warn(list[0].toDateString());
         })
 
 
         
-    }, [!monthsMatrix])
+    }, [])
     useEffect(()=>{
 
         
@@ -262,7 +211,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
         setSelectedMonthDisplay(monthsStr[selectedMonth]);
         setMonthsMatrix(preparedMonths);
-        refreshMonthsDisplay();
 
         
         
@@ -310,6 +258,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
 
     const setActiveMonthById = (monthId : number) => {
+        // console.warn("click")
         let m = monthsMatrix.find(x => x.isSelected === true);
         m!.isSelected = false;
         let electedMonth = monthsMatrix.find(x => x.Id === monthId);
@@ -374,7 +323,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                         <p className="self-end">Вс</p>
                         
                         {activityMatrix.map((item)=>(
-                            <div key={item.id} className="flex size-10">
+                            <div key={activityMatrix.indexOf(item)} className="flex size-10">
                                 <ActivityCalendarCell isActive={item.isChecked} isCurrentMonth={item.isCurrentMonth}></ActivityCalendarCell>
                             </div>
                         ))}

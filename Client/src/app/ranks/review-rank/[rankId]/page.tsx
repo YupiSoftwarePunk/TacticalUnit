@@ -20,7 +20,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const { rankId } = React.use(params);
     const numericRankId = Number(rankId);
 
-    const [canEdit, setCanEdit] = useState(true);
+    const [canEdit, setCanEdit] = useState(false);
     const [canGrant, setCanGrant] = useState(true);
     const [isNotSaved, setIsNotSaved] = useState(false);
     const [isLoading, setIsLoading] = useState(true);

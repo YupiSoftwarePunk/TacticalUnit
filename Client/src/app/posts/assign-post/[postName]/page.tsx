@@ -95,7 +95,7 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
             sortable: false,
             filterable: false,
             className: "w-12",
-            render: (_, item: any) => (
+            render: (_, item: IUnit) => (
                 <button
                     onClick={() => toggleUnitSelection(String(item.discordId))}
                     className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
