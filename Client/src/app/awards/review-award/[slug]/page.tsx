@@ -20,7 +20,7 @@ const COLUMNS_CONFIG = [
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = React.use(params);
-    const [canEdit, setCanEdit] = useState(true);
+    const [canEdit, setCanEdit] = useState(false);
     const [canGrant, setCanGrant] = useState(true);
 
     const [reward, setReward] = useState<IReward>({

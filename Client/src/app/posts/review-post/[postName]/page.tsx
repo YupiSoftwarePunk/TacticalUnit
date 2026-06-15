@@ -22,7 +22,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const { postName } = React.use(params);
     const numericPostId = Number(postName);
 
-    const [canEdit, setCanEdit] = useState(true);
+    const [canEdit, setCanEdit] = useState(false);
     const [canGrant, setCanGrant] = useState(true);
     const [isNotSaved, setIsNotSaved] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -145,7 +145,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     }
 
     return (
-        <RRForm>
+        <RRForm title="Должность" editable={canEdit} showSaveChangesButton={isNotSaved} saveChangesMethod={()=>{setIsNotSaved(false)}}>
             <div className="flex flex-1 gap-3">
                 <div className="flex flex-col flex-4">
                     <BaseContainer>
@@ -216,7 +216,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             tooltip="Подразделение к которому относится должность" 
                             textWhenEmpty="[ Подразделение не указано ]"
                         />
-                        <PermissionRollDownList />
+                        <PermissionRollDownList editable={canEdit}></PermissionRollDownList>
                     </BaseContainer>
                 </div>
             </div>
