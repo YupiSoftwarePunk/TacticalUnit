@@ -8,28 +8,28 @@ import { RankService } from "@/shared/api/services/RankService";
 import { warn } from "console";
 import { PostService } from "@/shared/api/services/postService";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
-import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
+    
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
-    { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
-    { 
-        key: "roles", 
-        label: "Должность", 
-        sortable: false, 
-        filterable: true, 
-        className: "text-text-secondary text-sm italic",
-        render: (value) => Array.isArray(value) ? value.join(", ") : value
-    },
-    { key: "unit", label: "Подразделение", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
-    { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true, className: "text-accent font-bold" },
+    { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
+    // { 
+    //     key: "roles", 
+    //     label: "Должность", 
+    //     sortable: false, 
+    //     filterable: true, 
+    //     className: "text-text-secondary text-sm italic",
+    //     render: (value) => Array.isArray(value) ? value.join(", ") : value
+    // },
+    // { key: "unit", label: "Подразделение", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
+    { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
     
     { key: "activity_week", label: "Активность за неделю", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_month", label: "Активность за месяц", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_year", label: "Активность за год", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
-    { key: "joinDate", label: "Дата вступления", sortable: true, filterable: true, className: "text-text-secondary text-sm font-mono" }
+    // { key: "joinDate", label: "Дата вступления", sortable: true, filterable: true, className: "text-text-secondary text-sm font-mono" }
 ];
 
 export default function MembersPage() {
@@ -40,48 +40,32 @@ export default function MembersPage() {
 
 
     useEffect(() => {
-        const fetchMembers = async () => {
-            try {
-                const [ranks, posts, subdivisions, units] = await Promise.all([
-                    RankService.getAll(),
-                    PostService.getAll(),
-                    SubdivisionService.getAll(),
-                    UnitService.getAll()
-                ]);
+        
+        let ranks : IRank[] = []
+        let posts : IPost[] = []
+        let subdivisions : ISubdivision[] = []
 
+
+        const fetchMembers = async () => {
+            
+
+            try {
+                await RankService.getAll().then(sRanks => {
+                ranks = [...sRanks];
+                })
+                await PostService.getAll().then(sPosts => {
+                    posts = [...sPosts];
+                })
+                await PostService.getAll().then(sPosts => {
+                    posts = [...sPosts];
+                })
+                const units = await UnitService.getAll();
                 if (!units || !Array.isArray(units)) return;
 
                 const preparedMemberArray = units.map((element: IUnit) => {
-                    const setRank = ranks.find(x => String(x.id) === String(element.rankId));
-
-                    const fullUserPosts = (element.posts || [])
-                        .map(p => posts.find(globalPost => String(globalPost.id) === String(p.id || p)))
-                        .filter(Boolean);
-
-                    const memberRoles: (string | undefined)[] = fullUserPosts.map((p) => p?.name).filter(Boolean) as (string | undefined)[];
+                    const memberRoles: string[] = element.posts?.map((p) => p.name).filter(Boolean) || [];
                     const topRole = memberRoles[0] || "Без должности";
-
-                    let unitName = "Вне подразделения";
-                    const firstPost = fullUserPosts[0];
-
-                    if (firstPost) {
-                        if (firstPost.subdivision?.name) {
-                            unitName = firstPost.subdivision.name;
-                        } 
-                        else {
-                            const targetSubId = firstPost.subdivisionId || firstPost.subdivision;
-                            const matchedSub = subdivisions.find(s => String(s.id) === String(targetSubId));
-                            if (matchedSub) unitName = matchedSub.name;
-                        }
-                    }
-
-                    if (unitName === "Вне подразделения") {
-                        const directSubId = (element as any).subdivisionId || (element as any).subdivision?.id || (element as any).subdivision;
-                        if (directSubId) {
-                            const matchedSub = subdivisions.find(s => String(s.id) === String(directSubId));
-                            if (matchedSub) unitName = matchedSub.name;
-                        }
-                    }
+                    const unitName = element.posts?.[0]?.subdivision?.name || "Вне подразделения";
 
                     let formattedJoinDate = "—";
                     if (element.joined) {
@@ -93,13 +77,19 @@ export default function MembersPage() {
                             formattedJoinDate = `${day}.${month}.${year}`;
                         }
                     }
+                    // console.warn(`${element.rankId}`);
+                    // console.warn(ranks.find(x=>`${x.id}` == `${element.rankId}`)?.name);
+                    
+                    let setRank = ranks.find(x=>x.id == element.rankId)
+                    let setPost = posts.find(x=>x.id == element.postsIds[0])
+                    
+                    // console.warn(setRank);
 
                     return {
-                        rank: setRank ? setRank.name : "Без звания",
+                        rank: setRank? setRank.name : "Без звания",
                         nickname: element.nickname,
-                        top_role: topRole,
+                        top_role: setPost? setPost.name : "Без должности",
                         roles: memberRoles,
-                        unit: unitName,
                         activity_week: (element as any).activity_week ?? (element as any).activityWeek ?? 0,
                         activity_month: (element as any).activity_month ?? (element as any).activityMonth ?? 0,
                         activity_year: (element as any).activity_year ?? (element as any).activityYear ?? 0,

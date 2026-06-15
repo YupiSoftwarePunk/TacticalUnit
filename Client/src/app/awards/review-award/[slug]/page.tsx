@@ -55,15 +55,8 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                 roles: item.unit?.posts?.map(post => post.name) || [],
                 steamId: item.unit?.steamId || ""
             }));
-
             setAssignedMembers(formattedMembers);
-
-
-
-            
             setLoaded(true);
-            
-            
 
         } 
         catch (er: any) {

@@ -1,5 +1,7 @@
 "use client";
 
+import { PostService } from "@/shared/api/services/postService";
+import { RankService } from "@/shared/api/services/RankService";
 import { UnitService } from "@/shared/api/services/unitService"
 import Link from "next/link";
 import { useEffect, useState } from "react"
@@ -51,10 +53,20 @@ interface IUnitInfoPanel{
 
 export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
 
-    const [states, setStates] = useState<IState[]>();
+    //const [states, setStates] = useState<IState[]>();
+    const [rank, setRank] = useState<IRank>();
+    const [posts, setPosts] = useState<IPost[]>([]);
     useEffect(()=>{
         if(Unit != undefined){
-            UnitService.getStates(Unit.discordId as unknown as number).then((data)=>{setStates(data);}).catch((error)=>{console.warn(error)})
+            //UnitService.getStates(Unit.discordId as unknown as number).then((data)=>{setStates(data);}).catch((error)=>{console.warn(error)})
+            RankService.getById(Unit.rankId).then(r=>{setRank(r);})
+            Unit.postsIds.forEach(id => {
+                PostService.getById(id).then(p=>{ 
+                    let newList : IPost[] = [...posts, ...[p]]
+                    setPosts( newList); 
+                    // console.warn(newList)
+                })
+            });
         }
     }, [])
 
@@ -66,24 +78,24 @@ export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
                                                         <img src="#" alt="" />
                                                     </div>
                                                     <div className={`text-text-primary relative px-4 self-center`}>
-                                                        <Link href={Unit?.rank == undefined?  "" : `/ranks/review-rank/${Unit.rank.id}`} className={`absolute min-h-2 min-w-10 inset-0 px-4 opacity-20 opacity-gradient-to-r hover:text-text-primary-accent hover:cursor-pointer from-100 to-0 transition-all`} style={{background: `${Unit?.rank != undefined? Unit?.rank.color : "#ffffff"}`}}>{Unit?.rank != undefined? Unit?.rank.name : "[ Без звания ]"}</Link>
-                                                        <p className="flex z-10 hover:text-text-primary-accent hover:cursor-pointer transition-all">{Unit?.rank != undefined? Unit?.rank.name : "[ Без звания ]"}</p>
+                                                        <Link href={Unit?.rankId == undefined?  "" : `/ranks/review-rank/${Unit.rankId}`} className={`absolute min-h-2 min-w-10 inset-0 px-4 opacity-20 opacity-gradient-to-r hover:text-text-primary-accent hover:cursor-pointer from-100 to-0 transition-all`} style={{background: `${rank != undefined? rank.color : "#ffffff"}`}}>{rank != undefined? rank.name : "[ Без звания ]"}</Link>
+                                                        <p className="flex z-10 hover:text-text-primary-accent hover:cursor-pointer transition-all">{rank != undefined? rank.name : "[ Без звания ]"}</p>
                                                     </div>
                                                 </div>
                                                 <p className="text-text-secondary-accent text-3xl">{Unit?.nickname}</p>
                                             </div>
                                             <ul className="flex flex-col"> 
-                                                {Unit?.posts! && Unit?.posts.map((post)=>(
+                                                {posts! && posts.map((post)=>(
                                                     <Link href={`/posts/review-post/${post.id}`} className="hover:text-text-primary-accent hover:underline transition-all" key={post.id}>{post.name}</Link>
                                                 ))}
                                             </ul>
-                                            <div className="flex flex-col">
+                                            {/* <div className="flex flex-col">
                                                 <ul className="flex gap-2">
                                                     {states && states.map((state)=>(
                                                     <Link href={`/${state.discordRoleId}`} key={state.discordRoleId}>{state.name}</Link>
                                                     ))}
                                                 </ul>
-                                            </div>
+                                            </div> */}
                                         </div>
     )
 }

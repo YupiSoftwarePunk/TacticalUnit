@@ -87,7 +87,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                                 </div>
                             </div>
                             <div className="flex ">
-                                <ActivityCalendar></ActivityCalendar>
+                                <ActivityCalendar UnitDiscordId={`${DiscordId}`}></ActivityCalendar>
                             </div>
                         </div>
                         <div className="flex ">

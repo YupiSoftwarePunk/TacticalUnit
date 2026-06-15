@@ -2,6 +2,7 @@ import { act, useEffect, useState } from "react"
 import { ActivityCalendarCell } from "../ActivityCalendarCell";
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import { ActivityCalendarPillar, IActivityCalendarPillar } from "./ActivityCalendarPillar";
+import { UnitService } from "@/shared/api/services/unitService";
 
 
 
@@ -10,6 +11,7 @@ import { ActivityCalendarPillar, IActivityCalendarPillar } from "./ActivityCalen
 const _today = new Date();
 const _currentYear = _today.getFullYear();
 const _currentMonth = _today.getMonth();
+
 const BlankMonths : IActivityCalendarPillar[] = [
         {
             Id : 0,
@@ -69,10 +71,28 @@ const BlankMonths : IActivityCalendarPillar[] = [
             Id : 6,
             monthName : "Май",
             year : 2026,
-            isSelected : true,
+            isSelected : false,
             isBlank : false,
             filling : 65,
             Date : new Date(_currentYear, _currentMonth-7, 1 )
+        },
+        {
+            Id : 7,
+            monthName : "Май",
+            year : 2026,
+            isSelected : false,
+            isBlank : false,
+            filling : 65,
+            Date : new Date(_currentYear, _currentMonth, 1 )
+        },
+        {
+            Id : 8,
+            monthName : "Май",
+            year : 2026,
+            isSelected : true,
+            isBlank : false,
+            filling : 65,
+            Date : new Date(_currentYear, _currentMonth+1, 1 )
         }
     ];
 
@@ -82,12 +102,18 @@ const monthsStr = [
         "Июль","Август","Сентябрь",
         "Октябрь","Ноябрь","Декабрь"
     ];
-export const ActivityCalendar = () =>{
+
+interface IActivityCalendar{
+    UnitDiscordId : string
+}
+export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
     const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
     const [monthsMatrix, setMonthsMatrix] = useState<IActivityCalendarPillar[]>([])
     const [selectedMonthDisplay, setSelectedMonthDisplay] = useState<string>();
     const [pillarsOffset, setPillarsOffset] = useState<number>(0);
     const [pillarsTransitionStatus, setPillarsTransitionStatus] = useState<boolean> (false);
+    const [activityDates, setActivityDates] = useState<Date[]>([]);
+
     let preparedMonths : IActivityCalendarPillar[] = [];
     
 
@@ -98,33 +124,14 @@ export const ActivityCalendar = () =>{
     
     const startDayOfMonth = new Date(currentYear, currentMonth, 1);
     let startDayOfWeek = startDayOfMonth.getDay();
-    let activityMatrixFilled : activityCell[] = [];
     const [selectedYearDisplay, setSelectedYearDisplay] = useState<number>(currentYear);
     const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
 
     let previouslySelectedMonthIndexOffset = -1;
 
-    for(let i = 0; i < startDayOfWeek-1; i++){
-        let newCell: activityCell = {
-            id : i,
-            date : new Date(),
-            isCurrentMonth : false,
-            isChecked : false
-        };
-        activityMatrixFilled.push(newCell);
-    }
-    for(let i = 0; i < new Date(currentYear, currentMonth+1, 0).getDate(); i++){
-
-        let newCell: activityCell = {
-            id : i + activityMatrixFilled.length,
-            date : new Date(),
-            isCurrentMonth : true,
-            isChecked : false
-        };
-        activityMatrixFilled.push(newCell);
-    }
+    
     function refreshMonthsDisplay(){
-        const monthsToSet : IActivityCalendarPillar[] = BlankMonths;
+        const monthsToSet : IActivityCalendarPillar[] = BlankMonths.sort((a,b)=>a.Date!.getTime() - b.Date!.getTime());
         let selectedMonthIndex = monthsToSet.findIndex(x=>x.isSelected == true);
 
             const monthsMargin = 4; //both directions
@@ -190,17 +197,75 @@ export const ActivityCalendar = () =>{
 
 
         //if (preparedMonths != monthsMatrix){setMonthsMatrix(preparedMonths);}
-                
+        // console.warn(selectedYearDisplay + "  " + selectedMonth)
     }
 
-    
+    function fillMonthMatrix(year : number = selectedYearDisplay, month : number = selectedMonth, dates : Date[] = activityDates){
+        // console.warn("cal refreshed")
+        // console.warn(year + "  " + month)
+        // console.warn("-----------------")
+
+
+
+        let activityMatrixFilled : activityCell[] = [];
+
+        const sdm = new Date(year, month, 1);
+        let sdw = sdm.getDay();
+
+        for(let i = 0; i < sdw-1; i++){
+        let newCell: activityCell = {
+            id : i,
+            date : new Date(),
+            isCurrentMonth : false,
+            isChecked : false
+        };
+        activityMatrixFilled.push(newCell);
+        }
+        for(let i = 0; i < new Date(year, month, 0).getDate(); i++){
+            let cellDate : Date = new Date(year, month, i+1);
+            let newCell: activityCell = {
+                id : i + activityMatrixFilled.length,
+                date : cellDate,
+                isCurrentMonth : true,
+                isChecked : dates.length > 0? dates.some(date => 
+                    date.getFullYear() === cellDate.getFullYear() &&
+                    date.getMonth() === cellDate.getMonth() &&
+                    date.getDate() === cellDate.getDate()
+                ) : false
+            };
+            activityMatrixFilled.push(newCell);
+        }
+        return activityMatrixFilled;
+    }
     
     useEffect(()=>{
+        UnitService.getActivity(UnitDiscordId).then(a => {
+            let list : Date[] = []
+
+            a.forEach(act => {
+                const [day, month, year] = act.split(".").map(Number);
+                list.push(new Date(year, month-1, day))
+            });
+            setActivityDates(list);
+
+            setActivityMatrix(fillMonthMatrix(currentYear, currentMonth, list));
+            //console.warn(list[0].toDateString());
+        })
+
+
+        
+    }, [!monthsMatrix])
+    useEffect(()=>{
+
+        
+
+
         setSelectedMonthDisplay(monthsStr[selectedMonth]);
         setMonthsMatrix(preparedMonths);
-        setActivityMatrix(activityMatrixFilled);
         refreshMonthsDisplay();
 
+        
+        
     }, [])
 
     function lowerSelectedMonth(){
@@ -253,8 +318,14 @@ export const ActivityCalendar = () =>{
         setMonthsMatrix([...monthsMatrix]);
         if (electedMonth != null){
             electedMonth.isSelected = true;
-            if (electedMonth?.year) setSelectedYearDisplay(electedMonth?.year);
-            if (electedMonth?.monthName) setSelectedMonthDisplay(electedMonth?.monthName);
+            if (electedMonth.Date) {
+                setSelectedYearDisplay(electedMonth.Date.getFullYear());
+                setSelectedMonthDisplay(monthsStr[electedMonth.Date.getMonth()])
+                setSelectedMonth(electedMonth.Date.getMonth())
+
+                setActivityMatrix(fillMonthMatrix(electedMonth.Date.getFullYear(), electedMonth.Date.getMonth(), activityDates));
+
+            }
             
         }
         refreshMonthsDisplay();
@@ -270,8 +341,14 @@ export const ActivityCalendar = () =>{
         setMonthsMatrix([...monthsMatrix]);
         if (electedMonth != null){
             electedMonth.isSelected = true;
-            if (electedMonth?.year) setSelectedYearDisplay(electedMonth?.year);
-            if (electedMonth?.monthName) setSelectedMonthDisplay(electedMonth?.monthName);
+            if (electedMonth.Date) {
+                setSelectedYearDisplay(electedMonth.Date.getFullYear());
+                setSelectedMonthDisplay(monthsStr[electedMonth.Date.getMonth()])
+                setSelectedMonth(electedMonth.Date.getMonth())
+
+                setActivityMatrix(fillMonthMatrix(electedMonth.Date.getFullYear(), electedMonth.Date.getMonth(), activityDates));
+
+            }
             
         }
         refreshMonthsDisplay();
@@ -287,7 +364,7 @@ export const ActivityCalendar = () =>{
             <div className="flex gap-2 max-md:flex-col max-md:items-center">
 
                 <div className="flex">
-                    <div className="grid grid-cols-7 grid-rows-6 w-full h-full text-center gap-1">
+                    <div className="grid grid-cols-7 grid-rows-7 w-full h-full text-center gap-1">
                         <p className="self-end">Пн</p>
                         <p className="self-end">Вт</p>
                         <p className="self-end">Ср</p>

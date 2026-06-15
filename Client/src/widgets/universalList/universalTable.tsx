@@ -85,10 +85,10 @@ const UniversalTable = <T extends Record<string, any>>({
                         <select 
                             value={sortConfig.key}
                             onChange={(e) => requestSort(e.target.value)}
-                            className="bg-transparent border-none text-text-primary focus:ring-0 cursor-pointer text-sm"
+                            className="bg-transparent border-none text-text-primary focus:bg-bg-accent focus:ring-0 cursor-pointer text-sm"
                         >
                             {columns.filter(c => c.sortable).map(col => (
-                                <option key={col.key} value={col.key} className="bg-bg-secondary">{col.label}</option>
+                                <option key={col.key} value={col.key} className="bg-bg-secondary  focus:bg-bg-accent">{col.label}</option>
                             ))}
                         </select>
                     </div>

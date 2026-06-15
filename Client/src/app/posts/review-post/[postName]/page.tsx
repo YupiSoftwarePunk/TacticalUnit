@@ -28,6 +28,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
 
+
     const [post, setPost] = useState<IPost>({
         id: "0",
         description: "Загрузка описания...",
@@ -48,11 +49,53 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [postPrompt, setPostPrompt] = useState<string>("");
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
 
+
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
-    const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([]);
+    const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
     
+    useEffect(()=>{
+            PostService.getAll().then((postList) => {
+                let preparedPosts : IListedInputItem[] = [];
+                postList.forEach(post => {
+                    preparedPosts.push({
+                        Name: post.name,
+                        Id: post.id
+                    })
+                });
+                setAvailableHeadPosts([...preparedPosts]);
+                UpdateHeadSearch("");
+            })
+        },[])
+
+    function UpdateHeadSearch(prompt : string){
+        let prepList : IListedInputItem[] = []
+        prepList = availableHeadPosts.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        setHeadList(prepList)
+    }
+
     const [subdivisionList, setSubdivisionList] = useState<IListedInputItem[]>([]);
-    const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([]);
+    const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([])
+    
+    useEffect(()=>{
+            SubdivisionService.getAll().then((postList) => {
+                let preparedPosts : IListedInputItem[] = [];
+                postList.forEach(subdiv => {
+                    preparedPosts.push({
+                        Name: subdiv.name,
+                        Id: subdiv.id
+                    })
+                });
+                setAvailableSubdivisions([...preparedPosts]);
+                UpdateSubdivisionSearch("");
+            })
+        },[])
+
+    function UpdateSubdivisionSearch(prompt : string){
+        let prepList : IListedInputItem[] = []
+        prepList = availableSubdivisions.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        setSubdivisionList(prepList)
+    }
+
 
 
     useEffect(() => {
@@ -66,83 +109,32 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
 
         Promise.all([
             PostService.getById(numericPostId),
-            RankService.getAll(),
-            PostService.getAll(),
-            UnitService.getAll()
+            PostService.getAssigned(numericPostId)
         ])
-        .then(([postData, ranksData, postsData, unitsData]) => {
+        .then(([postData, membersData]) => {
             setPost(postData);
+            
+            if (Array.isArray(membersData)) {
+                setMembers(membersData);
+            } else if (membersData && (membersData as any).value) {
+                setMembers((membersData as any).value);
+            }
+
             setPostPrompt(postData.head?.name || "");
             setSubdivisionPrompt(postData.subdivision?.name || "");
-
-            const preparedPosts = postsData.map(p => ({ Name: p.name, Id: p.id }));
-            setAvailableHeadPosts(preparedPosts);
-
-            if (Array.isArray(unitsData)) {
-                const targetPostIdStr = String(numericPostId);
-
-                const filteredUnits = unitsData.filter(unit => 
-                    unit.posts?.some(postId => String(postId) === targetPostIdStr)
-                );
-
-                const preparedMembers = filteredUnits.map((element: IUnit) => {
-                    const memberRoles = element.posts?.map((postId) => {
-                        const foundPost = postsData.find(p => String(p.id) === String(postId));
-                        return foundPost ? foundPost.name : null;
-                    }).filter(Boolean) || [];
-                    
-                    const currentRank = ranksData.find(r => String(r.id) === String(element.rankId));
-
-                    return {
-                        rank: currentRank ? currentRank.name : "Без звания",
-                        nickname: element.nickname,
-                        roles: memberRoles.join(", ") || "Без должности", 
-                        top_role: memberRoles[0] || "Без должности",
-                        unit: "В разработке",
-                        kit: element.favoriteKitId || "Не выбран", 
-                        steamId: element.steamId ? String(element.steamId) : "—",
-                        discordId: String(element.discordId),
-                    };
-                });
-
-                setMembers(preparedMembers);
-            }
         })
         .catch((er) => {
-            console.error("Ошибка загрузки данных страницы должности:", er);
             setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
         })
         .finally(() => {
             setIsLoading(false);
         });
+
+
+
+
+
     }, [numericPostId]);
-
-    useEffect(() => {
-        SubdivisionService.getAll()
-            .then((subdivList) => {
-                const preparedSubdivs = subdivList.map(subdiv => ({
-                    Name: subdiv.name,
-                    Id: subdiv.id
-                }));
-                setAvailableSubdivisions(preparedSubdivs);
-                setSubdivisionList(preparedSubdivs);
-            })
-            .catch(err => console.error("Ошибка загрузки подразделений:", err));
-    }, []);
-
-    function UpdateHeadSearch(prompt: string) {
-        const prepList = availableHeadPosts.filter(x => 
-            x.Name?.toLowerCase().includes(prompt.toLowerCase())
-        );
-        setHeadList(prepList);
-    }
-
-    function UpdateSubdivisionSearch(prompt: string) {
-        const prepList = availableSubdivisions.filter(x => 
-            x.Name?.toLowerCase().includes(prompt.toLowerCase())
-        );
-        setSubdivisionList(prepList);
-    }
 
     if (error !== undefined) {
         return <ErrorScreen error={error} />;
@@ -198,9 +190,9 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                                 setPostPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
-                            onChoice={(e) => {
+                            onChoice={(e)=>{
                                 setIsNotSaved(true);
-                                setPost({ ...post, headId: e.Id });
+                                setPost({...post, headId: e.Id})
                                 setPostPrompt(e.Name!);
                             }}
                             list={headList}
@@ -215,21 +207,16 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                                 setSubdivisionPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
-                            onChoice={(e) => {
-                                setPost({ ...post, subdivisionId: e.Id });
+                            onChoice={(e)=>{
+                                setPost({...post, subdivisionId: e.Id})
                                 setSubdivisionPrompt(e.Name!);
-                                setIsNotSaved(true);
+
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 
                             textWhenEmpty="[ Подразделение не указано ]"
                         />
-                        <PermissionRollDownList 
-                            givedPermissionList={post.givedPermissions} 
-                            allPermissionsList={[]}
-                            editable={canEdit} 
-                            editMode={true}
-                        />
+                        <PermissionRollDownList />
                     </BaseContainer>
                 </div>
             </div>
