@@ -226,3 +226,8 @@ interface StructureNode {
     subdivisionColor?: string;
     children: StructureNode[];
 }
+
+interface IImageUploadResponse {
+    message: string;
+    fileName: string;
+}
