@@ -8,6 +8,7 @@ import { RankService } from "@/shared/api/services/RankService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { getUnitImage } from "@/shared/config/imagesMapper";
 
 const COLUMNS_CONFIG = [
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
@@ -123,7 +124,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                     <div className="flex flex-col flex-1 h-full">
                         <div className="relative bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group">
                             <img 
-                                src={rank.rankChevronURL || "/-_-.jpg"}
+                                src={getUnitImage(rank.name)}
                                 alt="Award" 
                                 className="flex self-start object-top object-contain overflow-hidden"
                             />

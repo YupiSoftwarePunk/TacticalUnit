@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { RewardService } from "@/shared/api/services/RewardService";
+import { getRewardImage } from "@/shared/config/imagesMapper";
 
 export default function AwardsPage() {
     const [awards, setAwards] = useState<IReward[]>([]);
@@ -80,7 +81,7 @@ export default function AwardsPage() {
                                         className="relative aspect-square w-full bg-bg-secondary border border-bg-secondary overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:border-accent"
                                     >
                                         <img 
-                                            src={award.imagePath || "-_-.jpg"} 
+                                            src={getRewardImage(award.id, award.imagePath)} 
                                             alt={award.name}
                                             className="w-full h-full object-contain p-6 transition-all duration-500"
                                         />

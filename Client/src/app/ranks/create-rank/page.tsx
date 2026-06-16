@@ -2,9 +2,11 @@
 import { BaseContainer, ColorInputField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
+import Tooltip from "@/components/ToolTip/ToolTip";
 import { RankService } from "@/shared/api/services/RankService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
+import { validateColor } from "@/typescript/colorValidator";
 
 const mockG : IGivedPermission[] = [
     {
@@ -45,7 +47,6 @@ const mockG : IGivedPermission[] = [
     }
 ]
 
-
 export default function createSubdivPage(){
     const router = useRouter();
     const [rankName, setRankName] = useState<string>("");
@@ -85,12 +86,38 @@ export default function createSubdivPage(){
         }
     ])
 
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (imagePreview) URL.revokeObjectURL(imagePreview);
+        };
+    }, [imagePreview]);
+
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setImageFile(file);
+            
+            if (imagePreview) URL.revokeObjectURL(imagePreview);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleRemoveFile = () => {
+        setImageFile(null);
+        if (imagePreview) {
+            URL.revokeObjectURL(imagePreview);
+            setImagePreview(null);
+        }
+    };
+
     function UpdateSearch(prompt : string){
         let prepList : IListedInputItem[] = []
         prepList = availableHeadRanks.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
         setHeadList(prepList)
     }
-
 
     function sendForm(){
         let problems : string = "";
@@ -99,25 +126,52 @@ export default function createSubdivPage(){
         }
         if(headId == undefined){
             problems += "Вышестоящее звание\n";
-
         }
         if (problems){
             alert("Вы забыли указать:\n"+problems);
             return;
         }
+        if (!validateColor(color)){
+            alert("Цвет указан с ошибками, проверьте, что цвет начинается с \"#\" and содержит 6 символов после \"#\"");
+            return;
+        }
+
         let newRank : IRank = {
             counterToReach : activityToPromotion,
             color : color,
             name : rankName,
             lowerId : headId ? parseInt(headId, 10) : undefined,
             givedPermissions : permissions,
-
         }
+
         RankService.add({method: "POST", body:JSON.stringify(newRank)})
-        .then(()=>{alert("Вы успешно создали звание");
-        router.refresh();});
-        
+        .then((createdRank: any) => { 
+            if (imageFile) {
+                console.log(`[Имитация] Отправка картинки звания для ID: ${createdRank?.id || 'сгенерирован базой'}`);
+                alert("Вы успешно создали звание! (Изображение подготовлено к отправке)");
+                resetForm();
+                router.refresh();
+            } else {
+                alert("Вы успешно создали звание (будет использовано изображение по умолчанию)");
+                resetForm();
+                router.refresh();
+            }
+        })
+        .catch((err) => {
+            console.error("Ошибка при создании звания:", err);
+            alert("Не удалось создать звание.");
+        });
     }
+
+    const resetForm = () => {
+        setRankName("");
+        setActivityToPromotion(1);
+        setHeadId(undefined);
+        setHeadPrompt("");
+        setColor("#ffffff");
+        handleRemoveFile();
+    };
+
     useEffect(()=>{
         RankService.getAll().then((rankList) => {
             let preparedRanks : IListedInputItem[] = [];
@@ -128,28 +182,112 @@ export default function createSubdivPage(){
                 })
             });
             setAvailableHeadRanks([...preparedRanks]);
-            UpdateSearch(headPrompt);
+            setHeadList(preparedRanks);
         })
     },[])
 
-    return(<div className="flex flex-col min-h-screen">
-        <MainHeader></MainHeader>
+    return (
+        <div className="flex flex-col min-h-screen">
+            <MainHeader></MainHeader>
 
-        <CreationForm title="Создание звания" onClickSend={()=>{sendForm()}}>
-            <BaseContainer className="flex-col">
-                <ColorInputField watermark="Цвет" value={color} editMode={true} onChange={(e)=>{setColor(e.target.value)}} editable={true}></ColorInputField>
-            </BaseContainer>
-            <BaseContainer className="flex-col">
-                <MultiroleInputField tooltip="Название звания" watermark="Название звания" value={rankName} editMode={true} onChange={(e)=>{setRankName(e.target.value)}} editable={true}></MultiroleInputField>
-                <MultiroleInputField type="num" tooltip="Кол-во активности до повышения" watermark="Кол-во активности до повышения" value={activityToPromotion} editMode={true} onChange={(e)=>{setActivityToPromotion(Math.max(Math.abs(e.target.value as unknown as number),1))}} editable={true}></MultiroleInputField>
-            </BaseContainer>
+            <CreationForm title="Создание звания" onClickSend={() => { sendForm() }}>
+                <div className="flex flex-1 gap-3 w-full">
 
-            <BaseContainer>
-                <ListedInputField tooltip="Вышестоящее звание" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name!); setHeadId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
-            </BaseContainer>
-            <BaseContainer>
-                <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
-            </BaseContainer>
-        </CreationForm>
-    </div>)
+                    <Tooltip tooltipText="Картинка звания" className="flex flex-1 max-w-50" innerClassName="flex">
+                        <div className="flex flex-col flex-1 h-full w-full">
+                            <div className="relative bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group min-h-[160px] w-full transition-all">
+                                
+                                {imagePreview ? (
+                                    <>
+                                        <img 
+                                            src={imagePreview} 
+                                            alt="Rank Preview" 
+                                            className="flex self-start object-top object-contain overflow-hidden w-full h-full"
+                                        />
+                                        <button 
+                                            type="button" 
+                                            onClick={handleRemoveFile}
+                                            className="absolute bottom-2 right-2 p-1.5 bg-black/10 dark:bg-black/50 hover:bg-red-600 opacity-60 hover:opacity-100 transition-all border border-black/20 dark:border-white/10 text-white text-[10px] font-text-bold uppercase tracking-wider px-2"
+                                        >
+                                            Удалить
+                                        </button>
+                                    </>
+                                ) : (
+                                    <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-4 text-center group hover:bg-black/5 dark:hover:bg-white/5 transition-colors min-h-[160px]">
+                                        <span className="text-[11px] font-text-bold text-accent uppercase tracking-widest border-b border-accent group-hover:text-text-primary group-hover:border-text-primary transition-colors">
+                                            Выбрать файл
+                                        </span>
+                                        <span className="text-[9px] text-text-primary/40 mt-1.5 uppercase tracking-wider">
+                                            PNG, JPG, WEBP
+                                        </span>
+                                        <input 
+                                            type="file" 
+                                            accept="image/png, image/jpeg, image/jpg, image/webp" 
+                                            className="hidden" 
+                                            onChange={handleFileChange} 
+                                        />
+                                    </label>
+                                )}
+                            </div>
+                        </div>
+                    </Tooltip>
+                    <div className="flex flex-col flex-4 gap-3">
+
+                        <BaseContainer>
+                            <ColorInputField 
+                                watermark="Цвет" 
+                                value={color} 
+                                editMode={true} 
+                                onChange={(e) => { setColor(e.target.value) }} 
+                                editable={true}
+                            />
+                        </BaseContainer>
+
+                        <BaseContainer className="flex-col">
+                            <MultiroleInputField 
+                                tooltip="Название звания" 
+                                watermark="Название звания" 
+                                value={rankName} 
+                                editMode={true} 
+                                onChange={(e) => { setRankName(e.target.value) }} 
+                                editable={true}
+                            />
+                            <MultiroleInputField 
+                                type="num" 
+                                tooltip="Кол-во активности до повышения" 
+                                watermark="Кол-во активности до повышения" 
+                                value={activityToPromotion} 
+                                editMode={true} 
+                                onChange={(e) => { setActivityToPromotion(Math.max(Math.abs(e.target.value as unknown as number), 1)) }} 
+                                editable={true}
+                            />
+                        </BaseContainer>
+
+                        <BaseContainer>
+                            <ListedInputField 
+                                tooltip="Вышестоящее звание" 
+                                list={headList} 
+                                value={headPrompt} 
+                                onChoice={(el) => { setHeadPrompt(el.Name!); setHeadId(el.Id) }} 
+                                onChange={(e) => { setHeadPrompt(e.target.value); UpdateSearch(e.target.value) }} 
+                                editable={true} 
+                                editMode={true}
+                            />
+                        </BaseContainer>
+
+                        <BaseContainer>
+                            <PermissionRollDownList 
+                                givedPermissionList={permissions} 
+                                allPermissionsList={mockG} 
+                                onChange={(list) => { setPermissions(list); console.warn(list) }} 
+                                editable={true} 
+                                editMode={true}
+                            />
+                        </BaseContainer>
+                        
+                    </div>
+                </div>
+            </CreationForm>
+        </div>
+    )
 }
