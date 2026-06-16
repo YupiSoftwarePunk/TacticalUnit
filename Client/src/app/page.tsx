@@ -261,14 +261,14 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-black opacity-70 via-transparent to-transparent" />
         </div>
         <div className="relative z-10 text-center">
-          <h1 className="text-7xl md:text-9xl font-header text-text-white leading-none">[РХБЗ]</h1>
-          <p className="text-3xl mt-4 font-text-decorative text-text-primary-accent">Клан в Squad с военным RP</p>
+          <h1 className="text-7xl md:text-[150px] font-header text-text-white leading-none">«POLK»</h1>
+          <p className="text-3xl font-text-decorative text-accent">Squad с военным RP</p>
         </div>
       </section>
 
       {/* === DESCRIPTION === */}
       <section className="max-w-3xl mx-auto px-6 py-24 dark:border-white/5">
-        <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">О подразделении</h2>
+        <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-primary-accent mb-6 text-[25px] font-black">О подразделении</h2>
         <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
           Мы фокусируемся на глубокой симуляции боевых действий. Дисциплина — это не ограничение, а инструмент победы. В [РХБЗ] каждый боец знает свой сектор, свою задачу и своего товарища.
         </p>
@@ -276,7 +276,7 @@ export default function LandingPage() {
 
       <section className="bg-bg-secondary border-y border-black/10 dark:border-white/5">
         <div className="max-w-3xl mx-auto px-6 py-24">
-          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">
+          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-primary-accent mb-6 text-[25px] font-black">
             Внутренняя иерархия
           </h2>
           <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
@@ -287,7 +287,7 @@ export default function LandingPage() {
 
       <section className="bg-bg-primary">
         <div className="max-w-3xl mx-auto px-6 py-24 border-t border-black/5 dark:border-white/5">
-          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-secondary-accent mb-6 text-[20px] font-black">
+          <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-primary-accent mb-6 text-[25px] font-black">
             Меры поощрения
           </h2>
           <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">

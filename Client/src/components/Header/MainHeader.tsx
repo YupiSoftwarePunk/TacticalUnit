@@ -56,8 +56,8 @@ export const MainHeader = () => {
         <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-xl flex items-center gap-2 text-text-primary hover:text-text-secondary-accent uppercase px-2 py-0.5 transition-colors">
-              <img src="/b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="РХБЗ" />
-              РХБЗ
+              <img src="/b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="POLK" />
+              POLK
             </Link>
             <Link href="/members" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Состав

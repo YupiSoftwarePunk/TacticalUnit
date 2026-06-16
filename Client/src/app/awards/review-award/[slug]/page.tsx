@@ -77,7 +77,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             <div className="flex flex-1 gap-3">
                 <Tooltip tooltipText="Шеврон" className="flex flex-1 max-w-50" innerClassName="flex">
                     <div className="flex flex-col flex-1 h-full">
-                        <div className="relative bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group">
+                        <div className="relative  flex items-center justify-center group">
                             <img 
                                 src={reward.imagePath || "/-_-.jpg"}
                                 alt="Award" 
@@ -92,7 +92,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                     </div>
                 </Tooltip>
                 
-                <div className="flex flex-col flex-4">
+                <div className="flex flex-col flex-4 gap-2">
                     <BaseContainer>
                         <ColorInputField 
                             editable={canEdit} 

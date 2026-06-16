@@ -15,7 +15,7 @@ interface IBaseContainer{
     tooltip? : string
 }
 export const BaseContainer = ({className, children, onClick, style, tooltip} : IBaseContainer) => {
-    return <Tooltip tooltipText={tooltip? tooltip:""} className={`flex gap-5 relative border w-full h-full border-black/10 dark:border-white/5 bg-gray-100 dark:bg-[#1a1a1a] p-4 group pointer-events-auto ${className? className : ""}`}>
+    return <Tooltip tooltipText={tooltip? tooltip:""} className={`flex gap-5 relative  w-full h-full  bg-bg-secondary p-4 group pointer-events-auto ${className? className : ""}`}>
         <div className={`flex gap-5 relative w-full h-full pointer-events-auto ${className? className : ""}`} style={style} onClick={onClick}>
             {children}
         </div>
@@ -61,8 +61,8 @@ export const MultiroleInputField = ({className = "", editingClassName = "", edit
 
     return  <Tooltip verticalPlacement="top" className_Tooltip="text-[16px]" tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
         <div className="flex flex-1" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setEditMode(false)}}>
-            <div className={`flex  w-full  text-accent font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${className} ${editable? "absolute" : ""} ${editMode? "pointer-events-none" : ""}`} >
-                <h1 className={`flex  w-full absolute text-accent font-text-bold uppercase tracking-wider text-lg transition-all ${editMode? "opacity-0" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
+            <div className={`flex  w-full  text-text-primary font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${className} ${editable? "absolute" : ""} ${editMode? "pointer-events-none" : ""}`} >
+                <h1 className={`flex  w-full absolute font-text-bold uppercase tracking-wider text-lg transition-all ${editMode? "opacity-0" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
                 {`${value? value : "[ Пусто ]"}`}
                 </h1>
                 </div>
@@ -70,7 +70,7 @@ export const MultiroleInputField = ({className = "", editingClassName = "", edit
                 type == "text" &&
                 <div className={`flex relative flex-col ${editingClassName} ${editMode? "" : " opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
                     <input value={value} type="text" onChange={changeSequence} className={`flex  ${editMode? "" : " opacity-0 pointer-events-none"}  flex flex-1 text-accent font-text-bold uppercase tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
-                    {watermark&& <p className={`absolute size-full content-center px-3 pointer-events-none text-t ext-primary  transition-all`} style={{opacity: `${filling? "0" : "0.5"}`}}>{watermark}</p>}
+                    {watermark&& <p className={`absolute text-text-secondary size-full content-center px-3 pointer-events-none text-t ext-primary  transition-all`} style={{opacity: `${filling? "0" : "0.5"}`}}>{watermark}</p>}
                 </div>
                 }
                 {editable &&
@@ -205,7 +205,7 @@ export function ListedInputField({className, editingClassName, textWhenEmpty, ed
     return  <Tooltip verticalPlacement="top" className_Tooltip="text-[16px]" tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
 
             <div className="flex flex-1" onClick={()=>{tryEditing()}}  >
-                <h1 className={`flex text-accent font-text-bold tracking-wider text-lg py-2 transition-all ${editMode? " pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
+                <h1 className={`flex text-text-primary font-text-bold tracking-wider text-lg py-2 transition-all ${editMode? " pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
                 {`${!value? textWhenEmpty? textWhenEmpty:"[ Не указано ]" : value}`}
                 </h1>
             
@@ -305,12 +305,12 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
                 allPermissionsList!.map((item)=>(
                     <div key={item.permission.name} className="flex">
                         
-                        <button className="hover:bg-bg-secondary gap-3 flex flex-1 ">
+                        <button className="hover:bg-bg-secondary gap-3 flex flex-1 text-text-primary">
                             <ToolTip tooltipText="Выдать разрешение" className="flex" className_Tooltip="text-[16px]">
-                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.id!)}}> <Check className={`${givedPermissionList!.find(x=>x.id == item.id)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                <div className="bg-bg-secondary  border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setPermission(item.id!)}}> <Check className={`${givedPermissionList!.find(x=>x.id == item.id)? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                             </ToolTip>
                             <ToolTip tooltipText="Наследовать разраешение" className_Tooltip="text-[16px]">
-                                <div className="bg-bg-dark border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setInherit(item.id!)}}> <Check className={`${givedPermissionList!.find(x=>x.id == item.id)?.inherit? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
+                                <div className="bg-bg-secondary border border-border-secondary cursor-pointer hover:text-accent"  onClick={()=>{setInherit(item.id!)}}> <Check className={`${givedPermissionList!.find(x=>x.id == item.id)?.inherit? "opacity-100" : "opacity-0"} transition-all`}></Check></div>
                             </ToolTip>
                             <ToolTip className="flex flex-1" innerClassName="flex" tooltipAlignment="left" className_Tooltip="max-w-100 text-[14px]" tooltipText={`${item.permission.description}`}>
 
@@ -380,7 +380,7 @@ interface ICheckButton{
 
 export const CheckButton = ({onClick, title = "[ Назв. не присвоено ]", value = false} : ICheckButton) => {
     const [hovering, setHovering] = useState<boolean>();
-    return(<button className="flex hover:bg-bg-accent text-text-secondary" onClick={onClick} onMouseEnter={()=>{setHovering(true)}} onMouseLeave={()=>{setHovering(false)}}>
+    return(<button className="flex hover:bg-bg-accent text-text-secondary transition-all" onClick={onClick} onMouseEnter={()=>{setHovering(true)}} onMouseLeave={()=>{setHovering(false)}}>
                     <p className="flex flex-1">{title}</p>
                     <div className={`flex m-1 border border-border-secondary ${hovering? "text-text-primary-accent" : ""} transition-all`}>
                         {!value? <X></X> : <Check></Check>}
@@ -401,7 +401,7 @@ export const CopyField = ({title, copyInfo = ""} : ICopyField) =>{
             copyInfo = copyInfo + "...";
         }
     return (
-    <div className="flex relative content-center justify-center hover:bg-bg-secondary cursor-copy transition-all" onClick={()=>{if (copyInfo) navigator.clipboard.writeText(copyInfo)}}>
+    <div className="flex relative content-center px-4 hover:bg-bg-secondary cursor-copy transition-all font-text-bold text-text-secondary" onClick={()=>{if (copyInfo) navigator.clipboard.writeText(copyInfo)}}>
         <p className="flex">{title} : {copyInfo? copyInfo : "[ Не указано ]"}</p>
     </div>
     )
