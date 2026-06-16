@@ -281,7 +281,7 @@ export default function ClanStructurePage() {
                 <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
                     <div>
                         <h1 className="text-4xl font-header text-text-primary uppercase tracking-wider">
-                            Структура клана
+                            Структура полка
                         </h1>
                         <span className="block w-16 h-1 bg-accent mt-2"></span>
                     </div>

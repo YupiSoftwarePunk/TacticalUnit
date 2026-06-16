@@ -137,7 +137,7 @@ export default function MembersPage() {
                             Личный состав
                         </h1>
                         <p className="text-text-secondary font-text-regular text-lg">
-                            Реестр зарегистрированных бойцов подразделения [РХБЗ]
+                            Реестр зарегистрированных бойцов подразделения POLK
                         </p>
                     </header>
 

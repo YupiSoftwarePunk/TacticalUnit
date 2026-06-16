@@ -402,7 +402,7 @@ export const CopyField = ({title, copyInfo = ""} : ICopyField) =>{
         }
     return (
     <div className="flex relative content-center px-4 hover:bg-bg-secondary cursor-copy transition-all font-text-bold text-text-secondary" onClick={()=>{if (copyInfo) navigator.clipboard.writeText(copyInfo)}}>
-        <p className="flex">{title} : {copyInfo? copyInfo : "[ Не указано ]"}</p>
+        <p className="flex opacity-50">{title} : {copyInfo? copyInfo : "[ Не указано ]"}</p>
     </div>
     )
 }
