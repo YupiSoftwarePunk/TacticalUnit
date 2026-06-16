@@ -179,12 +179,17 @@ interface ICurrentUserResponse {
     steam_id: string | null;
 }
 
+interface IContainedInfo{
+    content: string;
+    color: string;
+}
 
 interface activityCell {
     id : number,
     date: Date,
     isCurrentMonth: boolean,
-    isChecked: boolean
+    isChecked: boolean,
+    givenInfo?: IContainedInfo[]
 }
 
 interface ISubdivision {

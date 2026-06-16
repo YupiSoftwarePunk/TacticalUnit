@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityCalendarCell, IActivityCalendarCell } from "../ActivityCalendarCell";
 
-interface IStoryCalendarPanel{
-    year? : number,
-    month? : number
-    ActivityDaysList? : activityCell[]
+export interface IStoryCalendarPanel{
+    year : number,
+    month : number
+    ActivityDaysList? : Date[]
+    orientation? : "horizontal" | "vertical"
 }
 
 const monthsStr = [
@@ -13,7 +14,61 @@ const monthsStr = [
         "Июль","Август","Сентябрь",
         "Октябрь","Ноябрь","Декабрь"
     ];
-const StoryCalendarPanel = ({year, month, ActivityDaysList} : IStoryCalendarPanel) =>{
+const StoryCalendarPanel = ({year, month, ActivityDaysList = []} : IStoryCalendarPanel) =>{
+    const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
+    
+    function fillMonthMatrix(dates : Date[] = ActivityDaysList){
+        // console.warn("cal refreshed")
+        // console.warn(year + "  " + month)
+        // console.warn("-----------------")
+
+
+
+        let activityMatrixFilled : activityCell[] = [];
+
+        const sdm = new Date(year, month, 1);
+        let sdw = sdm.getDay();
+        if (sdw == 0) sdw = 7
+        
+        sdw = sdw - 1;
+
+        for(let i = 0; i < sdw; i++){
+        let newCell: activityCell = {
+            id : i,
+            date : new Date(),
+            isCurrentMonth : false,
+            isChecked : false
+        };
+        activityMatrixFilled.push(newCell);
+        }
+        for(let i = 0; i < new Date(year, month+1, 0).getDate(); i++){
+            let cellDate : Date = new Date(year, month, i+1);
+            let wasActive  = dates.some(date => 
+                    date.getFullYear() === cellDate.getFullYear() &&
+                    date.getMonth() === cellDate.getMonth() &&
+                    date.getDate() === cellDate.getDate()
+                );
+            let newCell: activityCell = {
+                id : i + activityMatrixFilled.length,
+                date : cellDate,
+                isCurrentMonth : true,
+                isChecked : wasActive,
+                givenInfo: wasActive? [{
+                    content: `Появление на сборах ${cellDate.getDate()}.${cellDate.getMonth()+1}.${cellDate.getFullYear()}`,
+                    color: ""
+                }] : []
+            };
+            activityMatrixFilled.push(newCell);
+        }
+        return activityMatrixFilled;
+    }
+    useEffect(()=>{
+        setActivityMatrix(fillMonthMatrix())
+    },[])
+
+
+
+
 
     return (
         <div className="flex flex-col content-center justify-center gap-6">
@@ -32,10 +87,10 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList} : IStoryCalendarPane
                             <p className="self-end">Сб</p>
                             <p className="self-end">Вс</p>
                             
-                            { ActivityDaysList != undefined && ActivityDaysList.map((item)=>(
+                            { activityMatrix != undefined && activityMatrix.map((item)=>(
                                 // ActivityDaysList.indexOf(item)
-                                <div key={ActivityDaysList.indexOf(item)} className="flex size-10"> 
-                                    <ActivityCalendarCell isActive={item.isChecked} isCurrentMonth={item.isCurrentMonth}></ActivityCalendarCell>
+                                <div key={activityMatrix.indexOf(item)} className="flex size-10"> 
+                                    <ActivityCalendarCell dateDisplay={`${item.date.getDate()}.${item.date.getMonth()+1}.${item.date.getFullYear()}`} isActive={item.isChecked} isCurrentMonth={item.isCurrentMonth} givenInfo={item.givenInfo}></ActivityCalendarCell>
                                 </div>
                             ))}
                     </div>
