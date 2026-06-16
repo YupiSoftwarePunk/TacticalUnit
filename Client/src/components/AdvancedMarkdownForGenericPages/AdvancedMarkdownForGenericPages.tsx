@@ -387,3 +387,22 @@ export const CheckButton = ({onClick, title = "[ Назв. не присвоен
                     </div>
                 </button>)
 }
+
+
+
+interface ICopyField {
+    title: string,
+    copyInfo?: string
+}
+
+export const CopyField = ({title, copyInfo = ""} : ICopyField) =>{
+    if (copyInfo && copyInfo.length > 20){
+            copyInfo = copyInfo.slice(0, 20);
+            copyInfo = copyInfo + "...";
+        }
+    return (
+    <div className="flex relative content-center justify-center hover:bg-bg-secondary cursor-copy transition-all" onClick={()=>{if (copyInfo) navigator.clipboard.writeText(copyInfo)}}>
+        <p className="flex">{title} : {copyInfo? copyInfo : "[ Не указано ]"}</p>
+    </div>
+    )
+}

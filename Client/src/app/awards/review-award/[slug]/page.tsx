@@ -1,6 +1,6 @@
 'use client';
 
-import { AccordingUnitsTable, BaseContainer, ColorInputField, DescriptionInputField, MultiroleInputField } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, DescriptionInputField, MultiroleInputField } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
@@ -130,6 +130,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                             editable={canEdit} 
                         />
                     </BaseContainer>
+                    <CopyField title="Discord Id" copyInfo={reward.discordRoleId}></CopyField>
                 </div>
             </div>
 

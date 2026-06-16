@@ -1,6 +1,6 @@
 "use client";
 
-import { AccordingUnitsTable, BaseContainer, ColorInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
@@ -34,7 +34,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
         name: "Загрузка...",
         rankChevronURL: "#",
         givedPermissions: [],
-        giscordRoleId: -1
+        discordRoleId: "-1"
     });
 
     const [members, setMembers] = useState<any[]>([]);
@@ -192,6 +192,8 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                         />
                         <PermissionRollDownList />
                     </BaseContainer>
+                    <CopyField title="Discord Id" copyInfo={rank.discordRoleId}></CopyField>
+                    
                 </div>
             </div>
             <AccordingUnitsTable 
