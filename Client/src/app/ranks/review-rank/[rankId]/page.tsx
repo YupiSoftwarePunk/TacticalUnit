@@ -120,9 +120,9 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     return (
         <RRForm>
             <div className="flex flex-1 gap-3">
-                <Tooltip tooltipText="Шеврон" className="flex flex-1 max-w-50" innerClassName="flex">
+                <Tooltip tooltipText="Погон" className="flex flex-1 max-w-50" innerClassName="flex">
                     <div className="flex flex-col flex-1 h-full">
-                        <div className="relative bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group">
+                        <div className="relative bg-bg-secondary border border-black/10 dark:border-white/5 flex items-center justify-center group">
                             <img 
                                 src={getUnitImage(rank.name)}
                                 alt="Award" 

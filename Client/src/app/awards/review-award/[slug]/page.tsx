@@ -76,7 +76,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     return (
         <RRForm>
             <div className="flex flex-1 gap-3">
-                <Tooltip tooltipText="Шеврон" className="flex flex-1 max-w-50" innerClassName="flex">
+                <Tooltip tooltipText="награда" className="flex flex-1 max-w-50" innerClassName="flex">
                     <div className="flex flex-col flex-1 h-full">
                         <div className="relative  flex items-center justify-center group">
                             <img 
