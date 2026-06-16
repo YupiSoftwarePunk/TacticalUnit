@@ -350,7 +350,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-bg-secondary border-y border-black/10 dark:border-white/5">
+      <section className="bg-bg-primary border-y border-black/10 dark:border-white/5">
         <div className="max-w-3xl mx-auto px-6 py-24">
           <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-primary-accent mb-6 text-[25px] font-black">
             Внутренняя иерархия
@@ -361,7 +361,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-bg-primary">
+      <section className="bg-bg-secondary">
         <div className="max-w-3xl mx-auto px-6 py-24 border-t border-black/5 dark:border-white/5">
           <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-primary-accent mb-6 text-[25px] font-black">
             Меры поощрения
