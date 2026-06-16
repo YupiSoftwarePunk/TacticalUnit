@@ -44,8 +44,8 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             }
 
             const [rewardData, assignedData] = await Promise.all([
-                RewardService.getById(rewardId),
-                RewardService.getAssigned(rewardId)
+                RewardService.getById(slug),
+                RewardService.getAssigned(slug)
             ]);
             setReward(rewardData);
 

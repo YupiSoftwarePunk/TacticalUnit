@@ -2,7 +2,7 @@
 import { ActivityCalendar } from "@/components/ActivityCalendar/BaseCalendar/ActivityCalendar";
 import { BaseContainer } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { MainHeader } from "@/components/Header/MainHeader";
-import { ProfileBGImage, ProfileSidePanel, UnitInfoPanel } from "@/components/ProfileComponents/ProfileComponents";
+import { ProfileBGImage, ProfileSidePanel, RewardDisplay, UnitInfoPanel } from "@/components/ProfileComponents/ProfileComponents";
 import {LoadingScreen, ErrorScreen} from "@/components/StatusScreens/Screens";
 import { UnitService } from "@/shared/api/services/unitService";
 import { getBaseVariables } from "@/typescript/variables";
@@ -107,12 +107,20 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                                         className="object-top object-cover self-center size-full text-white"/>
                                     </div>
                                     <p className="text-text-secondary">Избранный кит :</p>
-                                    <p className="text-text-secondary-accent -mt-2">Командир отряда</p>
+                                    <p className="text-text-secondary-accent -mt-2">Избранный кит не выбран</p>
                                 </div>
                                 
                                 <div className="flex flex-col">
+                                    {unitData?.assignedRewardsIds && unitData?.assignedRewardsIds.length > 0? 
                                     <div className="flex flex-wrap max-w-77 gap-1">
+                                        {unitData?.assignedRewardsIds&&
+                                        unitData?.assignedRewardsIds.map(ri=>(
+                                            <RewardDisplay rewardId={ri}></RewardDisplay>
+                                        ))}
                                     </div>
+                                    :
+                                    <p>Боец еще не был награждён</p>
+                                    }
                                 </div>
                             </BaseContainer>
                         </div>

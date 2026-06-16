@@ -2,10 +2,12 @@
 
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
+import { RewardService } from "@/shared/api/services/RewardService";
 import { UnitService } from "@/shared/api/services/unitService"
 import { SquareUser } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react"
+import Tooltip from "../ToolTip/ToolTip";
 
 interface IProfileBGImage{
     Url? : string,
@@ -104,5 +106,25 @@ export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
                                                 </ul>
                                             </div> */}
                                         </div>
+    )
+}
+
+
+interface IRewardDisplay{
+    rewardId : string
+}
+
+export const RewardDisplay = ({rewardId} : IRewardDisplay) => {
+    const [reward, setReward] = useState<IReward>();
+    useEffect(()=>{
+        RewardService.getById(rewardId).then((r)=>{setReward(r)})
+    },[])
+    return(
+        <Link href={`/awards/review-award/${reward?.id}`} className="w-10 h-18 bg-bg-dark">
+            <Tooltip tooltipText={reward?.name} className="size-full flex" tooltipAlignment="center" verticalPlacement="top" className_Tooltip="flex text-nowrap">
+                <img src="-_-.jpg" alt="" className="size-full object-center object-cover" />
+            </Tooltip>
+        </Link>
+
     )
 }
