@@ -1,6 +1,6 @@
 "use client";
 
-import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList, StyledButton } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
@@ -161,7 +161,10 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                         />
                         <PermissionRollDownList editable={canEdit}></PermissionRollDownList>
                     </BaseContainer>
-                    <CopyField title="Discord Id" copyInfo={subdivision.discordRoleId}></CopyField>
+                    <div className="flex opacity-50">
+                        <CopyField className="flex flex-1" title="Discord Id" copyInfo={subdivision.discordRoleId}></CopyField>
+                        <StyledButton title={"обновить роль"}></StyledButton>
+                    </div>
                 </div>
             </div>
             

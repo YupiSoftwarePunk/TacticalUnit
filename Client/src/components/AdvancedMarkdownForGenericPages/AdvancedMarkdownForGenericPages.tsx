@@ -392,17 +392,31 @@ export const CheckButton = ({onClick, title = "[ Назв. не присвоен
 
 interface ICopyField {
     title: string,
-    copyInfo?: string
+    copyInfo?: string,
+    className? : string
 }
 
-export const CopyField = ({title, copyInfo = ""} : ICopyField) =>{
+export const CopyField = ({title, copyInfo = "", className} : ICopyField) =>{
     if (copyInfo && copyInfo.length > 20){
             copyInfo = copyInfo.slice(0, 20);
             copyInfo = copyInfo + "...";
         }
     return (
-    <div className="flex relative content-center px-4 hover:bg-bg-secondary cursor-copy transition-all font-text-bold text-text-secondary" onClick={()=>{if (copyInfo) navigator.clipboard.writeText(copyInfo)}}>
-        <p className="flex opacity-50">{title} : {copyInfo? copyInfo : "[ Не указано ]"}</p>
+    <div className={`flex relative content-center px-4 hover:bg-bg-secondary cursor-copy transition-all font-text-bold text-text-secondary ${className}`} onClick={()=>{if (copyInfo) navigator.clipboard.writeText(copyInfo)}}>
+        <p className="flex ">{title} : {copyInfo? copyInfo : "[ Не указано ]"}</p>
     </div>
+    )
+}
+
+
+interface IStyledButton {
+    title: string,
+    onClick?: (e : Event) => void,
+    className? : string,
+    view? : "main" | "secondary"
+}
+export const StyledButton = ({title = "[ Не указано ]", onClick, className = "", view = "secondary"} : IStyledButton) => {
+    return(
+        <button className={`flex font-text-bold ${view == "main"? "text-text-primary px-6 py-2":"text-text-secondary px-2"} hover:text-text-primary-accent hover:bg-bg-secondary cursor-pointer transition-all ${className} `}>{title}</button>
     )
 }
