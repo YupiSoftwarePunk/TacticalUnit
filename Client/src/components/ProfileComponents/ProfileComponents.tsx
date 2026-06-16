@@ -8,19 +8,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react"
 
 interface IProfileBGImage{
-    Url? : string
+    Url? : string,
+    canEdit? : boolean
 }
-export const ProfileBGImage = ({Url} : IProfileBGImage)=>{
+export const ProfileBGImage = ({Url, canEdit = false} : IProfileBGImage)=>{
     return(
         <div className="flex size-full">
 
             <img src={`${Url? Url : "/bgPlaceholder.png"}`} alt="Profile background image" className="flex object-top grayscale-40 object-cover self-center size-full text-white"/>
-            <div className="absolute inset-0 flex flex-col  ">
-                <div className="flex flex-1 bg-linear-to-b opacity-30 from-bg-primary tp-transparent"></div>
-                <div className="flex flex-1 "></div>
-                <div className="flex flex-1 bg-linear-to-t opacity-100 from-bg-primary tp-transparent"></div>
-            </div>
-            <button className="absolute transform bg-bg-primary px-4 py-1 rounded-md transition-all hover:bg-bg-accent bottom-4 right-4">Заменить баннер</button>
+            {canEdit&&
+            <button className="absolute transform bg-bg-primary px-4 py-1 rounded-md transition-all hover:text-black hover:bg-accent bottom-4 right-4">Заменить баннер</button>
+            }
         </div>
     )
 }
@@ -36,7 +34,7 @@ interface IProfileSidePanel{
 }
 export const ProfileSidePanel = ({imageUrl, availableOptions, Unit} : IProfileSidePanel)=>{
     return(                
-    <div className="flex border-r border-border-secondary">
+    <div className="flex ">
         <div className="flex size-full">
             <div className="flex flex-col text-end gap-2">
                                     <div className="flex size-60 self-end relative">

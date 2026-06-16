@@ -1,5 +1,6 @@
 'use client'
 import { ActivityCalendar } from "@/components/ActivityCalendar/BaseCalendar/ActivityCalendar";
+import { BaseContainer } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { ProfileBGImage, ProfileSidePanel, UnitInfoPanel } from "@/components/ProfileComponents/ProfileComponents";
 import {LoadingScreen, ErrorScreen} from "@/components/StatusScreens/Screens";
@@ -74,25 +75,30 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                 <ProfileBGImage></ProfileBGImage>
             </div>
             <div className="flex   flex-1 justify-center bg-bg-primary py-8 text-xl">
-                <div className="flex border-r border-border-secondary">
-                    <ProfileSidePanel></ProfileSidePanel>
+                <div className="flex ">
+                    <BaseContainer>
+                        <ProfileSidePanel></ProfileSidePanel>
+                    </BaseContainer>
                 </div>
-                <div className="flex flex-col px-4">
-                    <div className="flex flex-1 gap-5 max-lg:flex-col">
-                        <div className="flex flex-col  flex-1">
-                            <div className="flex flex-1">
+                <div className="pl-3 flex border-r border-border-secondary"></div>
+                <div className="flex flex-col px-3">
+                    <div className="flex flex-1 gap-3 max-lg:flex-col">
+                        <div className="flex flex-col  flex-1 gap-2">
+                            <BaseContainer className="flex flex-1">
 
                                 <div className="flex flex-col">
                                     <UnitInfoPanel Unit={unitData}></UnitInfoPanel>
                                 </div>
-                            </div>
-                            <div className="flex ">
+                            </BaseContainer>
+                            <BaseContainer className="flex ">
                                 <ActivityCalendar UnitDiscordId={`${DiscordId}`}></ActivityCalendar>
-                            </div>
+                            </BaseContainer>
                         </div>
+                        <div className=" flex border-r border-border-secondary"></div>
+
                         <div className="flex ">
 
-                            <div className="flex flex-col flex-3 justify-start gap-4">
+                            <BaseContainer className="flex flex-col flex-3 justify-start gap-4">
                                 <div className="flex flex-col">
                                     <div className="flex size-80 border-b border-border-primary">
                                         <img src="/AK-74__163.png" alt="Soldier of heaven" className="object-top object-cover self-center size-full text-white"/>
@@ -105,7 +111,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                                     <div className="flex flex-wrap max-w-77 gap-1">
                                     </div>
                                 </div>
-                            </div>
+                            </BaseContainer>
                         </div>
                     </div>
                     
