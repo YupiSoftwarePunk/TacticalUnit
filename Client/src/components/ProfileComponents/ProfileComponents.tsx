@@ -8,6 +8,7 @@ import { SquareUser } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react"
 import Tooltip from "../ToolTip/ToolTip";
+import { ImageService } from "@/shared/api/services/imageService";
 
 interface IProfileBGImage{
     Url? : string,
@@ -122,9 +123,8 @@ export const RewardDisplay = ({rewardId} : IRewardDisplay) => {
     return(
         <Link href={`/awards/review-award/${reward?.id}`} className="w-10 h-18 bg-bg-dark">
             <Tooltip tooltipText={reward?.name} className="size-full flex" tooltipAlignment="center" verticalPlacement="top" className_Tooltip="flex text-nowrap">
-                <img src="-_-.jpg" alt="" className="size-full object-center object-cover" />
+                <img src={ImageService.getRewardUrl(rewardId)} alt="" className="size-full object-center object-cover" />
             </Tooltip>
         </Link>
-
     )
 }

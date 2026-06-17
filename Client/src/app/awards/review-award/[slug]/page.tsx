@@ -7,11 +7,11 @@ import Tooltip from "@/components/ToolTip/ToolTip";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import { RewardService } from "@/shared/api/services/RewardService";
+import { ImageService } from "@/shared/api/services/imageService";
 import { UnitService } from "@/shared/api/services/unitService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { getRewardImage } from "@/shared/config/imagesMapper";
 
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
@@ -78,9 +78,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             <div className="flex flex-1 gap-3">
                 <Tooltip tooltipText="награда" className="flex flex-1 max-w-50" innerClassName="flex">
                     <div className="flex flex-col flex-1 h-full">
-                        <div className="relative  flex items-center justify-center group">
+                        <div className="relative flex items-center justify-center group">
                             <img 
-                                src={getRewardImage(reward.id, reward.imagePath)}
+                                src={ImageService.getRewardUrl(reward.id?.toString() || "")}
                                 alt="Award" 
                                 className="flex self-start object-top object-contain overflow-hidden"
                             />
