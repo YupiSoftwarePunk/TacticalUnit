@@ -41,7 +41,6 @@ export default function CreateSubdivPage() {
         }
     };
 
-    // Переводим функцию на async, так как у нас цепочка из двух сетевых запросов
     async function sendForm() {
         let problems: string = "";
         if (rewardName.replace(' ', '').length == 0) {
@@ -70,30 +69,25 @@ export default function CreateSubdivPage() {
         };
         
         try {
-            // Шаг 1: Сначала отправляем текстовые данные и ждем создания сущности на бэкенде
             const createdReward = await RewardService.add(newRank);
 
-            // Шаг 2: Если пользователь выбрал файл, отправляем его вторым запросом
             if (imageFile && createdReward?.id) {
                 const formData = new FormData();
-                // Ключ обязательно должен называться "file", как в аргументе C# контроллера: [FromForm] IFormFile file
                 formData.append("file", imageFile); 
 
-                // Вызываем метод твоего ImageService
                 await ImageService.uploadReward(createdReward.id, {
                     method: "POST",
                     body: formData
                 });
 
                 alert(`Награда "${createdReward.name}" и её изображение успешно созданы!`);
-            } else {
+            } 
+            else {
                 alert(`Награда "${createdReward.name}" успешно создана! Будет использовано стандартное изображение.`);
             }
-
-            // Очищаем форму только в случае успеха обоих запросов
             resetForm();
-
-        } catch (err) {
+        } 
+        catch (err) {
             console.error("Ошибка при создании награды или отправке картинки:", err);
             alert("Не удалось создать награду. Проверьте консоль для подробностей.");
         }

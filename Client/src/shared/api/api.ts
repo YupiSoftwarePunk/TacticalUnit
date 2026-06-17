@@ -8,15 +8,21 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
         token = localStorage.getItem("access_token");
     }
 
-    const headersInit: Record<string, string> = {
-        "Content-Type": "application/json",
-    };
+    const headersInit: Record<string, string> = {};
+    if (!(options.body instanceof FormData)) {
+        headersInit["Content-Type"] = "application/json";
+    }
 
     if (options.headers) {
         const customHeaders = new Headers(options.headers);
         customHeaders.forEach((value, key) => {
             headersInit[key] = value;
         });
+    }
+
+    if (options.body instanceof FormData) {
+        delete headersInit["Content-Type"];
+        delete headersInit["content-type"];
     }
 
     const requiresAuth = method !== "GET" || endpoint.startsWith("/auth/me");
@@ -38,29 +44,29 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
 
     if (!response.ok) {
         let errorMessage = `API Error: ${response.status}`;
-    try {
-        const textData = await response.text();
         try {
-            const errorData = JSON.parse(textData);
-            if (errorData.errors && typeof errorData.errors === "object") {
-                errorMessage = Object.values(errorData.errors)
-                    .flat()
-                    .join(", ");
+            const textData = await response.text();
+            try {
+                const errorData = JSON.parse(textData);
+                if (errorData.errors && typeof errorData.errors === "object") {
+                    errorMessage = Object.values(errorData.errors)
+                        .flat()
+                        .join(", ");
+                } 
+                else {
+                    errorMessage = errorData.error || errorData.message || errorData.title || errorMessage;
+                }
             } 
-            else {
-                errorMessage = errorData.error || errorData.message || errorData.title || errorMessage;
+            catch {
+                if (textData && textData.trim()) {
+                    errorMessage = textData;
+                }
             }
         } 
-        catch {
-            if (textData && textData.trim()) {
-                errorMessage = textData;
-            }
+        catch (e) {
+            console.error("Не удалось прочитать тело ответа об ошибке:", e);
         }
-    } 
-    catch (e) {
-        console.error("Не удалось прочитать тело ответа об ошибке:", e);
-    }
-    throw new Error(errorMessage);
+        throw new Error(errorMessage);
     }
 
     const rawText = await response.text();
