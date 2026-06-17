@@ -25,13 +25,10 @@ export const ProfileBGImage = ({Url, canEdit = false} : IProfileBGImage)=>{
     )
 }
 
-interface IProfileSidePanelLink{
-    Name : string,
-    Url : string
-}
+
 interface IProfileSidePanel{
     imageUrl? : string,
-    availableOptions? : IProfileSidePanelLink[],
+    availableOptions? : IActionMenuOption[],
     Unit? : IUnit
 }
 export const ProfileSidePanel = ({imageUrl, availableOptions, Unit} : IProfileSidePanel)=>{
@@ -45,9 +42,9 @@ export const ProfileSidePanel = ({imageUrl, availableOptions, Unit} : IProfileSi
                                         : <SquareUser className="size-full  text-text-secondary"></SquareUser>
                                         }
                                     </div>
-                                    <ul className="flex flex-col gap-1 pr-4 items-end">
+                                    <ul className="flex flex-col gap-1 pr-4  justify-stretch">
                                         {availableOptions&& availableOptions.map((item)=>(
-                                            <Link href={item.Url} key={availableOptions.indexOf(item)} className=" hover:text-accent transition-all">{item.Name}</Link>
+                                            <Link href={item.url} key={item.id} className=" hover:text-text-secondary-accent hover:bg-bg-primary flex transition-all justify-end"><p className="flex self-end">{item.name}</p></Link>
                                         ))}
                                     </ul>
                                 </div>

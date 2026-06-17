@@ -11,11 +11,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { getUnitImage } from "@/shared/config/imagesMapper";
 
-interface IActionMenuOption{
-    name : string,
-    accessOnRoles : string[],
-    url : string
-}
+
 
 
 
@@ -32,22 +28,106 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
 
     
     
-    
-    
+    function applyPermissions(disId : string = "-1"){
+        UnitService.getPermissionsIds(disId).then((r)=>{
+            let permissions : string[] = r
+            let preparedOptions : IActionMenuOption[] = [];
+            let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null;
+            permissions.push("any");
+            if (user.discord_id == DiscordId){
+                permissions.push("self");
+            }
+            console.warn(permissions);
+            menuOptions.forEach(option => {
+                console.warn(option.accessOnRoles);
 
-    const [accessRoles, setAccessRoles] = useState<string[]>([]);
+                permissions.forEach(perm=>{
+
+                    if(option.accessOnRoles.find(x=>x == perm)){
+                        if(!preparedOptions.find(x=>x.id == option.id)){
+
+                            preparedOptions.push(option);
+                        }
+                    }
+                })
+            });
+
+
+
+            setAvailableOptions(preparedOptions);
+        })
+    }
+    
     const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([
     {
-        name : "Заменить баннер",
-        url : "/",
-        accessOnRoles : ["host", "admin"]
+        id : 0,
+        name : "Подробная активность",
+        url : `/profile/${DiscordId}/story`,
+        accessOnRoles : ["1", "any"]
     },
     {
-        name : "Какая-то опция",
-        url : "/",
-        accessOnRoles : ["any"]
+        id : 1,
+        name : "Избранные документы",
+        url : `#`,
+        accessOnRoles : ["1", "any"]
+    },
+    {
+        id : 2,
+        name : "Изменить шапку профиля",
+        url : `#`,
+        accessOnRoles : ["1", "self"]
+    },
+    {
+        id : 3,
+        name : "Изменить избранный кит",
+        url : `#`,
+        accessOnRoles : ["1", "self"]
+    },
+    {
+        id : 4,
+        name : "Изменить отображаемые награды",
+        url : `#`,
+        accessOnRoles : ["1", "self"]
+    },
+    {
+        id : 5,
+        name : "Изменить никнейм",
+        url : `#`,
+        accessOnRoles : ["1", "self", "17"]
+    },
+    {
+        id : 6,
+        name : "Присвоить звание",
+        url : `#`,
+        accessOnRoles : ["1", "11"]
+    },
+    {
+        id : 7,
+        name : "Назначить на должность",
+        url : `#`,
+        accessOnRoles : ["1", "12"]
+    },
+    {
+        id : 8,
+        name : "Наградить",
+        url : `#`,
+        accessOnRoles : ["1", "13"]
+    },
+    {
+        id : 9,
+        name : "Отправить в отставку",
+        url : `#`,
+        accessOnRoles : ["1", "5"]
+    },
+    {
+        id : 10,
+        name : "Уволить",
+        url : `#`,
+        accessOnRoles : ["1", "4"]
     }
     ]);
+
+    const [availableOptions, setAvailableOptions] = useState<IActionMenuOption[]>([])
 
 
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -59,7 +139,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                 setLoaded(true);
                 data.discordId = DiscordId;
                 setUnitData(structuredClone(data));
-                
+                applyPermissions(DiscordId);
             }
         ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
     }
@@ -78,7 +158,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
             <div className="flex   flex-1 justify-center bg-bg-primary py-8 text-xl">
                 <div className="flex ">
                     <BaseContainer>
-                        <ProfileSidePanel></ProfileSidePanel>
+                        <ProfileSidePanel availableOptions={availableOptions}></ProfileSidePanel>
                     </BaseContainer>
                 </div>
                 <div className="pl-3 flex border-r border-border-secondary"></div>

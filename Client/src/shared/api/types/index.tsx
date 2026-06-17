@@ -178,7 +178,16 @@ interface ICurrentUserResponse {
     rank: string;
     steam_id: string | null;
 }
-
+interface IActionMenuOption{
+    id : number,
+    name : string,
+    accessOnRoles : string[],
+    url : string
+}
+interface IProfileSidePanelLink{
+    Name : string,
+    Url : string
+}
 interface IContainedInfo{
     content: string;
     color: string;

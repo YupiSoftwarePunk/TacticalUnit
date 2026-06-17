@@ -18,7 +18,7 @@ export const UnitService = {
     getActivity: (id: number | string) => apiClient<string[]>(`/unit/${id}/activity`),
     putActivity: (id: number | string, options : RequestInit) => apiClient<Date>(`/unit/${id}/activity`, options),  // fix activity
 
-    getPermissionsIds: (UnitDiscordId: number | string) => apiClient<number[]>(`/unit/${UnitDiscordId}/permission`), 
+    getPermissionsIds: (UnitDiscordId: number | string) => apiClient<string[]>(`/unit/${UnitDiscordId}/permission`), 
 
     getDismissedUnits: () => apiClient<IUnit[]>(`/unit-dismissed`), 
     getRetiredUnits: () => apiClient<IUnit[]>(`/unit-retirement`), 

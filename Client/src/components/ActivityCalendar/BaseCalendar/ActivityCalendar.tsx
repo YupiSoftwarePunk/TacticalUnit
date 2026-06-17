@@ -166,15 +166,16 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
         }
         for(let i = 0; i < new Date(year, month, 0).getDate(); i++){
             let cellDate : Date = new Date(year, month, i+1);
+            let wasActive  = dates.some(date => 
+                    date.getFullYear() === cellDate.getFullYear() &&
+                    date.getMonth() === cellDate.getMonth() &&
+                    date.getDate() === cellDate.getDate()
+                );
             let newCell: activityCell = {
                 id : i + activityMatrixFilled.length,
                 date : cellDate,
                 isCurrentMonth : true,
-                isChecked : dates.length > 0? dates.some(date => 
-                    date.getFullYear() === cellDate.getFullYear() &&
-                    date.getMonth() === cellDate.getMonth() &&
-                    date.getDate() === cellDate.getDate()
-                ) : false
+                isChecked : wasActive
             };
             activityMatrixFilled.push(newCell);
         }
@@ -324,7 +325,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                         
                         {activityMatrix.map((item)=>(
                             <div key={activityMatrix.indexOf(item)} className="flex size-10">
-                                <ActivityCalendarCell isActive={item.isChecked} isCurrentMonth={item.isCurrentMonth}></ActivityCalendarCell>
+                                <ActivityCalendarCell isActive={item.isChecked} dateDisplay={`${item.date.getDate()}.${item.date.getMonth()+1}.${item.date.getFullYear()}`} isCurrentMonth={item.isCurrentMonth}></ActivityCalendarCell>
                             </div>
                         ))}
                     </div>
