@@ -71,7 +71,7 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = []} : IStoryCalenda
 
 
     return (
-        <div className="flex flex-col content-center justify-center gap-6">
+        <div className="flex flex-col content-center justify-center gap-6 text-text-primary">
             <div className="flex justify-center">
 
             <div className="flex flex-col">

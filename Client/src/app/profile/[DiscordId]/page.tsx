@@ -10,12 +10,9 @@ import { useSearchParams } from "next/navigation";
 import React from "react";
 import { useEffect, useState } from "react";
 import { getUnitImage } from "@/shared/config/imagesMapper";
+import { applyPermissions, getProfileMenuOptions } from "./ProfileLogic";
 
-interface IActionMenuOption{
-    name : string,
-    accessOnRoles : string[],
-    url : string
-}
+
 
 
 
@@ -28,20 +25,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
     // }
     const {DiscordId} = React.use(params);
     const [unitData, setUnitData] = useState<IUnit>();
-
-    const [accessRoles, setAccessRoles] = useState<string[]>([]);
-    const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([
-    {
-        name : "Заменить баннер",
-        url : "/",
-        accessOnRoles : ["host", "admin"]
-    },
-    {
-        name : "Какая-то опция",
-        url : "/",
-        accessOnRoles : ["any"]
-    }
-    ]);
+    const [availableOptions, setAvailableOptions] = useState<IActionMenuOption[]>([])
 
 
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -53,6 +37,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                 setLoaded(true);
                 data.discordId = DiscordId;
                 setUnitData(structuredClone(data));
+                applyPermissions(getProfileMenuOptions(DiscordId), DiscordId).then(x=>{setAvailableOptions(x);})
                 
             }
         ).catch((er)=>{setError(`Не удалось загрузить данные | ${er}`);})
@@ -69,13 +54,13 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
             <div className="flex min-h-[300px] h-[30vh] bg-black relative">
                 <ProfileBGImage canEdit={true}></ProfileBGImage>
             </div>
-            <div className="flex   flex-1 justify-center bg-bg-primary py-8 text-xl">
-                <div className="flex ">
+            <div className="flex max-md:flex-col max-sm:text-xl flex-1 justify-center bg-bg-primary py-8 ">
+                <div className="flex mx-3">
                     <BaseContainer>
-                        <ProfileSidePanel></ProfileSidePanel>
+                        <ProfileSidePanel availableOptions={availableOptions}></ProfileSidePanel>
                     </BaseContainer>
                 </div>
-                <div className="pl-3 flex border-r border-border-secondary"></div>
+                <div className=" flex border-r border-border-secondary"></div>
                 <div className="flex flex-col px-3">
                     <div className="flex flex-1 gap-3 max-lg:flex-col">
                         <div className="flex flex-col  flex-1 gap-2">
@@ -85,7 +70,10 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                                 </div>
                             </BaseContainer>
                             <BaseContainer className="flex ">
+                            <div className="flex">
+                                
                                 <ActivityCalendar UnitDiscordId={`${DiscordId}`}></ActivityCalendar>
+                            </div>
                             </BaseContainer>
                         </div>
                         <div className=" flex border-r border-border-secondary"></div>
