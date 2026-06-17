@@ -10,6 +10,7 @@ import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalT
 import { AssignInfoHeader } from "@/components/AssignScreens/AssignInfoHeader";
 import { AssignFooter } from "@/components/AssignScreens/AssignFooter";
 import { RewardService } from "@/shared/api/services/RewardService";
+import { ImageService } from "@/shared/api/services/imageService"; 
 import { UnitService } from "@/shared/api/services/unitService";
 
 export default function AssignAwardPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -31,7 +32,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                 }
 
                 const [rewardData, allUnits] = await Promise.all([
-                    RewardService.getById(rewardId),
+                    RewardService.getById(rewardId.toString()),
                     UnitService.getAll()
                 ]);
                 setAward(rewardData);
@@ -75,7 +76,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
 
             await Promise.all(
                 Array.from(selectedUnits).map(discordId => 
-                    RewardService.assignToUnit(rewardId, { discordId })
+                    RewardService.assignToUnit(rewardId.toString(), { discordId })
                 )
             );
 
@@ -139,7 +140,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                         mediaNode={
                             <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center">
                                 <img
-                                    src={award.imagePath || "/-_-.jpg"}
+                                    src={ImageService.getRewardUrl(award.id?.toString() || "")}
                                     alt={award.name}
                                     className="w-4/5 h-4/5 object-contain"
                                 />

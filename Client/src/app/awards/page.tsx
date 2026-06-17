@@ -4,14 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { RewardService } from "@/shared/api/services/RewardService";
-import { getRewardImage } from "@/shared/config/imagesMapper";
+import { ImageService } from "@/shared/api/services/imageService";
 
 export default function AwardsPage() {
     const [awards, setAwards] = useState<IReward[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Заглушки для прав (в будущем можно вынести в контекст пользователя)
     const [hasAdminPermission] = useState(true); 
     const [hasAwardPermission] = useState(true);
 
@@ -80,8 +79,8 @@ export default function AwardsPage() {
                                         href={`/awards/review-award/${award.id}`}
                                         className="relative aspect-square w-full bg-bg-secondary border border-bg-secondary overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:border-accent"
                                     >
-                                        <img 
-                                            src={getRewardImage(award.id, award.imagePath)} 
+                                        <img
+                                            src={ImageService.getRewardUrl(award.id?.toString() || "")}
                                             alt={award.name}
                                             className="w-full h-full object-contain p-6 transition-all duration-500"
                                         />

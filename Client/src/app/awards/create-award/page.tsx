@@ -4,6 +4,7 @@ import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import { RewardService } from "@/shared/api/services/RewardService";
+import { ImageService } from "@/shared/api/services/imageService";
 import { validateColor } from "@/typescript/colorValidator";
 import { useState, ChangeEvent, useEffect } from "react";
 
@@ -40,7 +41,7 @@ export default function CreateSubdivPage() {
         }
     };
 
-    function sendForm() {
+    async function sendForm() {
         let problems: string = "";
         if (rewardName.replace(' ', '').length == 0) {
             problems += "Название награды\n";
@@ -67,22 +68,29 @@ export default function CreateSubdivPage() {
             name: rewardName
         };
         
-        RewardService.add(newRank)
-        .then((createdReward) => {
-            if (imageFile) {
-                /* ТОЧКА ИНТЕГРАЦИИ ДЛЯ ЗАГРУЗКИ КАРТИНКИ */
-                console.log(`[Имитация] Отправка файла ${imageFile.name} на отдельный эндпоинт для ID: ${createdReward.id}`);
-                alert(`Награда "${createdReward.name}" успешно создана! (Картинка готова к отправке)`);
-                resetForm();
-            } else {
+        try {
+            const createdReward = await RewardService.add(newRank);
+
+            if (imageFile && createdReward?.id) {
+                const formData = new FormData();
+                formData.append("file", imageFile); 
+
+                await ImageService.uploadReward(createdReward.id, {
+                    method: "POST",
+                    body: formData
+                });
+
+                alert(`Награда "${createdReward.name}" и её изображение успешно созданы!`);
+            } 
+            else {
                 alert(`Награда "${createdReward.name}" успешно создана! Будет использовано стандартное изображение.`);
-                resetForm();
             }
-        })
-        .catch((err) => {
-            console.error("Ошибка при создании награды:", err);
-            alert("Не удалось создать награду.");
-        });
+            resetForm();
+        } 
+        catch (err) {
+            console.error("Ошибка при создании награды или отправке картинки:", err);
+            alert("Не удалось создать награду. Проверьте консоль для подробностей.");
+        }
     }
 
     const resetForm = () => {

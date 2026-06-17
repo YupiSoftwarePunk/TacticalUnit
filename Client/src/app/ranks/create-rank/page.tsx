@@ -4,6 +4,7 @@ import CreationForm from "@/components/Forms/CreationForm";
 import { MainHeader } from "@/components/Header/MainHeader";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import { RankService } from "@/shared/api/services/RankService";
+import { ImageService } from "@/shared/api/services/imageService";
 import { useEffect, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { validateColor } from "@/typescript/colorValidator";
@@ -144,18 +145,37 @@ export default function createSubdivPage(){
             givedPermissions : permissions,
         }
 
-        RankService.add({method: "POST", body:JSON.stringify(newRank)})
-        .then((createdRank: any) => { 
-            if (imageFile) {
-                console.log(`[Имитация] Отправка картинки звания для ID: ${createdRank?.id || 'сгенерирован базой'}`);
-                alert("Вы успешно создали звание! (Изображение подготовлено к отправке)");
-                resetForm();
-                router.refresh();
-            } else {
+        RankService.add({ method: "POST", body: JSON.stringify(newRank) })
+        .then(async (createdRank: any) => { 
+            console.log("Ответ сервера при создании звания:", createdRank);
+            const targetId = createdRank?.id || createdRank?.Id || createdRank?.data?.id || createdRank?.data?.Id;
+            console.log("Проверка перед отправкой фото:", { imageFile, targetId });
+
+            if (imageFile && targetId) {
+                const formData = new FormData();
+                formData.append("file", imageFile); 
+
+                try {
+                    await ImageService.uploadRank(targetId, {
+                        method: "POST",
+                        body: formData,
+                    });
+                    alert("Вы успешно создали звание и загрузили шеврон!");
+                } 
+                catch (imgErr) {
+                    console.error("Ошибка при загрузке картинки звания:", imgErr);
+                    alert("Звание успешно сохранено, но не удалось загрузить картинку.");
+                }
+            } 
+            else {
+                if (!targetId) {
+                    console.warn("Не удалось определить ID созданного звания из ответа сервера.");
+                }
                 alert("Вы успешно создали звание (будет использовано изображение по умолчанию)");
-                resetForm();
-                router.refresh();
             }
+            
+            resetForm();
+            router.refresh();
         })
         .catch((err) => {
             console.error("Ошибка при создании звания:", err);
