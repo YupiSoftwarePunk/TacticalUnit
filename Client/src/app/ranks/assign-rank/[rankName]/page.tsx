@@ -11,6 +11,7 @@ import { AssignInfoHeader } from "@/components/AssignScreens/AssignInfoHeader";
 import { AssignFooter } from "@/components/AssignScreens/AssignFooter";
 import { RankService } from "@/shared/api/services/RankService";
 import { UnitService } from "@/shared/api/services/unitService";
+import { ImageService } from "@/shared/api/services/imageService"; 
 
 export default function AssignRankPage({ params }: { params: Promise<{ rankName: string }> }) {
     const { rankName } = React.use(params);
@@ -62,38 +63,38 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
     };
 
     const handleAssign = async () => {
-    if (!rank || !rank.id || selectedUnits.size === 0) return;
-    
-    try {
-        setIsSaving(true);
-        setError(null);
+        if (!rank || !rank.id || selectedUnits.size === 0) return;
+        
+        try {
+            setIsSaving(true);
+            setError(null);
 
-        const numericRankId = parseInt(rank.id?.toString() || "", 10);
-        if (isNaN(numericRankId)) {
-            throw new Error("Не удалось определить ID текущего звания");
+            const numericRankId = parseInt(rank.id?.toString() || "", 10);
+            if (isNaN(numericRankId)) {
+                throw new Error("Не удалось определить ID текущего звания");
+            }
+
+            const assignPromises = Array.from(selectedUnits).map((discordId) =>
+                RankService.assignToUnit(numericRankId, discordId, {
+                    method: "POST",
+                })
+            );
+
+            await Promise.all(assignPromises);
+
+            const updatedUnits = await UnitService.getAll();
+            setUnits(updatedUnits);
+
+            setIsSaving(false);
+            setSelectedUnits(new Set());
+            alert("Звания успешно присвоены бойцам!");
+        } 
+        catch (err: any) {
+            console.error("Ошибка при сохранении:", err);
+            setError(err.message || "Ошибка при присвоении звания");
+            setIsSaving(false);
         }
-
-        const assignPromises = Array.from(selectedUnits).map((discordId) =>
-            RankService.assignToUnit(numericRankId, discordId, {
-                method: "POST",
-            })
-        );
-
-        await Promise.all(assignPromises);
-
-        const updatedUnits = await UnitService.getAll();
-        setUnits(updatedUnits);
-
-        setIsSaving(false);
-        setSelectedUnits(new Set());
-        alert("Звания успешно присвоены бойцам!");
-    } 
-    catch (err: any) {
-        console.error("Ошибка при сохранении:", err);
-        setError(err.message || "Ошибка при присвоении звания");
-        setIsSaving(false);
-    }
-};
+    };
 
     const tableColumns: ColumnConfig[] = [
         {
@@ -149,10 +150,18 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
                         description={`Количество до повышения: ${rank.counterToReach}`}
                         mediaNode={
                             <div
-                                className="relative aspect-square border border-black/10 dark:border-white/5 flex items-center justify-center flex-col gap-4"
+                                className="relative aspect-square border border-black/10 dark:border-white/5 flex items-center justify-center overflow-hidden w-32 h-32 bg-bg-secondary"
                                 style={{ backgroundColor: rank.color }}
                             >
-                                <div className="text-black dark:text-text-primary font-text-bold text-2xl text-center px-4">
+                                <img 
+                                    src={ImageService.getRankUrl(rank.id || "")} 
+                                    alt={rank.name}
+                                    className="w-full h-full object-contain p-2 relative z-10"
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                />
+                                <div className="absolute z-0 text-black dark:text-text-primary font-text-bold text-xl text-center px-2 pointer-events-none uppercase tracking-wider opacity-40 mix-blend-difference">
                                     {rank.name}
                                 </div>
                             </div>
