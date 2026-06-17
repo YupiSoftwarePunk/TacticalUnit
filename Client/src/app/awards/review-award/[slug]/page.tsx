@@ -12,6 +12,7 @@ import { UnitService } from "@/shared/api/services/unitService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
@@ -79,10 +80,11 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                 <Tooltip tooltipText="награда" className="flex flex-1 max-w-50" innerClassName="flex">
                     <div className="flex flex-col flex-1 h-full">
                         <div className="relative flex items-center justify-center group">
-                            <img 
-                                src={ImageService.getRewardUrl(reward.id?.toString() || "")}
-                                alt="Award" 
-                                className="flex self-start object-top object-contain overflow-hidden"
+                            <StaticImage
+                                type="reward"
+                                entityId={reward.id?.toString() || ""}
+                                alt={reward.name}
+                                className="w-full h-full object-contain p-6 transition-all duration-500"
                             />
                             {canEdit && (
                                 <button type="button" className="absolute bottom-2 right-2 p-2 bg-black/10 dark:bg-black/50 hover:bg-accent opacity-50 hover:opacity-100 transition-all border border-black/20 dark:border-white/10">

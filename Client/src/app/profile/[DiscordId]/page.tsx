@@ -27,13 +27,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
     //     return (<LoadingScreen></LoadingScreen>);
     // }
     const {DiscordId} = React.use(params);
-    
     const [unitData, setUnitData] = useState<IUnit>();
-
-    
-    
-    
-    
 
     const [accessRoles, setAccessRoles] = useState<string[]>([]);
     const [menuOptions, setMenuOptions] = useState<IActionMenuOption[]>([
@@ -73,7 +67,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
         <div className="flex flex-col min-h-screen text-text-secondary font-text">
             <MainHeader></MainHeader>
             <div className="flex min-h-[300px] h-[30vh] bg-black relative">
-                <ProfileBGImage></ProfileBGImage>
+                <ProfileBGImage canEdit={true}></ProfileBGImage>
             </div>
             <div className="flex   flex-1 justify-center bg-bg-primary py-8 text-xl">
                 <div className="flex ">
@@ -86,7 +80,6 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                     <div className="flex flex-1 gap-3 max-lg:flex-col">
                         <div className="flex flex-col  flex-1 gap-2">
                             <BaseContainer className="flex flex-1">
-
                                 <div className="flex flex-col">
                                     <UnitInfoPanel Unit={unitData}></UnitInfoPanel>
                                 </div>
@@ -125,9 +118,7 @@ export default function Profile({ params }: { params: Promise<{DiscordId: string
                             </BaseContainer>
                         </div>
                     </div>
-                    
                 </div>
-                
             </div>
         </div>
     )

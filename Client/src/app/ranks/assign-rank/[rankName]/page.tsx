@@ -12,6 +12,7 @@ import { AssignFooter } from "@/components/AssignScreens/AssignFooter";
 import { RankService } from "@/shared/api/services/RankService";
 import { UnitService } from "@/shared/api/services/unitService";
 import { ImageService } from "@/shared/api/services/imageService"; 
+import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 
 export default function AssignRankPage({ params }: { params: Promise<{ rankName: string }> }) {
     const { rankName } = React.use(params);
@@ -150,13 +151,11 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
                         description={`Количество до повышения: ${rank.counterToReach}`}
                         mediaNode={
                             <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center overflow-hidden">
-                                <img 
-                                    src={ImageService.getRankUrl(rank.id || "")} 
+                                <StaticImage
+                                    type="rank"
+                                    entityId={rank.id?.toString() || ""}
                                     alt={rank.name}
-                                    className="w-4/5 h-4/5 object-contain relative z-10 p-2"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).style.display = 'none';
-                                    }}
+                                    className="w-full h-full object-contain p-6 transition-all duration-500"
                                 />
                             </div>
                         }

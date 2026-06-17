@@ -2,6 +2,7 @@
 
 import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList, StyledButton } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
+import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import { RankService } from "@/shared/api/services/RankService";
@@ -141,14 +142,11 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                 <Tooltip tooltipText="Погон" className="flex flex-1 max-w-50" innerClassName="flex">
                     <div className="flex flex-col flex-1 h-full">
                         <div className="relative bg-bg-secondary border border-black/10 dark:border-white/5 flex items-center justify-center group min-h-[160px] w-full">
-                            <img 
-                                src={`${ImageService.getRankUrl(numericRankId)}?v=${imageVersion}`}
-                                alt={rank.name} 
-                                className="flex self-start object-top object-contain overflow-hidden w-full h-full"
-                                onError={(e) => {
-
-                                    (e.target as HTMLImageElement).src = "/default-rank.png";
-                                }}
+                            <StaticImage
+                                type="rank"
+                                entityId={rank.id?.toString() || ""}
+                                alt={rank.name}
+                                className="w-full h-full object-contain p-6 transition-all duration-500"
                             />
                             {canEdit && (
                                 <>

@@ -12,6 +12,7 @@ import { AssignFooter } from "@/components/AssignScreens/AssignFooter";
 import { RewardService } from "@/shared/api/services/RewardService";
 import { ImageService } from "@/shared/api/services/imageService"; 
 import { UnitService } from "@/shared/api/services/unitService";
+import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 
 export default function AssignAwardPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = React.use(params);
@@ -139,11 +140,12 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                         description={award.conditions}
                         mediaNode={
                             <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center">
-                                <img
-                                    src={ImageService.getRewardUrl(award.id?.toString() || "")}
-                                    alt={award.name}
-                                    className="w-4/5 h-4/5 object-contain"
-                                />
+                                <StaticImage
+                                type="reward"
+                                entityId={award.id?.toString() || ""}
+                                alt={award.name}
+                                className="w-full h-full object-contain p-6 transition-all duration-500"
+                            />
                             </div>
                         }
                     />

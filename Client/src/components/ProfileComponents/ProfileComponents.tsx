@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react"
 import Tooltip from "../ToolTip/ToolTip";
 import { ImageService } from "@/shared/api/services/imageService";
+import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 
 interface IProfileBGImage{
     Url? : string,
@@ -16,7 +17,7 @@ interface IProfileBGImage{
 }
 export const ProfileBGImage = ({Url, canEdit = false} : IProfileBGImage)=>{
     return(
-        <div className="flex size-full">
+        <div className="flex size-full relative">
 
             <img src={`${Url? Url : "/bgPlaceholder.png"}`} alt="Profile background image" className="flex object-top grayscale-40 object-cover self-center size-full text-white"/>
             {canEdit&&
@@ -73,7 +74,6 @@ export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
                 PostService.getById(id).then(p=>{ 
                     let newList : IPost[] = [...posts, ...[p]]
                     setPosts( newList); 
-                    // console.warn(newList)
                 })
             });
         }
@@ -98,13 +98,6 @@ export const UnitInfoPanel = ({Unit} : IUnitInfoPanel)=>{
                                                     <Link href={`/posts/review-post/${post.id}`} className="hover:text-text-primary-accent hover:underline transition-all" key={post.id}>{post.name}</Link>
                                                 ))}
                                             </ul>
-                                            {/* <div className="flex flex-col">
-                                                <ul className="flex gap-2">
-                                                    {states && states.map((state)=>(
-                                                    <Link href={`/${state.discordRoleId}`} key={state.discordRoleId}>{state.name}</Link>
-                                                    ))}
-                                                </ul>
-                                            </div> */}
                                         </div>
     )
 }
@@ -122,7 +115,12 @@ export const RewardDisplay = ({rewardId} : IRewardDisplay) => {
     return(
         <Link href={`/awards/review-award/${reward?.id}`} className="w-10 h-18 bg-bg-dark">
             <Tooltip tooltipText={reward?.name} className="size-full flex" tooltipAlignment="center" verticalPlacement="top" className_Tooltip="flex text-nowrap">
-                <img src={ImageService.getRewardUrl(rewardId)} alt="" className="size-full object-center object-cover" />
+                <StaticImage
+                    type="reward"
+                    entityId={rewardId}
+                    alt={reward?.id}
+                    className="size-full object-center object-cover"
+                />
             </Tooltip>
         </Link>
     )

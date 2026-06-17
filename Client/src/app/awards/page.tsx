@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { RewardService } from "@/shared/api/services/RewardService";
 import { ImageService } from "@/shared/api/services/imageService";
+import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 
 export default function AwardsPage() {
     const [awards, setAwards] = useState<IReward[]>([]);
@@ -79,8 +80,9 @@ export default function AwardsPage() {
                                         href={`/awards/review-award/${award.id}`}
                                         className="relative aspect-square w-full bg-bg-secondary border border-bg-secondary overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:border-accent"
                                     >
-                                        <img
-                                            src={ImageService.getRewardUrl(award.id?.toString() || "")}
+                                        <StaticImage
+                                            type="reward"
+                                            entityId={award.id?.toString() || ""}
                                             alt={award.name}
                                             className="w-full h-full object-contain p-6 transition-all duration-500"
                                         />
