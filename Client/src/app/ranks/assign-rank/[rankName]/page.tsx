@@ -149,21 +149,15 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
                         title={rank.name}
                         description={`Количество до повышения: ${rank.counterToReach}`}
                         mediaNode={
-                            <div
-                                className="relative aspect-square border border-black/10 dark:border-white/5 flex items-center justify-center overflow-hidden w-32 h-32 bg-bg-secondary"
-                                style={{ backgroundColor: rank.color }}
-                            >
+                            <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center overflow-hidden">
                                 <img 
                                     src={ImageService.getRankUrl(rank.id || "")} 
                                     alt={rank.name}
-                                    className="w-full h-full object-contain p-2 relative z-10"
+                                    className="w-4/5 h-4/5 object-contain relative z-10 p-2"
                                     onError={(e) => {
                                         (e.target as HTMLImageElement).style.display = 'none';
                                     }}
                                 />
-                                <div className="absolute z-0 text-black dark:text-text-primary font-text-bold text-xl text-center px-2 pointer-events-none uppercase tracking-wider opacity-40 mix-blend-difference">
-                                    {rank.name}
-                                </div>
                             </div>
                         }
                     />

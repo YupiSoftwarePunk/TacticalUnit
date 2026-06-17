@@ -52,7 +52,6 @@ export const ProfileSidePanel = ({imageUrl, availableOptions, Unit} : IProfileSi
                                         ))}
                                     </ul>
                                 </div>
-
                 </div>
         </div>
     )
