@@ -1,15 +1,48 @@
 "use client";
 import { MainHeader } from "@/components/Header/MainHeader"
-import StoryCalendarPanel from "./StoryCalendarPanel";
+import StoryCalendarPanel, { IStoryCalendarPanel } from "./StoryCalendarPanel";
+import { useEffect, useState } from "react";
+import { UnitService } from "@/shared/api/services/unitService";
 
 
+interface IStoryCalendar{
+    DiscordId : string,
+}
 
+const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
-const StoryCalendar = () => {
+    const [calendars, setCalendars] = useState<IStoryCalendarPanel>()
 
+    let [activityDates, setActivityDates] = useState<Date[]>([]);
     
+    function getTotalMonths(){
+
+        let activityMonths : Date[] = [];
+        
+        activityDates.forEach(d => {
+            
+            if (activityMonths.find(x=>x.getMonth() == d.getMonth() && x.getFullYear() == d.getFullYear()) == undefined){
+                activityMonths.push(d);
+                
+            }
+        });
+        return activityMonths;
+    }
 
 
+    useEffect(()=>{
+        UnitService.getActivity(DiscordId).then(a => {
+            let list : Date[] = []
+
+            a.forEach(act => {
+                const [day, month, year] = act.split(".").map(Number);
+                list.push(new Date(year, month-1, day))
+            });
+            activityDates = list;
+            setActivityDates(list);
+            
+        })
+    },[])
 
 
 
@@ -56,14 +89,12 @@ const StoryCalendar = () => {
                 <div className="flex self-center w-full justify-center">
                     <div className="flex self-center">
 
-                    <div className={`grid grid-cols-5 max-[1800px]:grid-cols-4 max-[1600px]:grid-cols-3 max-[1300px]:grid-cols-2 max-[1000px]:grid-cols-1 self-center justify-start gap-2 overflow-auto flex-wrap `}>
-                        <StoryCalendarPanel ActivityDaysList={getCalendar(2026, 1)} year={2026} month={1}></StoryCalendarPanel>
-                        <StoryCalendarPanel ActivityDaysList={getCalendar(2026, 2)} year={2026} month={2}></StoryCalendarPanel>
-                        <StoryCalendarPanel ActivityDaysList={getCalendar(2026, 3)} year={2026} month={3}></StoryCalendarPanel>
-                        <StoryCalendarPanel ActivityDaysList={getCalendar(2026, 4)} year={2026} month={4}></StoryCalendarPanel>
-                        <StoryCalendarPanel ActivityDaysList={getCalendar(2026, 5)} year={2026} month={5}></StoryCalendarPanel>
-                        <StoryCalendarPanel ActivityDaysList={getCalendar(2026, 6)} year={2026} month={6}></StoryCalendarPanel>
-                        <StoryCalendarPanel ActivityDaysList={getCalendar(2026, 7)} year={2026} month={7}></StoryCalendarPanel>
+                    <div className={`grid overflow-visible grid-cols-5 max-[1800px]:grid-cols-4 max-[1600px]:grid-cols-3 max-[1300px]:grid-cols-2 max-[1000px]:grid-cols-1 self-center justify-start gap-2 mb-12 flex-wrap `}>
+                        {getTotalMonths().map(d=>(
+                            <StoryCalendarPanel key={d.toDateString()} year={d.getFullYear()} month={d.getMonth()} ActivityDaysList={activityDates}></StoryCalendarPanel>
+                        ))
+                        }
+                        
                     </div>
                     </div>
                 </div>

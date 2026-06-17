@@ -17,7 +17,7 @@ const storyPage = ({ params }: { params: Promise<{DiscordId: string}> }) => {
                     <ProfileSidePanel></ProfileSidePanel>
                     <div className="flex flex-col flex-1">
                         <UnitInfoPanel></UnitInfoPanel>
-                        <StoryCalendar></StoryCalendar>
+                        <StoryCalendar DiscordId={DiscordId}></StoryCalendar>
                     </div>
                 </div>
             </div>

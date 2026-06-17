@@ -12,7 +12,7 @@ interface CardProps {
 const Tooltip = ({children, tooltipText, className, innerClassName, className_Tooltip, tooltipAlignment = "left", verticalPlacement="bottom"}:CardProps) =>{
     const [showTooltip, setShowTooltip] = useState(false);
     return(
-        <div className={`relative ${className!} flex`} onMouseOver={()=>{setShowTooltip(true)}} onMouseLeave={()=>{setShowTooltip(false)}}>
+        <div className={`relative ${className!} ${tooltipAlignment == 'center'? "justify-center":""} flex`} onMouseOver={()=>{setShowTooltip(true)}} onMouseLeave={()=>{setShowTooltip(false)}}>
             
             <div className={`size-full ${innerClassName!}`}>{children}</div>
             {tooltipText &&
