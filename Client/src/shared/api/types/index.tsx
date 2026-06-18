@@ -109,15 +109,16 @@ interface ISingleDayEvent{
     color : string,
     dateTime : Date,
     unitId : string
-    unit? : IUnit
+    // unit? : IUnit
 }
 
 interface IUnitState{
     id? : string,
-    unit : IUnit,
+    // unit : IUnit,
     status : IState,
     startDate : Date,
-    endDate : Date
+    endDate : Date,
+    unitId : string
 }
 
 interface IUnit {
