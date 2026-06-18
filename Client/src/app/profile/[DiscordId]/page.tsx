@@ -74,12 +74,12 @@ export default function Profile({ params }: { params: Promise<{ DiscordId: strin
                         <div className="flex ">
                             <BaseContainer className="flex flex-col flex-3 justify-start gap-4">
                                 <div className="flex flex-col gap-2">
-                                    <div className="flex size-80 border-b border-border-primary bg-bg-dark overflow-hidden justify-center items-center">
+                                    <div className="flex size-80 border-b border-border-primary  overflow-hidden justify-center items-center">
                                         <StaticImage
                                             type="kit"
                                             entityId={DiscordId} 
                                             alt="Избранный кит бойца"
-                                            className="object-top object-cover size-full text-white"
+                                            className="object-top object-cover size-full text-white bg-transparent"
                                         />
                                     </div>
                                     <p className="text-text-secondary text-sm pl-1">Избранный кит профиля</p>
