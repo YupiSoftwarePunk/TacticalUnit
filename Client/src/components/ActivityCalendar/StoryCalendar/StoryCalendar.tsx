@@ -14,6 +14,8 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
     const [calendars, setCalendars] = useState<IStoryCalendarPanel>()
 
     let [activityDates, setActivityDates] = useState<Date[]>([]);
+    let [unitStates, setUnitStates] = useState<IUnitState[]>([]);
+    let [singleDayEvents, setSingleDayEvents] = useState<ISingleDayEvent[]>([]);
     
     function getTotalMonths(){
 
@@ -31,17 +33,27 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
 
     useEffect(()=>{
-        UnitService.getActivity(DiscordId).then(a => {
-            let list : Date[] = []
+        async function receive() {
+            await UnitService.getActivity(DiscordId).then(a => {
+                let list : Date[] = []
 
-            a.forEach(act => {
-                const [day, month, year] = act.split(".").map(Number);
-                list.push(new Date(year, month-1, day))
-            });
-            activityDates = list;
-            setActivityDates(list);
-            
-        })
+                a.forEach(act => {
+                    const [day, month, year] = act.split(".").map(Number);
+                    list.push(new Date(year, month-1, day))
+                });
+                activityDates = list;
+                setActivityDates(list);
+                
+            })
+            await UnitService.getStateStory(DiscordId).then(s=>{
+                setUnitStates(s);
+            })
+            await UnitService.getEventStory(DiscordId).then(e=>{
+                setSingleDayEvents(e)
+            })
+        }
+        
+        receive();
     },[])
 
 

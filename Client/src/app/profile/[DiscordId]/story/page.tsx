@@ -5,13 +5,16 @@ import { ProfileBGImage, ProfileSidePanel, UnitInfoPanel } from "@/components/Pr
 import React, { useEffect, useState } from "react";
 import { applyPermissions, getStoryMenuOptions } from "../ProfileLogic";
 import { BaseContainer } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { UnitService } from "@/shared/api/services/unitService";
 
 const storyPage = ({ params }: { params: Promise<{DiscordId: string}> }) => {
     const {DiscordId} = React.use(params);
+    const [unit, setUnit] = useState<IUnit>();
 
     const [availableOptions, setAvailableOptions] = useState<IActionMenuOption[]>([])
     useEffect(()=>{
         applyPermissions(getStoryMenuOptions(DiscordId), DiscordId).then(x=>{setAvailableOptions(x);})
+        UnitService.getByDiscordId(DiscordId).then((u)=>{setUnit(u)})
     },[])
 
 
@@ -31,7 +34,7 @@ const storyPage = ({ params }: { params: Promise<{DiscordId: string}> }) => {
                     </BaseContainer>
                     </div>
                     <div className="flex flex-col flex-1">
-                        <UnitInfoPanel></UnitInfoPanel>
+                        <UnitInfoPanel Unit={unit}></UnitInfoPanel>
                         <StoryCalendar DiscordId={DiscordId}></StoryCalendar>
                     </div>
                 </div>
