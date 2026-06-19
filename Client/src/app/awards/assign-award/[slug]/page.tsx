@@ -139,19 +139,19 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                         title={award.name}
                         description={award.conditions}
                         mediaNode={
-                            <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center">
+                            <div className="relative aspect-square bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center w-full md:max-w-50 mx-auto">
                                 <StaticImage
-                                type="reward"
-                                entityId={award.id?.toString() || ""}
-                                alt={award.name}
-                                className="w-full h-full object-contain p-6 transition-all duration-500"
-                            />
+                                    type="reward"
+                                    entityId={award.id?.toString() || ""}
+                                    alt={award.name}
+                                    className="w-full h-full object-contain p-6 transition-all duration-500"
+                                />
                             </div>
                         }
                     />
 
                     <div className="mt-16">
-                        <div className="flex justify-between items-end mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 sm:gap-0 mb-6">
                             <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
                                 Выберите бойцов для награждения
                             </h2>

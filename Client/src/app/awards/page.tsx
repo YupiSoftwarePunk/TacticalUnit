@@ -37,9 +37,8 @@ export default function AwardsPage() {
         <div className="flex flex-col h-full">
             <MainHeader />
             <div className="min-h-screen bg-bg-primary transition-colors duration-300 font-text pb-20">
-                <main className="max-w-[1200px] mx-auto pt-32 px-6">
-
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                <main className="max-w-[1200px] mx-auto pt-20 md:pt-32 px-4 md:px-6">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-4 md:gap-6 w-full">
                         <div>
                             <h1 className="text-5xl font-header text-text-primary uppercase tracking-wider">
                                 Витрина наград
@@ -73,7 +72,7 @@ export default function AwardsPage() {
                     )}
 
                     {!isLoading && !error && (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10 w-full">
                             {awards.map((award) => (
                                 <div key={award.id} className="group relative flex flex-col items-center">
                                     <Link 
@@ -91,23 +90,19 @@ export default function AwardsPage() {
                                     <div className="mt-4 text-center w-full">
                                         <h3 
                                             className="text-sm font-text-bold uppercase tracking-wider group-hover:text-accent transition-colors"
-                                            style={{ color: award.color || "var(--text-primary)" }}
-                                        >
+                                            style={{ color: award.color || "var(--text-primary)" }}>
                                             {award.name}
                                         </h3>
-
                                         {hasAwardPermission && (
-                                            <div className="overflow-hidden h-0 group-hover:h-10 transition-all duration-300 ease-in-out">
+                                            <div className="overflow-hidden h-auto md:h-0 group-hover:md:h-10 transition-all duration-300 ease-in-out">
                                                 <Link 
                                                     href={`/awards/assign-award/${award.id}`}
-                                                    className="inline-block mt-2 text-[10px] font-black text-accent uppercase tracking-widest border-b border-accent hover:text-text-primary hover:border-text-primary transition-all"
-                                                >
+                                                    className="inline-block mt-2 text-[10px] font-black text-accent uppercase tracking-widest border-b border-accent hover:text-text-primary hover:border-text-primary transition-all">
                                                     Наградить бойцов
                                                 </Link>
                                             </div>
                                         )}
                                     </div>
-
                                 </div>
                             ))}
                         </div>

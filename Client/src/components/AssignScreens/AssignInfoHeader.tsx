@@ -10,7 +10,7 @@ interface AssignInfoHeaderProps {
 export const AssignInfoHeader = ({ title, description, mediaNode }: AssignInfoHeaderProps) => {
     return (
         <div className="mb-12">
-            <div className="flex gap-8 mb-8">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-8 mb-8">
                 {mediaNode && (
                     <div className="w-full md:w-[200px] shrink-0">
                         {mediaNode}
