@@ -24,7 +24,9 @@ export function isDateBetweenDates(dateInQuestion : Date, lowerDate? : Date, big
 export function isInThisMonth(dateInQuestion : Date, year : number, monthIndex : number){
         let isBetween : boolean = false;
         
-        if (dateInQuestion && dateInQuestion.getFullYear() == year && dateInQuestion.getMonth() == monthIndex){
+        if(!dateInQuestion){return false}
+        
+        if (dateInQuestion.getFullYear() == year && dateInQuestion.getMonth() == monthIndex){
             isBetween = true;
         }
 
