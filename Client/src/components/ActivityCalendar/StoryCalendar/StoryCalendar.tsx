@@ -106,8 +106,8 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
                         {getTotalMonths().map(d=>(
                             <StoryCalendarPanel key={d.toDateString()} year={d.getFullYear()} month={d.getMonth()} 
                             ActivityDaysList={activityDates} 
-                            unitStates={unitStates.filter(x=> !(isInThisMonth(x.startDate!, d.getFullYear(), d.getMonth()) || isInThisMonth(x.endDate, d.getFullYear(), d.getMonth())) )} 
-                            singleDayEvents={singleDayEvents.filter(x=>!(isInThisMonth(x.dateTime!, d.getFullYear(), d.getMonth())))}></StoryCalendarPanel>
+                            unitStates={unitStates.filter(x=> !(isInThisMonth(x.startDate, d.getFullYear(), d.getMonth()) || isInThisMonth(x.endDate, d.getFullYear(), d.getMonth())) )} 
+                            singleDayEvents={singleDayEvents.filter(x=>!(isInThisMonth(x.dateTime, d.getFullYear(), d.getMonth())))}></StoryCalendarPanel>
                         ))
                         }
                         

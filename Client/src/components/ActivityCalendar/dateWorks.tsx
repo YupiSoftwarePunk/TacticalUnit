@@ -3,6 +3,8 @@ export function isDateBetweenDates(dateInQuestion : Date, lowerDate? : Date, big
         let isLowerThanHighest : boolean = false;
         let isBetween : boolean = false;
         if(!dateInQuestion){return false}
+        if(dateInQuestion == undefined){return false}
+        if(dateInQuestion == null){return false}
         if (lowerDate){
 
             if ((dateInQuestion.getFullYear() > lowerDate.getFullYear() || dateInQuestion.getFullYear() == lowerDate.getFullYear()) &&
@@ -25,6 +27,8 @@ export function isInThisMonth(dateInQuestion : Date, year : number, monthIndex :
         let isBetween : boolean = false;
         
         if(!dateInQuestion){return false}
+        if(dateInQuestion == undefined){return false}
+        if(dateInQuestion == null){return false}
         
         if (dateInQuestion.getFullYear() == year && dateInQuestion.getMonth() == monthIndex){
             isBetween = true;
