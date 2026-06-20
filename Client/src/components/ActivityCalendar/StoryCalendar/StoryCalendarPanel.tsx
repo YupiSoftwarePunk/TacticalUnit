@@ -6,6 +6,8 @@ export interface IStoryCalendarPanel{
     month : number
     ActivityDaysList? : Date[]
     orientation? : "horizontal" | "vertical"
+    unitStates? : IUnitState[]
+    singleDayEvents? : ISingleDayEvent[]
 }
 
 const monthsStr = [
@@ -14,13 +16,18 @@ const monthsStr = [
         "Июль","Август","Сентябрь",
         "Октябрь","Ноябрь","Декабрь"
     ];
-const StoryCalendarPanel = ({year, month, ActivityDaysList = []} : IStoryCalendarPanel) =>{
+const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = [], singleDayEvents = []} : IStoryCalendarPanel) =>{
     const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
+    
+
     
     function fillMonthMatrix(dates : Date[] = ActivityDaysList){
         // console.warn("cal refreshed")
         // console.warn(year + "  " + month)
         // console.warn("-----------------")
+        console.warn(unitStates);
+        console.warn(singleDayEvents);
+        
 
 
 

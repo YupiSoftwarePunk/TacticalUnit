@@ -3,6 +3,7 @@ import { MainHeader } from "@/components/Header/MainHeader"
 import StoryCalendarPanel, { IStoryCalendarPanel } from "./StoryCalendarPanel";
 import { useEffect, useState } from "react";
 import { UnitService } from "@/shared/api/services/unitService";
+import { isInThisMonth } from "../dateWorks";
 
 
 interface IStoryCalendar{
@@ -103,7 +104,10 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
                     <div className={`grid overflow-visible grid-cols-5 max-[1800px]:grid-cols-4 max-[1600px]:grid-cols-3 max-[1300px]:grid-cols-2 max-[1000px]:grid-cols-1 self-center justify-start gap-2 mb-12 flex-wrap `}>
                         {getTotalMonths().map(d=>(
-                            <StoryCalendarPanel key={d.toDateString()} year={d.getFullYear()} month={d.getMonth()} ActivityDaysList={activityDates}></StoryCalendarPanel>
+                            <StoryCalendarPanel key={d.toDateString()} year={d.getFullYear()} month={d.getMonth()} 
+                            ActivityDaysList={activityDates} 
+                            unitStates={unitStates.filter(x=> !(isInThisMonth(x.startDate, d.getFullYear(), d.getMonth()) || isInThisMonth(x.endDate, d.getFullYear(), d.getMonth())) )} 
+                            singleDayEvents={singleDayEvents.filter(x=>!(isInThisMonth(x.dateTime, d.getFullYear(), d.getMonth())))}></StoryCalendarPanel>
                         ))
                         }
                         

@@ -18,7 +18,7 @@ const storyPage = ({ params }: { params: Promise<{DiscordId: string}> }) => {
     },[])
 
 
-    if(DiscordId){console.warn(DiscordId)}
+    // if(DiscordId){console.warn(DiscordId)}
     return(
         <div className="flex flex-col flex-1 min-h-screen bg-bg-dark text-text-secondary font-text transition-all">
             <MainHeader></MainHeader>

@@ -95,8 +95,11 @@ function DiscordCallbackHandler() {
   const router = useRouter();
 
   const handleCloseOverlay = () => {
+    console.warn("Dethet")
     setStatusText(null);
     setErrorDetails(null);
+
+    navigation.reload()
     router.refresh();
   };
 

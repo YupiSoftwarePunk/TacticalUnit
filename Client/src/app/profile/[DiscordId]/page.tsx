@@ -16,7 +16,7 @@ export default function Profile({ params }: { params: Promise<{ DiscordId: strin
     const [unitData, setUnitData] = useState<IUnit>();
     const [availableOptions, setAvailableOptions] = useState<IActionMenuOption[]>([]);
 
-    const [loaded, setLoaded] = useState<boolean>(false);
+    const [loaded, setLoaded] = useState<boolean>(true);
     const [error, setError] = useState<string | undefined>();
     
     function loadData() {

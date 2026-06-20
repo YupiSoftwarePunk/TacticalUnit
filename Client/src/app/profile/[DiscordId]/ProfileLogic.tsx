@@ -163,7 +163,7 @@ export async function applyPermissions(menuOptions : IActionMenuOption[], disId 
             if (user.discord_id == disId){
                 permissions.push("self");
             }
-            console.warn(permissions);
+            //console.warn(permissions);
             menuOptions.forEach(option => {
 
                 permissions.forEach(perm=>{

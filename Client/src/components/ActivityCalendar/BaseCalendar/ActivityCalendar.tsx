@@ -3,6 +3,7 @@ import { ActivityCalendarCell } from "../ActivityCalendarCell";
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import { ActivityCalendarPillar, IActivityCalendarPillar } from "./ActivityCalendarPillar";
 import { UnitService } from "@/shared/api/services/unitService";
+import StoryCalendarPanel from "../StoryCalendar/StoryCalendarPanel";
 
 
 const monthsStr = [
@@ -143,7 +144,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
         // console.warn(selectedYearDisplay + "  " + selectedMonth)
     }
 
-    function fillMonthMatrix(year : number = selectedYearDisplay, month : number = selectedMonth, dates : Date[] = activityDates){
+    function fillMonthMatrix(year : number, month : number, dates : Date[] = activityDates){
         // console.warn("cal refreshed")
         // console.warn(year + "  " + month)
         // console.warn("-----------------")
@@ -154,8 +155,11 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
         const sdm = new Date(year, month, 1);
         let sdw = sdm.getDay();
+        if (sdw == 0) sdw = 7
+        
+        sdw = sdw - 1;
 
-        for(let i = 0; i < sdw-1; i++){
+        for(let i = 0; i < sdw; i++){
         let newCell: activityCell = {
             id : i,
             date : new Date(),
@@ -164,7 +168,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
         };
         activityMatrixFilled.push(newCell);
         }
-        for(let i = 0; i < new Date(year, month, 0).getDate(); i++){
+        for(let i = 0; i < new Date(year, month+1, 0).getDate(); i++){
             let cellDate : Date = new Date(year, month, i+1);
             let wasActive  = dates.some(date => 
                     date.getFullYear() === cellDate.getFullYear() &&
@@ -175,7 +179,11 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                 id : i + activityMatrixFilled.length,
                 date : cellDate,
                 isCurrentMonth : true,
-                isChecked : wasActive
+                isChecked : wasActive,
+                givenInfo: wasActive? [{
+                    content: `Появление на сборах ${cellDate.getDate()}.${cellDate.getMonth()+1}.${cellDate.getFullYear()}`,
+                    color: ""
+                }] : []
             };
             activityMatrixFilled.push(newCell);
         }
@@ -314,6 +322,9 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
             <div className="flex gap-2 max-md:flex-col max-md:items-center">
 
                 <div className="flex">
+
+                    {/* <StoryCalendarPanel year={selectedYearDisplay} month={selectedMonth} ActivityDaysList={activityDates}></StoryCalendarPanel> */}
+                    
                     <div className="grid grid-cols-7 grid-rows-7 w-full h-full text-center gap-1">
                         <p className="self-end">Пн</p>
                         <p className="self-end">Вт</p>
@@ -322,6 +333,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                         <p className="self-end">Пт</p>
                         <p className="self-end">Сб</p>
                         <p className="self-end">Вс</p>
+                        
                         
                         {activityMatrix.map((item)=>(
                             <div key={activityMatrix.indexOf(item)} className="flex size-10">
