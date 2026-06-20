@@ -2,7 +2,7 @@ export function isDateBetweenDates(dateInQuestion : Date, lowerDate? : Date, big
         let isHigherThanLowest : boolean = false;
         let isLowerThanHighest : boolean = false;
         let isBetween : boolean = false;
-        
+        if(!dateInQuestion){return false}
         if (lowerDate){
 
             if ((dateInQuestion.getFullYear() > lowerDate.getFullYear() || dateInQuestion.getFullYear() == lowerDate.getFullYear()) &&

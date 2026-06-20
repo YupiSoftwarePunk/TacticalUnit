@@ -124,7 +124,7 @@ interface IDescriptionInputField{
     editMode? : boolean
     onClick? : () => void
     onChange? : (e : ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => void
-    value? : string | number
+    value? : string
     tooltip? : string
     watermark? : string
     displayOnEmpty? : string
@@ -144,9 +144,9 @@ export const DescriptionInputField = ({className = "", displayOnEmpty, editingCl
     
     return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full font-text-bold`}>
         <div className="flex flex-1 gap-5" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setEditMode(false)}}>
-            <div className={`flex  text-text-secondary  tracking-wider  text-[${textSize}px] py-2 transition-all ${className} ${editable? "absolute": ""} ${editMode? " pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-                <p className={`flex tracking-wider transition-all  ${editMode? "opacity-0" : ""}`} >
-                {`${value? value : displayOnEmpty? displayOnEmpty : "[ описание пусто ]"}`}
+            <div className={`flex  text-text-secondary wrap-anywhere tracking-wider  text-[${textSize}px] py-2 transition-all inset-0 ${className} ${editable? "absolute": ""} ${editMode? " pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
+                <p className={`flex whitespace-pre-wrap tracking-wider transition-all inset-0 text-wrap  ${editMode? "opacity-0" : ""}`} >
+                {value? value : displayOnEmpty? displayOnEmpty : "[ описание пусто ]"}
                 </p>
                 </div>
                 {editable &&
