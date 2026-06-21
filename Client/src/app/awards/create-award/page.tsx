@@ -8,7 +8,7 @@ import { ImageService } from "@/shared/api/services/imageService";
 import { validateColor } from "@/typescript/colorValidator";
 import { useState, ChangeEvent, useEffect } from "react";
 
-export default function CreateSubdivPage() {
+export default function CreateAwardPage() {
     const [rewardName, setRewardName] = useState<string>("");
     const [privileges, setPrivileges] = useState<string>("");
     const [conditions, setConditions] = useState<string>("");
@@ -115,7 +115,7 @@ export default function CreateSubdivPage() {
                                         <img 
                                             src={imagePreview} 
                                             alt="Award Preview" 
-                                            className="flex self-start object-top object-contain overflow-hidden w-full h-full"
+                                            className="flex self-start object-top object-contain overflow-hidden w-full max-h-100"
                                         />
                                         <button 
                                             type="button" 

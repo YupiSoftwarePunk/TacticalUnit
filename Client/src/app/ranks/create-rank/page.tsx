@@ -49,7 +49,7 @@ const mockG : IGivedPermission[] = [
     }
 ]
 
-export default function createSubdivPage(){
+export default function createRankPage(){
     const router = useRouter();
     const [rankName, setRankName] = useState<string>("");
     const [activityToPromotion, setActivityToPromotion] = useState<number>(1);
@@ -210,11 +210,9 @@ export default function createSubdivPage(){
     return (
         <div className="flex flex-col min-h-screen">
             <MainHeader></MainHeader>
-
             <CreationForm title="Создание звания" onClickSend={() => { sendForm() }}>
-                <div className="flex flex-1 gap-3 w-full">
-
-                    <Tooltip tooltipText="Картинка звания" className="flex flex-1 max-w-50" innerClassName="flex">
+                <div className="flex flex-col md:flex-row flex-1 gap-6 md:gap-3 w-full">
+                    <Tooltip tooltipText="Картинка звания" className="flex w-full md:flex-1 max-w-full md:max-w-50" innerClassName="flex w-full">
                         <div className="flex flex-col flex-1 h-full w-full">
                             <div className="relative bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group min-h-[160px] w-full transition-all">
                                 
@@ -223,7 +221,7 @@ export default function createSubdivPage(){
                                         <img 
                                             src={imagePreview} 
                                             alt="Rank Preview" 
-                                            className="flex self-start object-top object-contain overflow-hidden w-full h-full"
+                                            className="flex self-start object-top object-contain overflow-hidden w-full max-h-100"
                                         />
                                         <button 
                                             type="button" 
@@ -252,7 +250,7 @@ export default function createSubdivPage(){
                             </div>
                         </div>
                     </Tooltip>
-                    <div className="flex flex-col flex-4 gap-3">
+                    <div className="flex flex-col flex-4 gap-3 w-full">
 
                         <BaseContainer>
                             <ColorInputField 
