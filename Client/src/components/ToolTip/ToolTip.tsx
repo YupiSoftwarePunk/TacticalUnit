@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
 
 interface CardProps {
   children?: React.ReactNode;
@@ -7,12 +7,13 @@ interface CardProps {
   className_Tooltip?: string;
   tooltipText?: string;
   tooltipAlignment? : "left" | "center" | "right";
-  verticalPlacement? : "top" | "bottom"
+  verticalPlacement? : "top" | "bottom",
+  style? : CSSProperties,
 }
-const Tooltip = ({children, tooltipText, className, innerClassName, className_Tooltip, tooltipAlignment = "left", verticalPlacement="bottom"}:CardProps) =>{
+const Tooltip = ({children, style, tooltipText, className, innerClassName, className_Tooltip, tooltipAlignment = "left", verticalPlacement="bottom"}:CardProps) =>{
     const [showTooltip, setShowTooltip] = useState(false);
     return(
-        <div className={`relative ${className!} ${tooltipAlignment == 'center'? "justify-center":""} flex`} onMouseOver={()=>{setShowTooltip(true)}} onMouseLeave={()=>{setShowTooltip(false)}}>
+        <div style={style} className={`relative ${className!} ${tooltipAlignment == 'center'? "justify-center":""} flex`} onMouseOver={()=>{setShowTooltip(true)}} onMouseLeave={()=>{setShowTooltip(false)}}>
             
             <div className={`size-full ${innerClassName!}`}>{children}</div>
             {tooltipText &&

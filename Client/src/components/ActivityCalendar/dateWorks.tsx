@@ -25,6 +25,20 @@ export function isDateBetweenDates(dateInQuestion : Date, lowerDate? : Date, big
 
         return isBetween;
     }
+
+export function isDateBetween(dateInQuestion: Date, lowerDate: Date, biggerDate: Date, inclusive: boolean = true): boolean {
+    const targetTime = dateInQuestion.getTime();
+    
+    
+    const minTime = Math.min(lowerDate.getTime(), biggerDate.getTime());
+    const maxTime = Math.max(lowerDate.getTime(), biggerDate.getTime());
+
+    if (inclusive) {
+        return targetTime >= minTime && targetTime <= maxTime;
+    } else {
+        return targetTime > minTime && targetTime < maxTime;
+    }
+}
 export function isInThisMonth(dateInQuestion : Date, year : number, monthIndex : number){
         let isBetween : boolean = false;
         

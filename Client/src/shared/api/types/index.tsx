@@ -118,7 +118,7 @@ interface IUnitState{
     status : IState,
     startDate : Date,
     endDate : Date,
-    unitId : string
+    unitId? : string
 }
 
 interface IUnit {
@@ -199,7 +199,8 @@ interface activityCell {
     date: Date,
     isCurrentMonth: boolean,
     isChecked: boolean,
-    givenInfo?: IContainedInfo[]
+    givenInfo?: IContainedInfo[],
+    color? : string,
 }
 
 interface ISubdivision {

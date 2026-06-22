@@ -25,7 +25,7 @@ const storyPage = ({ params }: { params: Promise<{DiscordId: string}> }) => {
             <div className="flex min-h-[250px] h-[30vh] bg-black relative">
                 <ProfileBGImage discordId={DiscordId}></ProfileBGImage>
             </div>
-            <div className="flex flex-1 bg-bg-primary mx-5 lg:mx-20 transition-all px-5 pt-10 gap-8">
+            <div className="flex flex-1 bg-bg-primary  mx-5 lg:mx-20 transition-all px-5 pt-10 gap-8">
                 <div className="flex gap-2 flex-1">
                     <div>
                         

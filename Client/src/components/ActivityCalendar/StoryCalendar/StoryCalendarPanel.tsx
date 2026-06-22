@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { ActivityCalendarCell, IActivityCalendarCell } from "../ActivityCalendarCell";
+import { isDateBetween, isDateBetweenDates } from "../dateWorks";
+import { mixColors } from "../colorConverter";
 
 export interface IStoryCalendarPanel{
     year : number,
@@ -25,8 +27,8 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
         // console.warn("cal refreshed")
         // console.warn(year + "  " + month)
         // console.warn("-----------------")
-        console.warn(unitStates);
-        console.warn(singleDayEvents);
+        // console.warn(unitStates);
+        // console.warn(singleDayEvents);
         
 
 
@@ -50,6 +52,7 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
         }
         for(let i = 0; i < new Date(year, month+1, 0).getDate(); i++){
             let cellDate : Date = new Date(year, month, i+1);
+            let cellColors : string[] = []
             let wasActive  = dates.some(date => 
                     date.getFullYear() === cellDate.getFullYear() &&
                     date.getMonth() === cellDate.getMonth() &&
@@ -65,6 +68,31 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
                     color: ""
                 }] : []
             };
+            if(unitStates.length > 0){
+                unitStates.forEach(state => {
+                    if(isDateBetween(cellDate, state.startDate, state.endDate)){
+                        newCell.givenInfo?.push({
+                            content: `${state.status.name}`,
+                            color: ""
+                        })
+                        cellColors.push(state.status.color)
+                    }
+                });
+
+            }
+            if(singleDayEvents.length > 0){
+                singleDayEvents.forEach(event => {
+                    if(cellDate.getDate() == event.dateTime.getDate()){
+                        newCell.givenInfo?.push({
+                            content: `${event.name}`,
+                            color: ""
+                        })
+                        cellColors.push(event.color)
+                    }
+                });
+
+            }
+            newCell.color = mixColors(cellColors);
             activityMatrixFilled.push(newCell);
         }
         return activityMatrixFilled;
@@ -85,7 +113,7 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
 
                     <h2 className="flex text-text-primary-accent text-xl self-center">{`${monthsStr[month!]} ${year!} года`}</h2>
 
-                    <div className="grid grid-flow-col grid-cols-7  grid-rows-7 w-full h-full justify-center gap-1 place-items-center">
+                    <div className="grid grid-flow-col grid-cols-7  grid-rows-7 w-full h-full justify-center gap-0 place-items-center">
                             <p className="self-end">Пн</p>
                             <p className="self-end">Вт</p>
                             <p className="self-end">Ср</p>
@@ -96,8 +124,8 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
                             
                             { activityMatrix != undefined && activityMatrix.map((item)=>(
                                 // ActivityDaysList.indexOf(item)
-                                <div key={activityMatrix.indexOf(item)} className="flex size-10"> 
-                                    <ActivityCalendarCell dateDisplay={`${item.date.getDate()}.${item.date.getMonth()+1}.${item.date.getFullYear()}`} isActive={item.isChecked} isCurrentMonth={item.isCurrentMonth} givenInfo={item.givenInfo}></ActivityCalendarCell>
+                                <div key={activityMatrix.indexOf(item)} className="flex size-10 p-1"> 
+                                    <ActivityCalendarCell borderColor={item.color} dateDisplay={`${item.date.getDate()}.${item.date.getMonth()+1}.${item.date.getFullYear()}`} isActive={item.isChecked} isCurrentMonth={item.isCurrentMonth} givenInfo={item.givenInfo}></ActivityCalendarCell>
                                 </div>
                             ))}
                     </div>

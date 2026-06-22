@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import InfoContainer from "../ToolTip/InfoContainer";
 import Tooltip from "../ToolTip/ToolTip";
 
@@ -9,9 +9,11 @@ export interface IActivityCalendarCell{
     SingleDayActivities? : ISingleDayEvent[],
     States? : IUnitState[],
     dateDisplay? : string,
+    borderColor? : string
 }
-export const ActivityCalendarCell: React.FC<IActivityCalendarCell> = ({isActive, dateDisplay = "dd.mm.yyyy", isCurrentMonth, SingleDayActivities, States, givenInfo}) =>
+export const ActivityCalendarCell: React.FC<IActivityCalendarCell> = ({isActive, dateDisplay = "dd.mm.yyyy", isCurrentMonth, SingleDayActivities, States, givenInfo, borderColor}) =>
 {
+
     function prepareGivenInfo(){
         let containedInfo : IContainedInfo[] = [];
         if(SingleDayActivities!= undefined){
@@ -37,9 +39,9 @@ export const ActivityCalendarCell: React.FC<IActivityCalendarCell> = ({isActive,
 
     }
     return(
-        <Tooltip verticalPlacement="top" tooltipAlignment="center" tooltipText={dateDisplay}  className={`flex size-full border-2 rounded-lg border-border-secondary ${isCurrentMonth? "":"hidden"}`}>
+        <Tooltip verticalPlacement="top" tooltipAlignment="center" tooltipText={dateDisplay} style={borderColor? {borderColor: borderColor} : undefined} className={`flex size-full  border-2 rounded-lg ${borderColor != undefined? `` : "border-border-secondary"}  ${isCurrentMonth? "":"hidden"}`}>
 
-            <InfoContainer containedInfoList={prepareGivenInfo()} appearOn="click" className={`flex size-full `}>
+            <InfoContainer containedInfoList={prepareGivenInfo()} appearOn="click" className={`flex size-full `} >
                 <div className={`flex size-full ${isActive? "bg-green-400" : "bg-transparent"} rounded-md opacity-80`}>
 
                 </div>

@@ -32,13 +32,13 @@ const InfoContainer = ({children, containedInfoList, className, innerClassName, 
             } 
             
             className={`
-                absolute flex flex-col text-text-primary font-text-bold ${verticalPlacement == "bottom" ? "top-full" : "bottom-full"} z-100 bg-bg-primary px-4 py-2 border border-border-secondary transition-all ${catchEvents? "pointer-events-auto" : "pointer-events-none"}  ${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo)? "opacity-100 pointer-events-auto" : "opacity-0") : ((mouseOverContent || mouseOverInfo) && focused? "opacity-100" : "opacity-0")}
+                absolute flex flex-col text-text-primary font-text-bold gap-1 ${verticalPlacement == "bottom" ? "top-full" : "bottom-full"} z-100 bg-bg-primary px-4 py-2 border w-80 border-border-secondary transition-all ${catchEvents? "pointer-events-auto" : "pointer-events-none"}  ${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo)? "opacity-100 pointer-events-auto" : "opacity-0") : ((mouseOverContent || mouseOverInfo) && focused? "opacity-100" : "opacity-0")}
             ${tooltipAlignment == "left"? "left-0" : ""}
             ${tooltipAlignment == "right"? "right-0" : ""}
             `}  style={{marginTop: `${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo)? "0px" : "20px") : ((mouseOverContent|| mouseOverInfo) && focused? "0px" : "20px")}`}}>
                 {
                     containedInfoList.map((item)=>(
-                        <div className="flex overflow-visible bg-bg-secondary px-4 text-lg" key={containedInfoList.indexOf(item)}>
+                        <div className="flex overflow-visible  size-full bg-bg-secondary hover:bg-bg-primary px-4 text-lg transition-all" key={containedInfoList.indexOf(item)}>
                             {item.content}
                         </div>
                     ))

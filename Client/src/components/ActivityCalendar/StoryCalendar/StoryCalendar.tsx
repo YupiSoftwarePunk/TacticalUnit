@@ -4,6 +4,7 @@ import StoryCalendarPanel, { IStoryCalendarPanel } from "./StoryCalendarPanel";
 import { useEffect, useState } from "react";
 import { UnitService } from "@/shared/api/services/unitService";
 import { isInThisMonth } from "../dateWorks";
+import { getMockSingleDayEvents, getMockStates } from "./MockStory";
 
 
 interface IStoryCalendar{
@@ -35,6 +36,14 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
     useEffect(()=>{
         async function receive() {
+            await UnitService.getStateStory(DiscordId).then(s=>{
+                setUnitStates(s);
+                setUnitStates(getMockStates());
+            })
+            await UnitService.getEventStory(DiscordId).then(e=>{
+                setSingleDayEvents(e)
+                setSingleDayEvents(getMockSingleDayEvents())
+            })
             await UnitService.getActivity(DiscordId).then(a => {
                 let list : Date[] = []
 
@@ -46,12 +55,7 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
                 setActivityDates(list);
                 
             })
-            await UnitService.getStateStory(DiscordId).then(s=>{
-                setUnitStates(s);
-            })
-            await UnitService.getEventStory(DiscordId).then(e=>{
-                setSingleDayEvents(e)
-            })
+            
         }
         
         receive();
@@ -102,12 +106,12 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
                 <div className="flex self-center w-full justify-center">
                     <div className="flex self-center">
 
-                    <div className={`grid overflow-visible grid-cols-5 max-[1800px]:grid-cols-4 max-[1600px]:grid-cols-3 max-[1300px]:grid-cols-2 max-[1000px]:grid-cols-1 self-center justify-start gap-2 mb-12 flex-wrap `}>
+                    <div className={`grid overflow-visible grid-cols-5 max-[1800px]:grid-cols-4 max-[1600px]:grid-cols-3 max-[1300px]:grid-cols-2 max-[1000px]:grid-cols-1 self-center justify-start gap-2 mb-28 flex-wrap `}>
                         {getTotalMonths().map(d=>(
                             <StoryCalendarPanel key={d.toDateString()} year={d.getFullYear()} month={d.getMonth()} 
                             ActivityDaysList={activityDates} 
-                            unitStates={unitStates.filter(x=> !(isInThisMonth(x.startDate, d.getFullYear(), d.getMonth()) || isInThisMonth(x.endDate, d.getFullYear(), d.getMonth())) )} 
-                            singleDayEvents={singleDayEvents.filter(x=>!(isInThisMonth(x.dateTime, d.getFullYear(), d.getMonth())))}></StoryCalendarPanel>
+                            unitStates={unitStates.filter(x=> (isInThisMonth(x.startDate, d.getFullYear(), d.getMonth()) || isInThisMonth(x.endDate, d.getFullYear(), d.getMonth())) )} 
+                            singleDayEvents={singleDayEvents.filter(x=>(isInThisMonth(x.dateTime, d.getFullYear(), d.getMonth())))}></StoryCalendarPanel>
                         ))
                         }
                         
