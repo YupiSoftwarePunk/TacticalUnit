@@ -130,13 +130,15 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                         description={post.description}
                     />
 
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 sm:gap-6 mb-6">
-                            <h2 className="text-lg md:text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider leading-snug">
+                    <div className="mt-16">
+                        <div className="flex justify-between items-end mb-6">
+                            <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
                                 Выберите бойцов для назначения на должность
                             </h2>
-                            <span className="text-xs md:text-sm font-text text-text-secondary whitespace-nowrap bg-black/5 dark:bg-white/5 px-2.5 py-1 rounded sm:bg-transparent sm:p-0">
+                            <span className="text-sm font-text text-text-secondary">
                                 Выбрано: {selectedUnits.size}
                             </span>
+                        </div>
 
                         <div className="border border-black/10 dark:border-white/5 overflow-hidden mb-6">
                             <UniversalTable 
