@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { PostService } from "@/shared/api/services/postService";
+import { ChevronDown } from "lucide-react";
 
 export default function ReportsPage() {
     const [subdivisions, setSubdivisions] = useState<any[]>([]);
@@ -23,6 +24,30 @@ export default function ReportsPage() {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [isMetricOpen, setIsMetricOpen] = useState<boolean>(false);
+    const metricDropdownRef = useRef<HTMLDivElement>(null);
+
+    const metricOptions = [
+        "Активность",
+        "Благодарности",
+        "Выговора",
+        "Награждение",
+        "Численность бойцов",
+        "Уволенные",
+        "Ушедшие в отставку",
+        "Уволенные и ушедшие в отставку"
+    ];
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (metricDropdownRef.current && !metricDropdownRef.current.contains(event.target as Node)) {
+                setIsMetricOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     useEffect(() => {
         setIsMetaLoading(true);
@@ -96,35 +121,49 @@ export default function ReportsPage() {
         <div className="w-full min-h-screen bg-bg-primary transition-colors duration-300 font-text pb-20 flex flex-col overflow-x-hidden">
             <MainHeader />
 
-            <main className="max-w-[1400px] w-full mx-auto pt-28 px-6 flex-shrink-0">
-                <div className="mb-8">
-                    <h1 className="text-sm font-text uppercase tracking-widest text-text-secondary">
+            <main className="max-w-[1400px] w-full mx-auto pt-20 md:pt-28 px-4 md:px-6 flex-shrink-0">
+                <div className="mb-6 md:mb-8">
+                    <h1 className="text-xs md:text-sm font-text uppercase tracking-widest text-text-secondary">
                         Генерация отчётности
                     </h1>
                     <span className="block w-12 h-0.5 bg-accent mt-1.5"></span>
                 </div>
 
-                <div className="bg-bg-secondary border border-border-secondary/40 p-6 shadow-sm mb-8 transition-colors duration-300">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-                        <div className="flex flex-col gap-1.5">
+                <div className="bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm mb-8 transition-colors duration-300">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                        <div className="flex flex-col gap-1.5 relative" ref={metricDropdownRef}>
                             <label className="text-xs font-text-bold uppercase tracking-widest text-text-secondary">
                                 Метрика
                             </label>
-                            <select
-                                value={metric}
-                                onChange={(e) => setMetric(e.target.value)}
-                                className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none"
+                            <button
+                                type="button"
+                                onClick={() => setIsMetricOpen(!isMetricOpen)}
+                                className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none flex items-center justify-between text-left rounded-none h-[38px] transition-colors"
                             >
-                                <option value="Активность">Активность</option>
-                                <option value="Благодарности">Благодарности</option>
-                                <option value="Выговора">Выговора</option>
-                                <option value="Награждение">Награждение</option>
-                                <option value="Численность бойцов">Численность бойцов</option>
-                                <option value="Уволенные">Уволенные</option>
-                                <option value="Ушедшие в отставку">Ушедшие в отставку</option>
-                                <option value="Уволенные и ушедшие в отставку">Уволенные и ушедшие в отставку</option>
-                            </select>
+                                <span className="truncate pr-2">{metric}</span>
+                                <ChevronDown className={`w-4 h-4 text-text-secondary transition-transform duration-200 flex-shrink-0 ${isMetricOpen ? "rotate-180" : ""}`} />
+                            </button>
+
+                            {isMetricOpen && (
+                                <div className="absolute left-0 right-0 top-[62px] bg-bg-primary border border-border-secondary border-t-0 z-50 max-h-[250px] overflow-y-auto shadow-lg animate-in fade-in duration-150 rounded-none custom-scrollbar">
+                                    {metricOptions.map((option) => (
+                                        <div
+                                            key={option}
+                                            onClick={() => {
+                                                setMetric(option);
+                                                setIsMetricOpen(false);
+                                            }}
+                                            className={`p-2.5 text-sm cursor-pointer transition-colors border-b border-border-secondary/10 last:border-0 break-words whitespace-normal leading-tight ${
+                                                metric === option 
+                                                    ? "bg-accent text-black font-text-bold" 
+                                                    : "text-text-primary hover:bg-bg-secondary"
+                                            }`}
+                                        >
+                                            {option}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex flex-col gap-1.5">
@@ -134,7 +173,7 @@ export default function ReportsPage() {
                             <select
                                 value={coverage}
                                 onChange={(e) => setCoverage(e.target.value)}
-                                className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none"
+                                className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none h-[38px]"
                             >
                                 <option value="Весь клан">Весь клан</option>
                                 <option value="Подразделение">Подразделение</option>
@@ -149,7 +188,7 @@ export default function ReportsPage() {
                             <select
                                 value={depth}
                                 onChange={(e) => setDepth(e.target.value)}
-                                className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none"
+                                className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none h-[38px]"
                             >
                                 <option value="Подразделение верхнего уровня">Подразделение верхнего уровня</option>
                                 <option value="Подразделение нижнего уровня">Подразделение нижнего уровня</option>
@@ -165,7 +204,7 @@ export default function ReportsPage() {
                             <select
                                 value={timeInterval}
                                 onChange={(e) => setTimeInterval(e.target.value)}
-                                className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none"
+                                className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none h-[38px]"
                             >
                                 <option value="Всё время">Всё время</option>
                                 <option value="Последние 365 дней">Последние 365 дней</option>
@@ -180,7 +219,7 @@ export default function ReportsPage() {
                     </div>
 
                     {(coverage === "Подразделение" || coverage === "Должность" || timeInterval === "Указать даты") && (
-                        <div className="mt-6 pt-6 border-t border-border-secondary/10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="mt-6 pt-6 border-t border-border-secondary/10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
 
                             {coverage === "Подразделение" && (
                                 <div className="flex flex-col gap-1.5">
@@ -191,7 +230,7 @@ export default function ReportsPage() {
                                         value={subdivisionId}
                                         onChange={(e) => setSubdivisionId(Number(e.target.value))}
                                         disabled={isMetaLoading}
-                                        className="w-full bg-bg-primary border border-accent/40 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none disabled:opacity-50"
+                                        className="w-full bg-bg-primary border border-accent/40 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none disabled:opacity-50 h-[38px]"
                                     >
                                         {isMetaLoading ? (
                                             <option>Загрузка подразделений...</option>
@@ -217,7 +256,7 @@ export default function ReportsPage() {
                                         value={postId}
                                         onChange={(e) => setPostId(Number(e.target.value))}
                                         disabled={isMetaLoading}
-                                        className="w-full bg-bg-primary border border-accent/40 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none disabled:opacity-50"
+                                        className="w-full bg-bg-primary border border-accent/40 p-2 text-sm text-text-primary focus:border-accent outline-none cursor-pointer rounded-none disabled:opacity-50 h-[38px]"
                                     >
                                         {isMetaLoading ? (
                                             <option>Загрузка должностей...</option>
@@ -244,7 +283,7 @@ export default function ReportsPage() {
                                             type="date"
                                             value={startDate}
                                             onChange={(e) => setStartDate(e.target.value)}
-                                            className="w-full bg-bg-primary border border-accent/40 p-1.5 text-sm text-text-primary focus:border-accent outline-none rounded-none dark:[color-scheme:dark]"
+                                            className="w-full bg-bg-primary border border-accent/40 p-1.5 text-sm text-text-primary focus:border-accent outline-none rounded-none dark:[color-scheme:dark] h-[38px]"
                                         />
                                     </div>
                                     <div className="flex flex-col gap-1.5">
@@ -255,7 +294,7 @@ export default function ReportsPage() {
                                             type="date"
                                             value={endDate}
                                             onChange={(e) => setEndDate(e.target.value)}
-                                            className="w-full bg-bg-primary border border-accent/40 p-1.5 text-sm text-text-primary focus:border-accent outline-none rounded-none dark:[color-scheme:dark]"
+                                            className="w-full bg-bg-primary border border-accent/40 p-1.5 text-sm text-text-primary focus:border-accent outline-none rounded-none dark:[color-scheme:dark] h-[38px]"
                                         />
                                     </div>
                                 </>
@@ -272,43 +311,43 @@ export default function ReportsPage() {
                     </div>
                 </div>
 
-                <div className="flex flex-col items-start gap-8">
+                <div className="flex flex-col items-stretch sm:items-start gap-6 md:gap-8">
                     <button
                         onClick={handleGenerateReport}
                         disabled={isLoading}
-                        className="relative group inline-block disabled:opacity-50 disabled:pointer-events-none"
+                        className="relative group inline-block disabled:opacity-50 disabled:pointer-events-none w-full sm:w-auto"
                     >
                         <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
-                        <div className="relative border border-border-secondary bg-bg-secondary px-6 py-2.5 text-xs font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black cursor-pointer">
+                        <div className="relative border border-border-secondary bg-bg-secondary px-6 py-2.5 text-xs font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black cursor-pointer text-center">
                             {isLoading ? "Формирование..." : "Сформировать"}
                         </div>
                     </button>
 
-                    <div className="w-full min-h-[400px] border border-dashed border-border-secondary/30 bg-bg-secondary/40 flex items-center justify-center p-4 transition-all duration-300">
+                    <div className="w-full min-h-[300px] md:min-h-[400px] border border-dashed border-border-secondary/30 bg-bg-secondary/40 flex items-center justify-center p-2 md:p-4 transition-all duration-300">
                         {isLoading && (
-                            <div className="text-center text-text-secondary font-text uppercase tracking-widest text-xs animate-pulse">
+                            <div className="text-center text-text-secondary font-text uppercase tracking-widest text-xs animate-pulse p-4">
                                 Штаб обрабатывает данные конфигурации...
                             </div>
                         )}
 
                         {error && (
-                            <div className="text-center text-red-500 font-text uppercase tracking-widest text-xs">
+                            <div className="text-center text-red-500 font-text uppercase tracking-widest text-xs p-4">
                                 Ошибка: {error}
                             </div>
                         )}
 
                         {!isLoading && !error && imageSrc && (
-                            <div className="max-w-full h-auto animate-in fade-in duration-500 shadow-md border border-border-secondary/20 bg-bg-primary p-2">
+                            <div className="max-w-full h-auto animate-in fade-in duration-500 shadow-md border border-border-secondary/20 bg-bg-primary p-1 md:p-2">
                                 <img
                                     src={imageSrc}
                                     alt="Сгенерированный отчёт клана"
-                                    className="object-contain max-h-[700px] w-full"
+                                    className="object-contain max-h-[500px] md:max-h-[700px] w-full"
                                 />
                             </div>
                         )}
 
                         {!isLoading && !error && !imageSrc && (
-                            <div className="text-center text-text-secondary/40 font-text uppercase tracking-widest text-xs selection:bg-transparent">
+                            <div className="text-center text-text-secondary/40 font-text uppercase tracking-widest text-xs selection:bg-transparent p-4">
                                 Место для сгенерированного отчёта
                             </div>
                         )}
