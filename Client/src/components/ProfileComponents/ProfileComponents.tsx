@@ -17,7 +17,7 @@ interface IProfileBGImage {
 export const ProfileBGImage = ({ discordId, canEdit = false }: IProfileBGImage) => {
     return (
         <div className="flex size-full relative">
-            <StaticImage 
+            <StaticImage  
                 type="background"
                 entityId={discordId}
                 alt="Profile background image"
@@ -132,7 +132,7 @@ export const RewardDisplay = ({ rewardId }: IRewardDisplay) => {
                     type="reward"
                     entityId={rewardId}
                     alt={reward?.name || "Reward"}
-                    className="size-full object-center object-cover"
+                    className="size-full object-center object-contain overflow-hidden"
                 />
             </Tooltip>
         </Link>

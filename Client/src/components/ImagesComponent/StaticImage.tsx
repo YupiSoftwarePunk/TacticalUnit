@@ -16,7 +16,7 @@ export const StaticImage: React.FC<StaticImageProps> = ({
     ...props
 }) => {
     const [extIndex, setExtIndex] = useState<number>(0);
-    const [isFallback, setIsFallback] = useState<boolean>(false);
+    let [isFallback, setIsFallback] = useState<boolean>(true);
     const [fallbackExtIndex, setFallbackExtIndex] = useState<number>(0);
 
     useEffect(() => {
@@ -32,6 +32,7 @@ export const StaticImage: React.FC<StaticImageProps> = ({
             } 
             else {
                 setIsFallback(true);
+                isFallback = true;
             }
         } 
         else {
@@ -41,6 +42,7 @@ export const StaticImage: React.FC<StaticImageProps> = ({
         }
     };
 
+    // console.warn(isFallback)
     const src = isFallback
         ? `${ImageService.getDefaultImageUrl(type)}${ALLOWED_EXTENSIONS[fallbackExtIndex]}`
         : `${ImageService.getEntityImageUrl(type, entityId)}${ALLOWED_EXTENSIONS[extIndex]}`;

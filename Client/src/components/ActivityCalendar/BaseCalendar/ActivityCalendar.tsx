@@ -325,7 +325,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
                     {/* <StoryCalendarPanel year={selectedYearDisplay} month={selectedMonth} ActivityDaysList={activityDates}></StoryCalendarPanel> */}
                     
-                    <div className="grid grid-cols-7 grid-rows-7 w-full h-full text-center gap-1">
+                    <div className="grid grid-cols-7 grid-rows-7 w-full h-full text-center">
                         <p className="self-end">Пн</p>
                         <p className="self-end">Вт</p>
                         <p className="self-end">Ср</p>
@@ -336,7 +336,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                         
                         
                         {activityMatrix.map((item)=>(
-                            <div key={activityMatrix.indexOf(item)} className="flex size-10">
+                            <div key={activityMatrix.indexOf(item)} className="flex size-10 p-1">
                                 <ActivityCalendarCell isActive={item.isChecked} dateDisplay={`${item.date.getDate()}.${item.date.getMonth()+1}.${item.date.getFullYear()}`} isCurrentMonth={item.isCurrentMonth}></ActivityCalendarCell>
                             </div>
                         ))}
