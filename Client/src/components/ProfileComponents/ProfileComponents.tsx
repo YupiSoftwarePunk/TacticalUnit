@@ -126,7 +126,7 @@ export const RewardDisplay = ({ rewardId }: IRewardDisplay) => {
     }, [rewardId])
 
     return (
-        <Link href={`/awards/review-award/${reward?.id}`} className="w-10 h-18 bg-bg-dark">
+        <Link href={`/awards/review-award/${reward?.id}`} className="w-10 h-18">
             <Tooltip tooltipText={reward?.name} className="size-full flex" tooltipAlignment="center" verticalPlacement="top" className_Tooltip="flex text-nowrap">
                 <StaticImage
                     type="reward"
