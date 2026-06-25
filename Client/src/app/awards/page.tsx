@@ -40,7 +40,7 @@ export default function AwardsPage() {
                 <main className="max-w-[1200px] mx-auto pt-20 md:pt-32 px-4 md:px-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-4 md:gap-6 w-full">
                         <div>
-                            <h1 className="text-5xl font-header text-text-primary uppercase tracking-wider">
+                            <h1 className="text-2xl md:text-4xl font-header text-text-primary uppercase tracking-wider">
                                 Витрина наград
                             </h1>
                             <span className="block w-20 h-1 bg-accent mt-2"></span>
@@ -107,13 +107,11 @@ export default function AwardsPage() {
                             ))}
                         </div>
                     )}
-
                     {!isLoading && !error && awards.length === 0 && (
                         <div className="text-center text-text-primary/60 text-lg py-10">
                             Награды еще не созданы.
                         </div>
                     )}
-
                 </main>
             </div>
         </div>

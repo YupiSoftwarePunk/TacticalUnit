@@ -123,7 +123,7 @@ export default function ReportsPage() {
 
             <main className="max-w-[1400px] w-full mx-auto pt-20 md:pt-28 px-4 md:px-6 flex-shrink-0">
                 <div className="mb-6 md:mb-8">
-                    <h1 className="text-xs md:text-sm font-text uppercase tracking-widest text-text-secondary">
+                    <h1 className="text-xs md:text-sm font-header uppercase tracking-widest text-text-primary">
                         Генерация отчётности
                     </h1>
                     <span className="block w-12 h-0.5 bg-accent mt-1.5"></span>
