@@ -71,6 +71,9 @@ export const MainHeader = () => {
                         <Link href="/awards" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
                             Награды
                         </Link>
+                        <Link href="/reports" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+                            Отчеты
+                        </Link>
                     </nav>
 
                     <div className="hidden md:flex items-center space-x-6">
@@ -173,6 +176,12 @@ export const MainHeader = () => {
                                 onClick={() => setIsOpen(false)}
                                 className="text-xl font-text-bold text-text-primary hover:text-text-secondary-accent transition-colors py-2.5">
                                 Награды
+                            </Link>
+                            <Link 
+                                href="/reports" 
+                                onClick={() => setIsOpen(false)}
+                                className="text-xl font-text-bold text-text-primary hover:text-text-secondary-accent transition-colors py-2.5">
+                                Отчеты
                             </Link>
                         </nav>
                     </div>
