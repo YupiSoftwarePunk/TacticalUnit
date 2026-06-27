@@ -114,7 +114,7 @@ function DiscordCallbackHandler() {
 
     const processAuthentication = async () => {
       try {
-        setStatusText("Синхронизация с Discord: отправка данных бэкенду...");
+        setStatusText("Ждем ответа от сервера авторизации...");
 
         if (typeof window !== "undefined") {
           window.history.replaceState({}, document.title, window.location.pathname);
@@ -132,7 +132,7 @@ function DiscordCallbackHandler() {
           localStorage.setItem("access_token", token);
           localStorage.setItem("user", JSON.stringify(userObj));
           setIsSuccess(true);
-          setStatusText("Токен успешно получен и сохранен в системе!");
+          setStatusText("Авторизация прошла успешно!");
 
           // try {
           //   const profileData = await checkAuth() as any;
