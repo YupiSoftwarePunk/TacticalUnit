@@ -76,8 +76,8 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
     return (
         <RRForm>
-            <div className="flex flex-1 gap-3">
-                <Tooltip tooltipText="награда" className="flex flex-1 max-w-50" innerClassName="flex">
+            <div className="flex flex-col md:flex-row flex-1 gap-6 md:gap-3 w-full">
+                <Tooltip tooltipText="награда" className="flex w-full md:flex-1 max-w-full md:max-w-50" innerClassName="flex w-full">
                     <div className="flex flex-col flex-1 h-full">
                         <div className="relative flex items-center justify-center group">
                             <StaticImage
@@ -95,7 +95,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                     </div>
                 </Tooltip>
                 
-                <div className="flex flex-col flex-4 gap-2">
+                <div className="flex flex-col flex-4 gap-2 w-full">
                     <BaseContainer>
                         <ColorInputField 
                             editable={canEdit} 
@@ -132,7 +132,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                             editable={canEdit} 
                         />
                     </BaseContainer>
-                    <div className="flex opacity-50">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 opacity-50 w-full">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={reward.discordRoleId}></CopyField>
                         <StyledButton title={"обновить роль"}></StyledButton>
                     </div>

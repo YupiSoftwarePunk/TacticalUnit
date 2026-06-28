@@ -106,12 +106,10 @@ export default function CreateSubdivPage() {
             <MainHeader></MainHeader>
 
             <CreationForm title="Создание награды" onClickSend={() => { sendForm() }}>
-                <div className="flex flex-1 gap-3 w-full">
-
-                    <Tooltip tooltipText="Картинка награды" className="flex flex-1 max-w-50" innerClassName="flex">
+                <div className="flex flex-col md:flex-row flex-1 gap-6 md:gap-3 w-full">
+                    <Tooltip tooltipText="Картинка награды" className="flex w-full md:flex-1 max-w-full md:max-w-50" innerClassName="flex w-full">
                         <div className="flex flex-col flex-1 h-full w-full">
                             <div className="relative bg-gray-100 dark:bg-[#1a1a1a] border border-black/10 dark:border-white/5 flex items-center justify-center group min-h-[160px] w-full transition-all">
-                                
                                 {imagePreview ? (
                                     <>
                                         <img 
@@ -147,8 +145,7 @@ export default function CreateSubdivPage() {
                         </div>
                     </Tooltip>
 
-                    <div className="flex flex-col flex-4 gap-3">
-
+                    <div className="flex flex-col flex-4 gap-3 w-full">
                         <BaseContainer>
                             <ColorInputField 
                                 watermark="Цвет" 
@@ -188,7 +185,6 @@ export default function CreateSubdivPage() {
                                 editable={true}
                             />
                         </BaseContainer>
-                        
                     </div>
                 </div>
             </CreationForm>
