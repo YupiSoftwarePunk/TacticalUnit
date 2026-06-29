@@ -1,14 +1,14 @@
 import { CSSProperties, useState } from "react";
 
 interface CardProps {
-  children?: React.ReactNode;
-  className?: string;
-  innerClassName?: string;
-  className_Tooltip?: string;
-  tooltipText?: string;
-  tooltipAlignment? : "left" | "center" | "right";
-  verticalPlacement? : "top" | "bottom",
-  style? : CSSProperties,
+    children?: React.ReactNode;
+    className?: string;
+    innerClassName?: string;
+    className_Tooltip?: string;
+    tooltipText?: string;
+    tooltipAlignment? : "left" | "center" | "right";
+    verticalPlacement? : "top" | "bottom",
+    style? : CSSProperties,
 }
 const Tooltip = ({children, style, tooltipText, className, innerClassName, className_Tooltip, tooltipAlignment = "left", verticalPlacement="bottom"}:CardProps) =>{
     const [showTooltip, setShowTooltip] = useState(false);

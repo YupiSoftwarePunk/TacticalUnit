@@ -40,9 +40,7 @@ export const ActivityCalendarCell: React.FC<IActivityCalendarCell> = ({isActive,
         if (givenInfo){
             containedInfo = [...containedInfo, ...givenInfo]
         }
-        // console.warn(containedInfo)
         return containedInfo;
-
     }
 
     useEffect(()=>{
@@ -50,7 +48,6 @@ export const ActivityCalendarCell: React.FC<IActivityCalendarCell> = ({isActive,
     },[])
     return(
         <Tooltip verticalPlacement="top" tooltipAlignment="center" tooltipText={dateDisplay} style={borderColor? {borderColor: borderColor} : undefined} className={`flex size-full  border-2 rounded-lg ${borderColor != undefined? `` : "border-border-secondary"}  ${isCurrentMonth? "":"hidden"}`}>
-
             <InfoContainer containedInfoList={prepInfo} appearOn="click" className={`flex size-full `} >
                 <div className={`flex content-center justify-around size-full ${isActive? "bg-green-400" : "bg-transparent"} rounded-md flex-wrap opacity-80`}>
                     {prepInfo.filter(x=>(x.type == "EVENT")).map((item)=>(

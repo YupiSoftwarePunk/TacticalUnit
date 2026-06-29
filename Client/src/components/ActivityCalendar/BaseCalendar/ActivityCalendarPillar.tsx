@@ -15,9 +15,7 @@ export const ActivityCalendarPillar: React.FC<IActivityCalendarPillar> = ({filli
 
     function onClickDo(){
         if (switchMonthMethod && Id != null && isBlank == false) switchMonthMethod(Id);
-        // console.warn(Id)
     }
-
 
     return(
         <div className="flex flex-col" onClick={()=>{onClickDo(); }} onMouseEnter={()=>{setHighlight(true)}} onMouseLeave={()=>{setHighlight(false)}}>

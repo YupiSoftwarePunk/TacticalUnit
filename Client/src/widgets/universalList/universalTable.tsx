@@ -33,12 +33,14 @@ const UniversalTable = <T extends Record<string, any>>({
     const visibleColumns = useMemo(() => {
         return columns.filter(col => !col.key.startsWith("activity"));
     }, [columns]);
+
     const [sortConfig, setSortConfig] = useState<SortConfig>(defaultSort);
     const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const sortedData = useMemo(() => {
         const sortableItems = [...data];
+
         if (sortConfig.key) {
             sortableItems.sort((a, b) => {
                 const valA = a[sortConfig.key];
@@ -75,8 +77,7 @@ const UniversalTable = <T extends Record<string, any>>({
                 <div className="flex flex-col xs:flex-row justify-between sm:justify-start items-stretch xs:items-center gap-4 sm:gap-6 w-full sm:w-auto">
                     <button 
                         onClick={() => setIsFilterOpen(!isFilterOpen)}
-                        className="text-text-secondary hover:text-accent border-b border-dotted border-text-secondary transition-all uppercase text-sm tracking-widest text-center xs:text-left py-1"
-                    >
+                        className="text-text-secondary hover:text-accent border-b border-dotted border-text-secondary transition-all uppercase text-sm tracking-widest text-center xs:text-left py-1">
                         Фильтры
                     </button>
                     <div className="flex gap-2 items-center justify-between xs:justify-start min-w-0 border border-bg-secondary/40 rounded px-2 py-1 xs:border-none xs:p-0">
@@ -84,8 +85,7 @@ const UniversalTable = <T extends Record<string, any>>({
                         <select 
                             value={sortConfig.key}
                             onChange={(e) => requestSort(e.target.value)}
-                            className="bg-transparent border-none text-text-primary focus:bg-bg-accent focus:ring-0 cursor-pointer text-xs sm:text-sm flex-1 min-w-0 truncate w-full"
-                        >
+                            className="bg-transparent border-none text-text-primary focus:bg-bg-accent focus:ring-0 cursor-pointer text-xs sm:text-sm flex-1 min-w-0 truncate w-full">
                             {columns.filter(c => c.sortable).map(col => (
                                 <option key={col.key} value={col.key} className="bg-bg-secondary focus:bg-bg-accent">{col.label}</option>
                             ))}
@@ -96,8 +96,7 @@ const UniversalTable = <T extends Record<string, any>>({
                 <div className="w-full sm:w-auto">
                     <button 
                         onClick={() => onExport(filteredData)}
-                        className="w-full sm:w-auto bg-transparent text-accent border-b-2 border-accent hover:text-white hover:border-white transition-all py-2 sm:py-1 uppercase font-black text-center text-sm md:text-lg tracking-wider"
-                    >
+                        className="w-full sm:w-auto bg-transparent text-accent border-b-2 border-accent hover:text-white hover:border-white transition-all py-2 sm:py-1 uppercase font-black text-center text-sm md:text-lg tracking-wider">
                         Экспортировать
                     </button>
                 </div>

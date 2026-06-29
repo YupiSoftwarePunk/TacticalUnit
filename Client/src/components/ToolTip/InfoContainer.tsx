@@ -2,14 +2,14 @@ import { useState } from "react";
 
 
 interface CardProps {
-  children?: React.ReactNode;
-  className?: string;
-  innerClassName?: string;
-  className_Tooltip?: string;
-  containedInfoList? : IContainedInfo[];
-  tooltipAlignment? : "left" | "center" | "right";
-  verticalPlacement? : "top" | "bottom",
-  appearOn? : "hover" | "click"
+    children?: React.ReactNode;
+    className?: string;
+    innerClassName?: string;
+    className_Tooltip?: string;
+    containedInfoList? : IContainedInfo[];
+    tooltipAlignment? : "left" | "center" | "right";
+    verticalPlacement? : "top" | "bottom",
+    appearOn? : "hover" | "click"
 }
 const InfoContainer = ({children, containedInfoList, className, innerClassName, className_Tooltip, appearOn = "hover", tooltipAlignment = "center", verticalPlacement="bottom" }:CardProps) =>{
     let [mouseOverContent, setMouseOverContent] = useState(false);

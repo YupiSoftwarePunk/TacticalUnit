@@ -26,8 +26,6 @@ const CreationForm = ({children, title, onClickSend} : ICreationForm) =>{
                 </div>
             </div>
         </div>
-
-
     </div>)
 }
 export default CreationForm;
