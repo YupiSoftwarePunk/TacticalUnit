@@ -33,7 +33,6 @@ class ApiStructureTransformer {
         posts.forEach((post) => {
             if (!post.id) return;
             const currentNode = nodeMap[post.id];
-
             if (post.headId && nodeMap[post.headId.toString()]) {
                 nodeMap[post.headId.toString()].children.push(currentNode);
             } 
@@ -43,7 +42,6 @@ class ApiStructureTransformer {
                 }
             }
         });
-
         return root;
     }
 }

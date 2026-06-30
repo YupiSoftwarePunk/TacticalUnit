@@ -9,6 +9,7 @@ import { useEffect, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { validateColor } from "@/typescript/colorValidator";
 
+// необходимо вызвать ендпоинт с получением настоящих разрешений
 const mockG : IGivedPermission[] = [
     {
         id : "0",

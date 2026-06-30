@@ -5,7 +5,6 @@ import { ActivityCalendarPillar, IActivityCalendarPillar } from "./ActivityCalen
 import { UnitService } from "@/shared/api/services/unitService";
 import StoryCalendarPanel from "../StoryCalendar/StoryCalendarPanel";
 
-
 const monthsStr = [
         "Январь", "Февраль", "Март", 
         "Апрель","Май","Июнь",
@@ -25,8 +24,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
     let [activityDates, setActivityDates] = useState<Date[]> ([]);
 
     let preparedMonths : IActivityCalendarPillar[] = [];
-    
-
 
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -39,8 +36,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
     let previouslySelectedMonthIndexOffset = -1;
 
-    
-
     function createPillars(){
         let activityMonths : Date[] = [];
         activityDates.forEach(d => {
@@ -52,8 +47,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
         });
         let pillars : IActivityCalendarPillar[] = [];
         activityMonths.forEach(d => {
-
-
 
             let monthDays = new Date(d.getFullYear(), d.getMonth(), 0).getDate();
             let monthActivity = activityDates.filter(x=>(x.getMonth() == d.getMonth() && x.getFullYear() == d.getFullYear()))
@@ -109,7 +102,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                         isSelected : false,
                     }
                     preparedMonths.push(blank);
-
                 }
                 
                 setMonthsMatrix(preparedMonths);
@@ -134,7 +126,8 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
             }
             
             let interval = setTimeout(()=>{ setPillarsOffset(0); refresh(); }, 50);
-        }else{
+        }
+        else{
             refresh();
         }
         setTimeout(()=>{setPillarsTransitionStatus(true);}, 1);
@@ -148,8 +141,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
         // console.warn("cal refreshed")
         // console.warn(year + "  " + month)
         // console.warn("-----------------")
-
-
 
         let activityMatrixFilled : activityCell[] = [];
 
@@ -209,20 +200,11 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
             //console.warn(list[0].toDateString());
         })
-
-
-        
     }, [])
     useEffect(()=>{
 
-        
-
-
         setSelectedMonthDisplay(monthsStr[selectedMonth]);
         setMonthsMatrix(preparedMonths);
-
-        
-        
     }, [])
 
     function lowerSelectedMonth(){
@@ -242,7 +224,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
             }
         }
     }
-    
     function enlargeSelectedMonth(){
 
         let currentMonth = monthsMatrix.find(x => x.isSelected === true);
@@ -263,9 +244,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
     }
 
 
-
-
-
     const setActiveMonthById = (monthId : number) => {
         // console.warn("click")
         let m = monthsMatrix.find(x => x.isSelected === true);
@@ -282,12 +260,10 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                 setSelectedMonth(electedMonth.Date.getMonth())
 
                 setActivityMatrix(fillMonthMatrix(electedMonth.Date.getFullYear(), electedMonth.Date.getMonth(), activityDates));
-
             }
             
         }
         refreshMonthsDisplay();
-
         //console.warn("switched to " + monthId)
     }
     const setActiveMonthByListIndex = (monthId : number) => {
@@ -305,7 +281,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                 setSelectedMonth(electedMonth.Date.getMonth())
 
                 setActivityMatrix(fillMonthMatrix(electedMonth.Date.getFullYear(), electedMonth.Date.getMonth(), activityDates));
-
             }
             
         }
@@ -313,9 +288,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
         //console.warn("switched to " + monthId)
     }
-
-
-    
 
     return(
         <div className="flex size-full flex-col gap-5">
@@ -333,7 +305,6 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                         <p className="self-end">Пт</p>
                         <p className="self-end">Сб</p>
                         <p className="self-end">Вс</p>
-                        
                         
                         {activityMatrix.map((item)=>(
                             <div key={activityMatrix.indexOf(item)} className="flex size-10 p-1">

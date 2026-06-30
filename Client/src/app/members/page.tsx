@@ -5,7 +5,7 @@ import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalT
 import { MainHeader } from "@/components/Header/MainHeader";
 import { UnitService } from "@/shared/api/services/unitService";
 import { RankService } from "@/shared/api/services/RankService";
-import { PostService } from "@/shared/api/services/postService"; // Убран деструктуризатор ломающий клиентскую сборку 'warn' из node-console
+import { PostService } from "@/shared/api/services/postService";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [

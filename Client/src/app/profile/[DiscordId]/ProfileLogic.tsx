@@ -147,14 +147,6 @@ export function getStoryMenuOptions(disId : string){
 
 
 export async function applyPermissions(menuOptions : IActionMenuOption[], disId : string = "-1") : Promise<IActionMenuOption[]>{
-
-
-
-
-
-
-
-    
         let preparedOptions : IActionMenuOption[] = [];
         await UnitService.getPermissionsIds(disId).then((r)=>{
             let permissions : string[] = r
@@ -163,22 +155,15 @@ export async function applyPermissions(menuOptions : IActionMenuOption[], disId 
             if (user.discord_id == disId){
                 permissions.push("self");
             }
-            //console.warn(permissions);
             menuOptions.forEach(option => {
-
                 permissions.forEach(perm=>{
-
                     if(option.accessOnRoles.find(x=>x == perm)){
                         if(!preparedOptions.find(x=>x.id == option.id)){
-
                             preparedOptions.push(option);
                         }
                     }
                 })
             });
-
-
-            
         })
         return (preparedOptions);
     }

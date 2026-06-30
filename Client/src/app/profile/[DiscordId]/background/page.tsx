@@ -47,7 +47,6 @@ export default function BackgroundPage({ params }: { params: Promise<{ DiscordId
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
     function ChooseBg(bg: IProfileAttribute){
-        // console.warn(bg);
         setCurrentImage(bg);
     }
     function Save(){

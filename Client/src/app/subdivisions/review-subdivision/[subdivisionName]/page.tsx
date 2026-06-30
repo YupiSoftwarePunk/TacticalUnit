@@ -41,8 +41,6 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
     const [members, setMembers] = useState<any[]>([]);
 
-
-
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
     const [availableHeadSubdivisions, setAvailableHeadSubdivisions] = useState<IListedInputItem[]>([])
     
@@ -65,11 +63,6 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
         prepList = availableHeadSubdivisions.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
         setHeadList(prepList)
     }
-
-
-
-
-
     
     useEffect(() => {
         if (isNaN(numericSubdivisionId)) {
@@ -93,9 +86,11 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
 
                 if (Array.isArray((subdivisionData as any).members)) {
                     setMembers((subdivisionData as any).members);
-                } else if ((subdivisionData as any).value) {
+                } 
+                else if ((subdivisionData as any).value) {
                     setMembers((subdivisionData as any).value);
-                } else {
+                } 
+                else {
                     setMembers([]);
                 }
             })
