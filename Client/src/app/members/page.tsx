@@ -5,31 +5,18 @@ import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalT
 import { MainHeader } from "@/components/Header/MainHeader";
 import { UnitService } from "@/shared/api/services/unitService";
 import { RankService } from "@/shared/api/services/RankService";
-import { warn } from "console";
-import { PostService } from "@/shared/api/services/postService";
+import { PostService } from "@/shared/api/services/postService"; // Убран деструктуризатор ломающий клиентскую сборку 'warn' из node-console
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
-    
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true, className: "text-accent font-bold" },
     { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
-    // { 
-    //     key: "roles", 
-    //     label: "Должность", 
-    //     sortable: false, 
-    //     filterable: true, 
-    //     className: "text-text-secondary text-sm italic",
-    //     render: (value) => Array.isArray(value) ? value.join(", ") : value
-    // },
-    // { key: "unit", label: "Подразделение", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
-    
     { key: "activity_week", label: "Активность за неделю", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_month", label: "Активность за месяц", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_year", label: "Активность за год", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
-    // { key: "joinDate", label: "Дата вступления", sortable: true, filterable: true, className: "text-text-secondary text-sm font-mono" }
 ];
 
 export default function MembersPage() {
@@ -38,29 +25,22 @@ export default function MembersPage() {
     const [error, setError] = useState<string | undefined>();
 
     useEffect(() => {
-        
-        let ranks : IRank[] = []
-        let posts : IPost[] = []
-        let subdivisions : ISubdivision[] = []
+        let ranks: any[] = [];
+        let posts: any[] = [];
 
         const fetchMembers = async () => {
             try {
-                await RankService.getAll().then(sRanks => {
+                const sRanks = await RankService.getAll();
                 ranks = [...sRanks];
-                })
-                await PostService.getAll().then(sPosts => {
-                    posts = [...sPosts];
-                })
-                await PostService.getAll().then(sPosts => {
-                    posts = [...sPosts];
-                })
+
+                const sPosts = await PostService.getAll();
+                posts = [...sPosts];
+
                 const units = await UnitService.getAll();
                 if (!units || !Array.isArray(units)) return;
 
-                const preparedMemberArray = units.map((element: IUnit) => {
-                    const memberRoles: string[] = element.posts?.map((p) => p.name).filter(Boolean) || [];
-                    const topRole = memberRoles[0] || "Без должности";
-                    const unitName = element.posts?.[0]?.subdivision?.name || "Вне подразделения";
+                const preparedMemberArray = units.map((element: any) => {
+                    const memberRoles: string[] = element.posts?.map((p: any) => p.name).filter(Boolean) || [];
 
                     let formattedJoinDate = "—";
                     if (element.joined) {
@@ -72,19 +52,19 @@ export default function MembersPage() {
                             formattedJoinDate = `${day}.${month}.${year}`;
                         }
                     }
-                    let setRank = ranks.find(x=>x.id?.toString() == element.rankId.toString())
-                    let setPost = posts.find(x=>x.id == element.postsIds[0])
+                    let setRank = ranks.find(x => x.id?.toString() == element.rankId?.toString());
+                    let setPost = posts.find(x => x.id == element.postsIds?.[0]);
 
                     return {
-                        rank: setRank? setRank.name : "Без звания",
+                        rank: setRank ? setRank.name : "Без звания",
                         nickname: element.nickname,
-                        top_role: setPost? setPost.name : "Без должности",
+                        top_role: setPost ? setPost.name : "Без должности",
                         roles: memberRoles,
-                        activity_week: (element as any).activity_week ?? (element as any).activityWeek ?? 0,
-                        activity_month: (element as any).activity_month ?? (element as any).activityMonth ?? 0,
-                        activity_year: (element as any).activity_year ?? (element as any).activityYear ?? 0,
-                        activity_total: (element as any).activity_total ?? (element as any).activityTotal ?? 0,
-                        kit: (element as any).favoriteKit?.name || (element as any).kit || "Не выбран",
+                        activity_week: element.activity_week ?? element.activityWeek ?? 0,
+                        activity_month: element.activity_month ?? element.activityMonth ?? 0,
+                        activity_year: element.activity_year ?? element.activityYear ?? 0,
+                        activity_total: element.activity_total ?? element.activityTotal ?? 0,
+                        kit: element.favoriteKit?.name || element.kit || "Не выбран",
                         steamId: element.steamId ? String(element.steamId) : "—",
                         discordId: String(element.discordId),
                         joinDate: formattedJoinDate
@@ -114,44 +94,42 @@ export default function MembersPage() {
         alert("Скопировано: " + text);
     };
 
-    if (error) return <ErrorScreen error={error}></ErrorScreen>
-    if (!loaded) return <LoadingScreen></LoadingScreen>
+    if (error) return <ErrorScreen error={error}></ErrorScreen>;
+    if (!loaded) return <LoadingScreen></LoadingScreen>;
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full w-full overflow-x-hidden">
             <MainHeader />
-            <main className="min-h-screen bg-bg-primary pt-24 pb-12 px-8">
-                <div className="max-w-[1400px] mx-auto">
-                    <header className="mb-12">
-                        <h1 className="text-5xl font-header text-text-primary uppercase tracking-normal mb-2">
+            <main className="min-h-screen bg-bg-primary pt-20 md:pt-24 pb-12 px-4 sm:px-8 w-full">
+                <div className="max-w-[1400px] mx-auto w-full">
+                    <header className="mb-6 md:mb-12">
+                        <h1 className="text-3xl sm:text-5xl font-header text-text-primary uppercase tracking-normal mb-2 break-words">
                             Личный состав
                         </h1>
-                        <p className="text-text-secondary font-text-regular text-lg">
+                        <p className="text-text-secondary font-text-regular text-sm sm:text-lg">
                             Реестр зарегистрированных бойцов подразделения POLK
                         </p>
                     </header>
 
-                    <section className="bg-bg-primary border border-bg-secondary p-8 shadow-2xl">
+                    <section className="bg-bg-primary border border-bg-secondary p-4 sm:p-8 shadow-2xl w-full">
                         <UniversalTable 
                             data={members} 
                             columns={COLUMNS_CONFIG} 
                             onExport={handleExport}
                             defaultSort={{ key: "rank", direction: "desc" }}
                             renderActions={(item: any) => (
-                                <>
+                                <div className="flex flex-row md:flex-row gap-2 w-full justify-end">
                                     <button 
                                         onClick={() => copyToClipboard(item.steamId)}
-                                        className="p-1 border border-bg-secondary hover:border-accent text-[10px] uppercase"
-                                    >
+                                        className="flex-1 md:flex-none p-1.5 px-3 border border-bg-secondary hover:border-accent text-[10px] uppercase transition-colors bg-bg-primary text-center whitespace-nowrap">
                                         Steam_ID
                                     </button>
                                     <button 
                                         onClick={() => copyToClipboard(item.discordId)}
-                                        className="p-1 border border-bg-secondary hover:border-accent text-[10px] uppercase"
-                                    >
+                                        className="flex-1 md:flex-none p-1.5 px-3 border border-bg-secondary hover:border-accent text-[10px] uppercase transition-colors bg-bg-primary text-center whitespace-nowrap">
                                         Discord_ID
                                     </button>
-                                </>
+                                </div>
                             )}
                         />
                     </section>
