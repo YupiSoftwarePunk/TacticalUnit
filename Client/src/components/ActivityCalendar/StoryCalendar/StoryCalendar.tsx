@@ -99,7 +99,7 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
 
     return(
-        <div className="flex flex-1 flex-col gap-10 font-text-bold justify-center ">
+        <div className="flex flex-1 flex-col gap-10 font-text-bold justify-center overflow-clip">
                 <h1 className={`flex w-full text-accent font-text-bold uppercase tracking-wider text-2xl justify-center transition-all`}>
                     История бойца
                 </h1>
