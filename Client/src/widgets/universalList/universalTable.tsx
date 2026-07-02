@@ -72,32 +72,32 @@ const UniversalTable = <T extends Record<string, any>>({
 
     return (
         <div className="w-full bg-bg-primary text-text-primary font-text">
-            <div className="flex justify-between items-end mb-4 border-b border-bg-secondary pb-4">
-                <div className="flex gap-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-4 border-b border-bg-secondary pb-4">
+                <div className="flex justify-between sm:justify-start items-center gap-4 sm:gap-6 w-full sm:w-auto">
                     <button 
                         onClick={() => setIsFilterOpen(!isFilterOpen)}
                         className="text-text-secondary hover:text-accent border-b border-dotted border-text-secondary transition-all uppercase text-sm tracking-widest"
                     >
                         Фильтры
                     </button>
-                    <div className="flex gap-2 items-center">
-                        <span className="text-text-secondary text-sm uppercase tracking-widest">Сортировка:</span>
+                    <div className="flex gap-1 sm:gap-2 items-center flex-1 min-w-0">
+                        <span className="text-text-secondary text-xs sm:text-sm uppercase tracking-widest shrink-0">Сортировка:</span>
                         <select 
                             value={sortConfig.key}
                             onChange={(e) => requestSort(e.target.value)}
-                            className="bg-transparent border-none text-text-primary focus:bg-bg-accent focus:ring-0 cursor-pointer text-sm"
+                            className="bg-transparent border-none text-text-primary focus:bg-bg-accent focus:ring-0 cursor-pointer text-xs sm:text-sm flex-1 min-w-0 truncate w-full"
                         >
                             {columns.filter(c => c.sortable).map(col => (
-                                <option key={col.key} value={col.key} className="bg-bg-secondary  focus:bg-bg-accent">{col.label}</option>
+                                <option key={col.key} value={col.key} className="bg-bg-secondary focus:bg-bg-accent">{col.label}</option>
                             ))}
                         </select>
                     </div>
                 </div>
                 
-                <div className="flex gap-4 items-center">
+                <div className="flex gap-4 items-center w-full sm:w-auto justify-between sm:justify-start">
                     <button 
                         onClick={() => onExport(filteredData)}
-                        className="bg-transparent text-accent border-b-2 border-accent hover:text-white hover:border-white transition-all px-2 py-1 uppercase font-black text-lg"
+                        className="bg-transparent text-accent border-b-2 border-accent hover:text-white hover:border-white transition-all px-2 py-1 uppercase font-black text-sm md:text-lg"
                     >
                         Экспортировать
                     </button>
@@ -139,7 +139,7 @@ const UniversalTable = <T extends Record<string, any>>({
 
                                 {renderActions && (
                                     <td className="p-4 text-right">
-                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                             {renderActions(item)}
                                         </div>
                                     </td>

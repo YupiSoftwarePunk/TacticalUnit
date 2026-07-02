@@ -9,7 +9,8 @@ interface ICreationForm{
     onClickSend? : ()=>void;
 }
 const CreationForm = ({children, title, onClickSend} : ICreationForm) =>{
-    return(<div className="flex flex-1 flex-col size-full bg-bg-dark transition-all font-text-bold text-lg">
+    return(
+    <div className="flex flex-1 flex-col size-full bg-bg-dark transition-all font-text-bold text-lg">
         <div className="flex mx-5 p-5 md:mx-[20%] bg-bg-primary transition-all">
             <div className="flex flex-col size-full gap-5">
 

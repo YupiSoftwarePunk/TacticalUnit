@@ -34,10 +34,8 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
 
 export default function MembersPage() {
     const [members, setMembers] = useState<any[]>([]);
-
     const [loaded, setLoaded] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>();
-
 
     useEffect(() => {
         
@@ -45,10 +43,7 @@ export default function MembersPage() {
         let posts : IPost[] = []
         let subdivisions : ISubdivision[] = []
 
-
         const fetchMembers = async () => {
-            
-
             try {
                 await RankService.getAll().then(sRanks => {
                 ranks = [...sRanks];
@@ -77,13 +72,8 @@ export default function MembersPage() {
                             formattedJoinDate = `${day}.${month}.${year}`;
                         }
                     }
-                    // console.warn(`${element.rankId}`);
-                    // console.warn(ranks.find(x=>`${x.id}` == `${element.rankId}`)?.name);
-                    
                     let setRank = ranks.find(x=>x.id?.toString() == element.rankId.toString())
                     let setPost = posts.find(x=>x.id == element.postsIds[0])
-                    
-                    // console.warn(setRank);
 
                     return {
                         rank: setRank? setRank.name : "Без звания",
