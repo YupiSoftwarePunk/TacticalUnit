@@ -18,8 +18,6 @@ export const MainHeader = () => {
 
     function userFromLocalStrorage(){
         let userId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
-        // console.warn("awdawdawd");
-        // console.warn(userId);
         return userId;
     }
     useEffect(()=>{
@@ -38,8 +36,6 @@ export const MainHeader = () => {
         setMounted(true);
     }, []);
 
-    
-
     const toggleTheme = () => {
         setIsDark((prevIsDark) => {
           const nextTheme = !prevIsDark;
@@ -52,20 +48,20 @@ export const MainHeader = () => {
     return(
       <div>
         <div className="h-14 flex"></div>
-        <header className="fixed top-0 z-50 w-full h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm font-text transition-colors">
-        <div className="max-w-[1400px] mx-auto h-full px-4 flex items-center justify-between">
-          <div className="flex items-center space-x-8">
+        <header className="fixed top-0 z-50 w-full min-h-14 h-auto md:h-14 border-b border-bg-secondary bg-bg-primary backdrop-blur-sm font-text transition-colors py-2 md:py-0">
+        <div className="max-w-[1400px] mx-auto h-full px-4 flex flex-wrap md:flex-nowrap items-center justify-between gap-y-2">
+          <div className="flex items-center flex-wrap gap-x-3 md:gap-x-0 md:space-x-8">
             <Link href="/" className="text-xl flex items-center gap-2 text-text-primary hover:text-text-secondary-accent uppercase px-2 py-0.5 transition-colors">
               <img src="/b900b76c06a65d8b.png" className="object-cover w-8 h-8 my-1" alt="POLK" />
               POLK
             </Link>
-            <Link href="/members" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+            <Link href="/members" className="text-base md:text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Состав
             </Link>
-            <Link href="/structure" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+            <Link href="/structure" className="text-base md:text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Структура
             </Link>
-            <Link href="/awards" className="text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
+            <Link href="/awards" className="text-base md:text-xl font-text text-text-primary hover:text-text-secondary-accent transition-colors">
               Награды
             </Link>
           </div>
@@ -76,7 +72,7 @@ export const MainHeader = () => {
                     {!isAuthenticated ? (
                         <button 
                             onClick={login}
-                            className="bg-accent hover:bg-accent-hover text-black font-text-bold px-4 py-2 transition-all cursor-pointer"
+                            className="bg-accent hover:bg-accent-hover text-black font-text-bold text-sm px-3 py-1.5 md:text-base md:px-4 md:py-2 transition-all cursor-pointer"
                         >
                             Войти через Discord
                         </button>
