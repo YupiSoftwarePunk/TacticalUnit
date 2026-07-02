@@ -251,3 +251,8 @@ interface IImageUploadResponse {
     message: string;
     fileName: string;
 }
+
+interface IProfileAttribute{ // For background and kit choosing
+    name: string,
+    id: string
+}

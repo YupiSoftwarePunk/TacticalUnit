@@ -25,4 +25,9 @@ export const UnitService = {
     
     getStateStory: (id : number | string) => apiClient<IUnitState[]>(`/unit/${id}/states`), 
     getEventStory: (id : number | string) => apiClient<ISingleDayEvent[]>(`/unit/${id}/events`), 
+
+    getAvailableBg: (id : string) => apiClient<Map<string, string>>(`/unit/${id}/background`), 
+    setUnitBg: (id : string, options : RequestInit) => apiClient<Map<string, string>>(`/unit/${id}/background`, options), 
+    getAvailableKit: (id : string) => apiClient<Map<string, string>>(`/unit/${id}/kit`), 
+    setUnitKit: (id : string, options : RequestInit) => apiClient<Map<string, string>>(`/unit/${id}/kit`, options), 
 };
