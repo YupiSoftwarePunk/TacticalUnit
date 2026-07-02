@@ -191,7 +191,7 @@ interface IProfileSidePanelLink{
 }
 
 interface IContainedInfo{
-    type: "NONE" | "EVENT" | "STATE";
+    type?: "NONE" | "EVENT" | "STATE";
     content: string;
     color: string;
     id?: string;
