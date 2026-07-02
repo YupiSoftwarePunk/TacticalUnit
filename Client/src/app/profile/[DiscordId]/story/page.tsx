@@ -26,16 +26,22 @@ const storyPage = ({ params }: { params: Promise<{DiscordId: string}> }) => {
                 <ProfileBGImage discordId={DiscordId}></ProfileBGImage>
             </div>
             <div className="flex flex-1 bg-bg-primary  mx-5 lg:mx-20 transition-all px-5 pt-10 gap-8">
-                <div className="flex gap-2 flex-1">
+                <div className="flex gap-3 flex-1">
                     <div>
                         
                     <BaseContainer>
                         <ProfileSidePanel availableOptions={availableOptions}></ProfileSidePanel>
                     </BaseContainer>
                     </div>
-                    <div className="flex flex-col flex-1">
+                    <div className=" flex border-r border-border-secondary"></div>
+
+                    <div className="flex flex-col flex-1 gap-2">
+                    <BaseContainer>
                         <UnitInfoPanel Unit={unit}></UnitInfoPanel>
+                    </BaseContainer>
+                    <BaseContainer>
                         <StoryCalendar DiscordId={DiscordId}></StoryCalendar>
+                    </BaseContainer>
                     </div>
                 </div>
             </div>

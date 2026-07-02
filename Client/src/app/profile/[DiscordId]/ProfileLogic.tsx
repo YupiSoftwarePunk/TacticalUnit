@@ -18,13 +18,13 @@ export function getProfileMenuOptions(disId : string){
         {
             id : 2,
             name : "Изменить шапку профиля",
-            url : `#`,
+            url : `/profile/${disId}/background`,
             accessOnRoles : ["1", "self"]
         },
         {
             id : 3,
             name : "Изменить избранный кит",
-            url : `#`,
+            url : `/profile/${disId}/kit`,
             accessOnRoles : ["1", "self"]
         },
         {
@@ -90,13 +90,13 @@ export function getStoryMenuOptions(disId : string){
         {
             id : 2,
             name : "Изменить шапку профиля",
-            url : `#`,
+            url : `/profile/${disId}/background`,
             accessOnRoles : ["1", "self"]
         },
         {
             id : 3,
             name : "Изменить избранный кит",
-            url : `#`,
+            url : `/profile/${disId}/kit`,
             accessOnRoles : ["1", "self"]
         },
         {

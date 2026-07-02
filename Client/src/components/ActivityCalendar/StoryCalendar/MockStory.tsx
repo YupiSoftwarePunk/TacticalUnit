@@ -36,9 +36,23 @@ export function getMockSingleDayEvents() : ISingleDayEvent[] {
             unitId: ""
         },
         {
-            id: "0",
+            id: "1",
             name: "Первая снежинка на носу у китайца!",
             color: "#0099FF",
+            dateTime: new Date(today.getFullYear(), today.getMonth(), today.getDate()+2),
+            unitId: ""
+        },
+        {
+            id: "2",
+            color: "#FF0022",
+            name: "Чаехлюпательное состязание",
+            dateTime: new Date(today.getFullYear(), today.getMonth(), today.getDate()+2),
+            unitId: ""
+        },
+        {
+            id: "3",
+            color: "#11FF22",
+            name: "Переломный момент",
             dateTime: new Date(today.getFullYear(), today.getMonth(), today.getDate()+2),
             unitId: ""
         },

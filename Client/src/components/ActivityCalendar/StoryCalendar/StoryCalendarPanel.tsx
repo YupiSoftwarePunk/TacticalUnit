@@ -64,6 +64,7 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
                 isCurrentMonth : true,
                 isChecked : wasActive,
                 givenInfo: wasActive? [{
+                    type: "NONE",
                     content: `Появление на сборах ${cellDate.getDate()}.${cellDate.getMonth()+1}.${cellDate.getFullYear()}`,
                     color: ""
                 }] : []
@@ -71,10 +72,19 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
             if(unitStates.length > 0){
                 unitStates.forEach(state => {
                     if(isDateBetween(cellDate, state.startDate, state.endDate)){
-                        newCell.givenInfo?.push({
+                        let prepInfo : IContainedInfo = {
+                            type: "STATE",
                             content: `${state.status.name}`,
-                            color: ""
-                        })
+                            color: state.status.color,
+                            id: state.id
+                        }
+                        if(state.startDate != undefined){
+                            prepInfo.dates = `${state.startDate.getDate()}.${state.startDate.getMonth()+1}.${state.startDate.getFullYear()} - `
+                        }
+                        if(state.endDate != undefined){
+                            prepInfo.dates += `${state.endDate.getDate()}.${state.endDate.getMonth()+1}.${state.endDate.getFullYear()}`
+                        }
+                        newCell.givenInfo?.push(prepInfo)
                         cellColors.push(state.status.color)
                     }
                 });
@@ -84,8 +94,11 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
                 singleDayEvents.forEach(event => {
                     if(cellDate.getDate() == event.dateTime.getDate()){
                         newCell.givenInfo?.push({
+                            type: "EVENT",
                             content: `${event.name}`,
-                            color: ""
+                            color: event.color,
+                            id: event.id,
+                            dates: `${cellDate.getDate()}.${cellDate.getMonth()+1}.${cellDate.getFullYear()}`
                         })
                         cellColors.push(event.color)
                     }

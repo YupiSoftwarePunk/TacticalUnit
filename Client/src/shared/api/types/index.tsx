@@ -189,9 +189,13 @@ interface IProfileSidePanelLink{
     Name : string,
     Url : string
 }
+
 interface IContainedInfo{
+    type: "NONE" | "EVENT" | "STATE";
     content: string;
     color: string;
+    id?: string;
+    dates?: string;
 }
 
 interface activityCell {
@@ -246,4 +250,9 @@ interface StructureNode {
 interface IImageUploadResponse {
     message: string;
     fileName: string;
+}
+
+interface IProfileAttribute{ // For background and kit choosing
+    name: string,
+    id: string
 }
