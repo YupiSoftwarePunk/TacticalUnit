@@ -244,7 +244,7 @@ export default function ReportsPage() {
                                             type="date"
                                             value={startDate}
                                             onChange={(e) => setStartDate(e.target.value)}
-                                            className="w-full bg-bg-primary border border-accent/40 p-1.5 text-sm text-text-primary focus:border-accent outline-none rounded-none"
+                                            className="w-full bg-bg-primary border border-accent/40 p-1.5 text-sm text-text-primary focus:border-accent outline-none rounded-none dark:[color-scheme:dark]"
                                         />
                                     </div>
                                     <div className="flex flex-col gap-1.5">
@@ -255,7 +255,7 @@ export default function ReportsPage() {
                                             type="date"
                                             value={endDate}
                                             onChange={(e) => setEndDate(e.target.value)}
-                                            className="w-full bg-bg-primary border border-accent/40 p-1.5 text-sm text-text-primary focus:border-accent outline-none rounded-none"
+                                            className="w-full bg-bg-primary border border-accent/40 p-1.5 text-sm text-text-primary focus:border-accent outline-none rounded-none dark:[color-scheme:dark]"
                                         />
                                     </div>
                                 </>
