@@ -99,7 +99,7 @@ function DiscordCallbackHandler() {
     setStatusText(null);
     setErrorDetails(null);
 
-    navigation.reload()
+    (window as any).navigation?.reload();
     router.refresh();
   };
 
