@@ -1,84 +1,80 @@
+'use client';
+import React from "react";
 import { CircleX, Cog, RefreshCw } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { MainHeader } from "../Header/MainHeader";
 
-export const LoadingScreen = () =>{
-
-
-
-    return(
-    <div className="flex  text-text-primary bg-bg-primary w-screen h-screen font-text-bold overflow-clip">
-        <MainHeader></MainHeader>
-        {/* <div className="absolute flex h-screen w-[400vh] max-h-screen overflow-clip">
-            <div className="absolute flex h-screen mt-[-50vh] w-[400vh]  opacity-20 animate-[moveAndReturn_10s_linear_infinite] max-h-screen">
-
-                <div className="flex flex-1 rotate-25 h-[200%] bg-accent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-transparent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-accent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-transparent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-accent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-transparent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-accent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-transparent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-accent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-transparent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-accent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-transparent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-accent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-transparent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-accent"></div>
-                <div className="flex flex-1 rotate-25 h-[200%] bg-transparent"></div>
+export const LoadingScreen = () => {
+    return (
+        <div className="flex flex-col text-text-primary bg-bg-primary w-full min-h-screen font-text-bold relative overflow-hidden">
+            <MainHeader />
+            <div className="flex-1 flex flex-col items-center justify-center relative px-4 select-none">
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <Cog className="size-40 sm:size-52 md:size-64 animate-[spin_4s_linear_infinite] opacity-5 text-text-primary" />
+                </div>
+                <div className="z-10 text-2xl sm:text-3xl tracking-wider animate-pulse uppercase">
+                    Загрузка...
+                </div>
             </div>
-        </div> */}
-
-        <div className="absolute flex w-screen h-screen content-center justify-center">
-            <Cog className="flex size-50 animate-[spin_2s_linear_infinite] align-middle opacity-10 self-center justify-center text-center"></Cog>
         </div>
-        <div className="flex z-10 flex-1 self-center justify-center text-center content-center  text-3xl">Загрузка...</div>
-    </div>
-);
-}
-interface IErrorScreen{
-    error? : string
-}
-export const ErrorScreen = ({error} : IErrorScreen) =>{
-    const router = useRouter();
-    const textCut = (text : string) =>{
-        let modText = structuredClone(text);
-        let displayLength = 120;
+    );
+};
 
-        if (modText.length > displayLength){
-            modText = modText.slice(0, displayLength);
-            modText = modText + "...";
+interface IErrorScreen {
+    error?: string;
+}
+
+export const ErrorScreen = ({ error }: IErrorScreen) => {
+    const router = useRouter();
+
+    const textCut = (text: string) => {
+        const modText = structuredClone(text);
+        const displayLength = 120;
+
+        if (modText.length > displayLength) {
+            return modText.slice(0, displayLength) + "...";
         }
         return modText;
-    }
+    };
 
-    return(
-    <div className="flex absolute flex-col gap-20 align-middle content-center justify-center text-text-primary bg-bg-primary w-screen h-screen font-text-bold overflow-clip">
-        <MainHeader></MainHeader>
-        <div className="absolute size-full self-center justify-center">
-            <div className="flex relative size-full content-center justify-center">
-                
-                <div className="absolute flex self-center content-center justify-center">
-                    <CircleX className="flex size-50 align-middle text-red-600 opacity-5 animate-pulse self-center justify-center text-center"></CircleX>
-                    {
-                        error &&
-                        <div className="flex top-50 absolute justify-center w-screen px-20 text-center self-center z-10 text-xl  flex-col" >
-                            <p>Текст ошибки:</p><p className="hover:underline cursor-copy" onClick={()=>{navigator.clipboard.writeText(error)}}>{textCut(error)}</p>
-                        </div>
-                    }
+    return (
+        <div className="flex flex-col text-text-primary bg-bg-primary w-full min-h-screen font-text-bold relative overflow-y-auto">
+            <MainHeader/>
+
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-24 my-auto w-full max-w-3xl mx-auto text-center gap-6 sm:gap-8">
+                <div className="relative flex items-center justify-center min-h-[100px] sm:min-h-[140px] w-full">
+                    <CircleX className="size-28 sm:size-40 md:size-48 text-red-600 opacity-5 animate-pulse absolute" />
+                    <h2 className="z-10 text-2xl sm:text-3xl md:text-4xl tracking-wide uppercase">
+                        Возникла ошибка
+                    </h2>
                 </div>
-                <div className="absolute z-10 flex-1 self-center justify-center text-center content-center  text-3xl">Возникла ошибка</div>
-            
-            
+
+                {error && (
+                    <div className="z-10 w-full bg-bg-secondary/40 border border-border-secondary/20 p-4 sm:p-5 backdrop-blur-sm animate-in fade-in duration-300">
+                        <p className="text-xs uppercase tracking-widest text-text-secondary mb-2">
+                            Текст ошибки:
+                        </p>
+                        <p 
+                            className="text-sm sm:text-base font-mono break-words hover:underline cursor-copy select-all selection:bg-accent/30 leading-relaxed" 
+                            onClick={() => navigator.clipboard.writeText(error)}
+                            title="Нажмите, чтобы скопировать">
+                            {textCut(error)}
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            <div className="w-full bg-bg-secondary border-t border-border-secondary/20 py-3 px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 sm:divide-x divide-border-secondary/40 text-base sm:text-lg sticky bottom-0">
+                <button 
+                    className="w-full sm:w-auto hover:bg-accent px-6 py-2.5 sm:py-1 hover:text-black transition-all cursor-pointer text-center uppercase tracking-wider text-sm sm:text-base" 
+                    onClick={() => router.back()}
+                >Назад</button>
+                <a 
+                    href="/" 
+                    className="w-full sm:w-auto hover:bg-accent px-6 py-2.5 sm:py-1 hover:text-black transition-all text-center uppercase tracking-wider text-sm sm:text-base">
+                    Главная страница
+                </a>
             </div>
         </div>
-        <div className="bg-bg-secondary bottom-5 flex self-center absolute text-xl px-6 py-2 gap-0 text-text-primary">
-            <button className="hover:bg-accent px-5 hover:text-black transition-all cursor-pointer" onClick={()=>{router.back()}}>Назад</button>
-            <div className="flex border-r"/>
-            <a href="/" className="hover:bg-accent px-5 hover:text-black transition-all" >Главная страница</a>
-        </div>
-    </div>
-);
-}
+    );
+};
