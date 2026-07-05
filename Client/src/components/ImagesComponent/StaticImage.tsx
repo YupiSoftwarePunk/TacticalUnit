@@ -42,7 +42,6 @@ export const StaticImage: React.FC<StaticImageProps> = ({
         }
     };
 
-    // console.warn(isFallback)
     const src = isFallback
         ? `${ImageService.getDefaultImageUrl(type)}${ALLOWED_EXTENSIONS[fallbackExtIndex]}`
         : `${ImageService.getEntityImageUrl(type, entityId)}${ALLOWED_EXTENSIONS[extIndex]}`;

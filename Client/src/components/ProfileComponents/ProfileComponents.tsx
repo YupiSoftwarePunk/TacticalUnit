@@ -24,7 +24,7 @@ export const ProfileBGImage = ({ discordId, canEdit = false }: IProfileBGImage) 
                 className="flex object-top grayscale-40 object-cover self-center size-full text-white"
             />
             {canEdit && (
-                <button className="absolute transform bg-bg-primary px-4 py-1 rounded-md transition-all hover:text-black hover:bg-accent bottom-4 right-4">
+                <button className="absolute bg-bg-primary/90 backdrop-blur-sm px-3 py-1 sm:px-4 sm:py-1.5 rounded-md text-xs sm:text-sm transition-all hover:text-black hover:bg-accent bottom-3 right-3 sm:bottom-4 sm:right-4 font-text-bold border border-bg-secondary">
                     Заменить баннер
                 </button>
             )}
@@ -40,24 +40,27 @@ interface IProfileSidePanel {
 
 export const ProfileSidePanel = ({ imageUrl, availableOptions, Unit }: IProfileSidePanel) => {
     return (                
-        <div className="flex ">
-            <div className="flex size-full">
-                <div className="flex flex-col text-end gap-2">
-                    <div className="flex size-60 self-end relative">
-                        {imageUrl ? (
-                            <img src={`${imageUrl}`} alt="Profile image" className="object-top bg-black object-cover self-center size-full text-white"/>
-                        ) : (
-                            <SquareUser className="size-full text-text-secondary"></SquareUser>
-                        )}
-                    </div>
-                    <ul className="flex flex-col gap-1 pr-4 justify-stretch">
-                        {availableOptions && availableOptions.map((item) => (
-                            <Link href={item.url} key={item.id} className="hover:text-text-secondary-accent hover:bg-bg-primary flex transition-all justify-end">
-                                <p className="flex self-end">{item.name}</p>
-                            </Link>
-                        ))}
-                    </ul>
+        <div className="flex w-full justify-center md:justify-end">
+            <div className="flex flex-col items-center md:items-end gap-4 w-full">
+                <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-60 md:h-60 relative border border-bg-secondary bg-bg-secondary/10 overflow-hidden">
+                    {imageUrl ? (
+                        <img src={`${imageUrl}`} alt="Profile image" className="object-top bg-black object-cover size-full text-white"/>
+                    ) : (
+                        <SquareUser className="size-full text-text-secondary/60 p-4"></SquareUser>
+                    )}
                 </div>
+
+                <ul className="flex flex-col gap-1.5 w-full text-center md:text-end px-2 md:pr-4">
+                    {availableOptions && availableOptions.map((item) => (
+                        <Link 
+                            href={item.url} 
+                            key={item.id} 
+                            className="hover:text-text-secondary-accent hover:bg-bg-secondary/40 flex transition-all justify-center md:justify-end py-1 px-3 md:px-0 rounded md:rounded-none border border-bg-secondary/30 md:border-none"
+                        >
+                            <p className="text-sm sm:text-base font-text-bold tracking-wide">{item.name}</p>
+                        </Link>
+                    ))}
+                </ul>
             </div>
         </div>
     )
@@ -86,30 +89,49 @@ export const UnitInfoPanel = ({ Unit }: IUnitInfoPanel) => {
     }, [Unit])
 
     return (
-        <div className="flex size-full flex-col gap-2">
-            <div className="flex flex-col">
-                <div className="flex justify-items-center gap-3">
-                    <div className="bg-bg-dark size-8">
-                        <img src="#" alt="" />
+        <div className="flex w-full flex-col gap-4 text-center md:text-left items-center md:items-start">
+            <div className="flex flex-col items-center md:items-start gap-2 w-full">
+
+                <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
+                    <div className="bg-bg-dark size-8 flex items-center justify-center border border-bg-secondary/50">
+                        <img src="#" alt="" className="hidden" />
                     </div>
-                    <div className={`text-text-primary relative px-4 self-center`}>
-                        <Link href={Unit?.rankId == undefined ? "" : `/ranks/review-rank/${Unit.rankId}`} className={`absolute min-h-2 min-w-10 inset-0 px-4 opacity-20 opacity-gradient-to-r hover:text-text-primary-accent hover:cursor-pointer from-100 to-0 transition-all`} style={{ background: `${rank != undefined ? rank.color : "#ffffff"}` }}>
-                            {rank != undefined ? rank.name : "[ Без звания ]"}
+                    
+                    <div className="text-text-primary relative px-4 py-0.5 min-h-7 flex items-center justify-center overflow-hidden rounded border border-white/10">
+                        <Link 
+                            href={Unit?.rankId == undefined ? "" : `/ranks/review-rank/${Unit.rankId}`} 
+                            className="absolute inset-0 px-4 opacity-20 hover:opacity-40 transition-all bg-gradient-to-r from-bg-secondary to-transparent" 
+                            style={{ backgroundColor: `${rank?.color || "#ffffff"}` }}
+                        >
+                            &nbsp;
                         </Link>
-                        <p className="flex z-10 hover:text-text-primary-accent hover:cursor-pointer transition-all">
+                        <p className="relative z-10 text-xs sm:text-sm font-text-bold tracking-wider uppercase pointer-events-none">
                             {rank != undefined ? rank.name : "[ Без звания ]"}
                         </p>
                     </div>
                 </div>
-                <p className="text-text-secondary-accent text-3xl">{Unit?.nickname}</p>
+
+                <h1 className="text-text-secondary-accent text-2xl sm:text-3xl md:text-4xl font-text-bold tracking-tight mt-1">
+                    {Unit?.nickname || "Загрузка..."}
+                </h1>
             </div>
-            <ul className="flex flex-col"> 
-                {posts && posts.map((post) => (
-                    <Link href={`/posts/review-post/${post.id}`} className="hover:text-text-primary-accent hover:underline transition-all" key={post.id}>
-                        {post.name}
-                    </Link>
-                ))}
-            </ul>
+
+            <div className="w-full flex flex-col items-center md:items-start gap-1">
+                <span className="text-[10px] uppercase tracking-widest text-text-secondary/50 font-text-bold">Занимаемые должности</span>
+                <ul className="flex flex-col gap-1 w-full items-center md:items-start"> 
+                    {posts.length > 0 ? posts.map((post) => (
+                        <Link 
+                            href={`/posts/review-post/${post.id}`} 
+                            className="text-sm sm:text-base text-text-primary/90 hover:text-text-primary-accent hover:underline transition-all font-text-bold bg-bg-secondary/20 md:bg-transparent px-3 py-1 md:p-0 rounded border border-bg-secondary/40 md:border-none" 
+                            key={post.id}
+                        >
+                            {post.name}
+                        </Link>
+                    )) : (
+                        <span className="text-xs italic text-text-secondary/40">Должности отсутствуют</span>
+                    )}
+                </ul>
+            </div>
         </div>
     )
 }
@@ -126,13 +148,13 @@ export const RewardDisplay = ({ rewardId }: IRewardDisplay) => {
     }, [rewardId])
 
     return (
-        <Link href={`/awards/review-award/${reward?.id}`} className="w-10 h-18">
+        <Link href={`/awards/review-award/${reward?.id}`} className="w-10 h-16 sm:w-11 sm:h-18 transition-transform hover:scale-105 block">
             <Tooltip tooltipText={reward?.name} className="size-full flex" tooltipAlignment="center" verticalPlacement="top" className_Tooltip="flex text-nowrap">
                 <StaticImage
                     type="reward"
                     entityId={rewardId}
                     alt={reward?.name || "Reward"}
-                    className="size-full object-center object-contain overflow-hidden"
+                    className="size-full object-center object-contain overflow-hidden filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
                 />
             </Tooltip>
         </Link>
