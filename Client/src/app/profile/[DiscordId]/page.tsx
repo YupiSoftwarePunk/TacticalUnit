@@ -38,62 +38,66 @@ export default function Profile({ params }: { params: Promise<{ DiscordId: strin
     if (!loaded) { return <LoadingScreen></LoadingScreen> }
 
     return (
-        <div className="flex flex-col min-h-screen text-text-secondary font-text">
+        <div className="flex flex-col min-h-screen text-text-secondary bg-bg-primary font-text">
             <MainHeader></MainHeader>
-
-            <div className="flex min-h-[300px] h-[30vh] bg-black relative">
+            <div className="flex min-h-[200px] h-[25vh] md:min-h-[300px] md:h-[30vh] bg-black relative">
                 <ProfileBGImage discordId={DiscordId} canEdit={true}></ProfileBGImage>
             </div>
 
-            <div className="flex max-md:flex-col max-sm:text-xl flex-1 justify-center bg-bg-primary py-8 ">
-                <div className="flex mx-3">
+            <div className="flex flex-col md:flex-row flex-1 justify-center py-8 px-4 max-w-[1400px] mx-auto w-full gap-6">
+
+                <div className="flex justify-center md:justify-end">
                     <BaseContainer>
                         <ProfileSidePanel availableOptions={availableOptions}></ProfileSidePanel>
                     </BaseContainer>
                 </div>
-                
-                <div className=" flex border-r border-border-secondary"></div>
-                
-                <div className="flex flex-col px-3">
-                    <div className="flex flex-1 gap-3 max-lg:flex-col">
-                        <div className="flex flex-col flex-1 gap-2">
-                            <BaseContainer className="flex flex-1">
-                                <div className="flex flex-col">
+
+                <div className="border-b md:border-r border-border-secondary w-full md:w-auto md:self-stretch"></div>
+
+                <div className="flex flex-col flex-1 gap-6">
+                    <div className="flex flex-col lg:flex-row gap-6 flex-1">
+                        <div className="flex flex-col flex-1 gap-2 min-w-0">
+                            <BaseContainer className="flex flex-1 p-4">
+                                <div className="flex flex-col w-full">
                                     <UnitInfoPanel Unit={unitData}></UnitInfoPanel>
                                 </div>
                             </BaseContainer>
+
                             <BaseContainer className="flex ">
-                                <div className="flex">
-                                    <ActivityCalendar UnitDiscordId={`${DiscordId}`}></ActivityCalendar>
+                                <div className="w-full overflow-x-auto flex">
+                                    <div className="mx-auto min-w-max">
+                                        <ActivityCalendar UnitDiscordId={`${DiscordId}`}></ActivityCalendar>
+                                    </div>
                                 </div>
                             </BaseContainer>
                         </div>
-                        
-                        <div className=" flex border-r border-border-secondary"></div>
+
+                        <div className="border-b lg:border-r border-border-secondary w-full lg:w-auto lg:self-stretch"></div>
 
                         <div className="flex ">
-                            <BaseContainer className="flex flex-col flex-3 justify-start gap-4">
-                                <div className="flex flex-col gap-2">
-                                    <div className="flex size-80 border-b border-border-primary  overflow-hidden justify-center items-center">
+                            <BaseContainer className="flex flex-col justify-start gap-4 p-4 w-full max-w-sm">
+                                <div className="flex flex-col gap-2 items-center lg:items-start">
+                                    <div className="w-full max-w-[320px] aspect-square border-b border-border-primary overflow-hidden flex justify-center items-center">
                                         <StaticImage
                                             type="kit"
                                             entityId={DiscordId} 
                                             alt="Избранный кит бойца"
-                                            className="object-top object-cover size-full text-white bg-transparent"
+                                            className="object-top object-cover w-full h-full text-white bg-transparent"
                                         />
                                     </div>
-                                    <p className="text-text-secondary text-sm pl-1">Избранный кит профиля</p>
+                                    <p className="text-text-secondary text-sm pl-1 self-start">Избранный кит профиля</p>
                                 </div>
-                                <div className="flex flex-col">
-                                    {unitData?.assignedRewardsIds && unitData?.assignedRewardsIds.length > 0 ? 
-                                        <div className="flex flex-wrap max-w-77 gap-1">
+                                
+                                <div className="flex flex-col w-full items-center lg:items-start">
+                                    {unitData?.assignedRewardsIds && unitData?.assignedRewardsIds.length > 0 ? (
+                                        <div className="flex flex-wrap gap-1 justify-center lg:justify-start max-w-[308px]">
                                             {unitData?.assignedRewardsIds.map(ri => (
                                                 <RewardDisplay key={ri} rewardId={ri}></RewardDisplay>
                                             ))}
                                         </div>
-                                        :
+                                    ) : (
                                         <p className="text-sm italic">Боец еще не был награждён</p>
-                                    }
+                                    )}
                                 </div>
                             </BaseContainer>
                         </div>
