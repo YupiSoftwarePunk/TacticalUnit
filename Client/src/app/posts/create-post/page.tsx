@@ -9,8 +9,6 @@ import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-
-
 const mockG : IGivedPermission[] = [
     {
         id : "0",
@@ -50,7 +48,6 @@ const mockG : IGivedPermission[] = [
     }
 ]
 
-
 export default function createSubdivPage(){
     const [rankName, setRankName] = useState<string>("");
     const [description, setDescription] = useState<string>("");
@@ -58,7 +55,7 @@ export default function createSubdivPage(){
     const [availableRanks, setAvailableRanks] = useState<IRank[]>([]);
     const [headPostId, setHeadPostId] = useState<string>();
     const [maxRankId, setMaxRankId] = useState<string>();
-    const [headPrompt, setHeadPrompt] = useState<string>();
+    const [headPrompt, setHeadPrompt] = useState<string>("");
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
     const [color, setColor] = useState<string>("#ffffff");
     const [appendSubdivisionName, setAppendSubdivisionName] = useState<boolean>(false)
@@ -99,15 +96,11 @@ export default function createSubdivPage(){
         setHeadList(prepList)
     }
 
-
     function sendForm(){
         let problems : string = "";
         if(rankName.replace(' ', '').length == 0){
             problems += "Название должности\n";
         }
-        // if(maxRankId == undefined){
-        //     problems += "Высшее звание\n";
-        // }
         if (problems){
             alert("Вы забыли указать:\n"+problems)
             return;
@@ -138,39 +131,51 @@ export default function createSubdivPage(){
             console.error("Ошибка при создании должности:", error);
         });
     }
+
     useEffect(()=>{
-            PostService.getAll().then((postList) => {
-                let preparedPosts : IListedInputItem[] = [];
-                postList.forEach(post => {
-                    preparedPosts.push({
-                        Name: post.name,
-                        Id: post.id
-                    })
-                });
-                setAvailableHeadPosts([...preparedPosts]);
-                UpdateSearch("", preparedPosts);
-            })
-        },[])
+        PostService.getAll().then((postList) => {
+            let preparedPosts : IListedInputItem[] = [];
+            postList.forEach(post => {
+                preparedPosts.push({
+                    Name: post.name,
+                    Id: post.id
+                })
+            });
+            setAvailableHeadPosts([...preparedPosts]);
+            UpdateSearch("", preparedPosts);
+        })
+    },[])
 
-    return(<div className="flex flex-col min-h-screen">
-        <MainHeader></MainHeader>
+    return (
+        <div className="flex flex-col min-h-screen">
+            <MainHeader></MainHeader>
+            <CreationForm title="Создание должности" onClickSend={()=>{sendForm()}}>
+                <div className="flex flex-col gap-4 w-full">
 
-        <CreationForm title="Создание должности" onClickSend={()=>{sendForm()}}>
-            <BaseContainer className="flex-col">
-                <ColorInputField watermark="Цвет" value={color} editMode={true} onChange={(e)=>{setColor(e.target.value)}} editable={true}></ColorInputField>
-            </BaseContainer>
-            <BaseContainer className="flex-col">
-                <MultiroleInputField tooltip="Название должности" watermark="Название должности" value={rankName} editMode={true} onChange={(e)=>{setRankName(e.target.value)}} editable={true}></MultiroleInputField>
-                <CheckButton title="Дополнять названием подразделения" value={appendSubdivisionName} onClick={(e)=>{setAppendSubdivisionName(!appendSubdivisionName)}}></CheckButton>
-                <DescriptionInputField watermark="Описание должности" value={description} onChange={(e)=>{setDescription(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
-            </BaseContainer>
+                    <BaseContainer className="flex-col w-full">
+                        <ColorInputField watermark="Цвет" value={color} editMode={true} onChange={(e)=>{setColor(e.target.value)}} editable={true}></ColorInputField>
+                    </BaseContainer>
 
-            <BaseContainer>
-                <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name); setHeadPostId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
-            </BaseContainer>
-            <BaseContainer>
-                <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
-            </BaseContainer>
-        </CreationForm>
-    </div>)
+                    <BaseContainer className="flex-col gap-3 w-full">
+                        <MultiroleInputField tooltip="Название должности" watermark="Название должности" value={rankName} editMode={true} onChange={(e)=>{setRankName(e.target.value)}} editable={true}></MultiroleInputField>
+
+                        <div className="w-full py-1">
+                            <CheckButton title="Дополнять названием подразделения" value={appendSubdivisionName} onClick={(e)=>{setAppendSubdivisionName(!appendSubdivisionName)}}></CheckButton>
+                        </div>
+                        
+                        <DescriptionInputField watermark="Описание должности" value={description} onChange={(e)=>{setDescription(e.target.value)}} editMode={true} editable={true}></DescriptionInputField>
+                    </BaseContainer>
+
+                    <BaseContainer className="w-full">
+                        <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name!); setHeadPostId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
+                    </BaseContainer>
+
+                    <BaseContainer className="w-full">
+                        <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
+                    </BaseContainer>
+                    
+                </div>
+            </CreationForm>
+        </div>
+    )
 }
