@@ -88,6 +88,13 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
         }
     };
 
+    const handleCancel = () => {
+        if (selectedUnits.size === 0) {
+            return;
+        }
+        setSelectedUnits(new Set());
+    };
+
     const tableColumns: ColumnConfig[] = [
         {
             key: "selection",
@@ -150,7 +157,7 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                         </div>
 
                         <AssignFooter 
-                            cancelUrl={`/posts/${postName}`}
+                            onCancel={handleCancel}
                             onAssign={handleAssign}
                             selectedCount={selectedUnits.size}
                             isSaving={isSaving}

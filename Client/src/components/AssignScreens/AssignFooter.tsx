@@ -4,22 +4,22 @@ import Link from "next/link";
 import { Save } from "lucide-react";
 
 interface AssignFooterProps {
-    cancelUrl: string;
+    onCancel: () => void;
     onAssign: () => void;
     selectedCount: number;
     isSaving: boolean;
     buttonText: string;
 }
 
-export const AssignFooter = ({ cancelUrl, onAssign, selectedCount, isSaving, buttonText }: AssignFooterProps) => {
+export const AssignFooter = ({ onCancel, onAssign, selectedCount, isSaving, buttonText }: AssignFooterProps) => {
     return (
         <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 sm:justify-end mt-8 w-full">
-            <Link
-                href={cancelUrl}
-                className="px-6 py-3 border border-border-secondary hover:bg-bg-secondary transition-colors font-text text-sm text-text-primary text-center w-full sm:w-auto"
-            >
+            <button
+                type="button"
+                onClick={onCancel}
+                className="px-6 py-3 border border-border-secondary hover:bg-bg-secondary transition-colors font-text text-sm text-text-primary text-center w-full sm:w-auto cursor-pointer">
                 Отменить
-            </Link>
+            </button>
             <button
                 onClick={onAssign}
                 disabled={selectedCount === 0 || isSaving}

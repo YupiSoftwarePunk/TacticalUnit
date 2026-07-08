@@ -92,6 +92,13 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         }
     };
 
+    const handleCancel = () => {
+        if (selectedUnits.size === 0) {
+            return;
+        }
+        setSelectedUnits(new Set());
+    };
+
     const tableColumns: ColumnConfig[] = [
         {
             key: "selection",
@@ -170,7 +177,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                         </div>
 
                         <AssignFooter 
-                            cancelUrl={`/awards/${slug}`}
+                            onCancel={handleCancel}
                             onAssign={handleAssign}
                             selectedCount={selectedUnits.size}
                             isSaving={isSaving}
