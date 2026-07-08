@@ -161,10 +161,10 @@ function DiscordCallbackHandler() {
           setErrorDetails(`Структура ответа бэкенда: ${JSON.stringify(response)}`);
         }
       }
-      catch (error: any) {
+      catch (error) {
         console.error("Критическая ошибка fetch-запроса callback:", error);
         setStatusText("Произошла ошибка при обмене данными с сервером.");
-        setErrorDetails(error?.message || String(error));
+        setErrorDetails(String(error));
       }
     };
 

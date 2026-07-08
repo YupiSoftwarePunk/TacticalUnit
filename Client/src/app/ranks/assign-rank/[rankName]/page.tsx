@@ -43,9 +43,9 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
                 setUnits(unitsData);
                 setLoading(false);
             } 
-            catch (err: any) {
+            catch (err) {
                 console.error("Ошибка при получении данных:", err);
-                setError(err.message || "Ошибка при загрузке данных с сервера");
+                setError("Ошибка при загрузке данных с сервера");
                 setLoading(false);
             }
         };
@@ -90,9 +90,9 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
             setSelectedUnits(new Set());
             alert("Звания успешно присвоены бойцам!");
         } 
-        catch (err: any) {
+        catch (err) {
             console.error("Ошибка при сохранении:", err);
-            setError(err.message || "Ошибка при присвоении звания");
+            setError("Ошибка при присвоении звания");
             setIsSaving(false);
         }
     };

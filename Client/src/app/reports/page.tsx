@@ -108,9 +108,9 @@ export default function ReportsPage() {
         try {
             // Вызов эндпоинта генерации
         } 
-        catch (err: any) {
+        catch (err) {
             console.error("Ошибка при генерации отчёта:", err);
-            setError(err.message || "Не удалось отправить конфигурацию отчёта");
+            setError("Не удалось отправить конфигурацию отчёта");
         } 
         finally {
             setIsLoading(false);

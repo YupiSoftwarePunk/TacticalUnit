@@ -112,7 +112,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
             
             if (Array.isArray(membersData)) {
                 setMembers(membersData);
-            } else if (membersData && (membersData as any).value) {
+            } 
+            else if (membersData && (membersData as any).value) {
                 setMembers((membersData as any).value);
             }
 

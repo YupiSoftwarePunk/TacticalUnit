@@ -40,8 +40,9 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                 setUnits(unitsData);
                 setLoading(false);
             } 
-            catch (err: any) {
-                setError(err?.message || "Ошибка при загрузке данных с сервера");
+            catch (err) {
+                console.error(err);
+                setError("Ошибка при загрузке данных с сервера");
                 setLoading(false);
             }
         };
@@ -82,8 +83,9 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
             
             alert("Должности успешно присвоены бойцам!");
         } 
-        catch (err: any) {
-            setError(err?.message || "Ошибка при сохранении: не удалось назначить должность");
+        catch (err) {
+            console.error(err);
+            setError("Ошибка при сохранении: не удалось назначить должность");
             setIsSaving(false);
         }
     };
