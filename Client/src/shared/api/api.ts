@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000/api"; 
+const API_BASE_URL = "http://localhost:5000/api/v1"; 
 
 export const apiClient = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
     const method = (options.method || "GET").toUpperCase();
