@@ -61,7 +61,7 @@ export default function CreateAwardPage() {
             return;
         }
 
-        let newReward: IReward = {
+        const newReward: IReward = {
             color: color,
             conditions: conditions,
             privileges: privileges,

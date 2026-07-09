@@ -46,7 +46,7 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     
     useEffect(()=>{
             SubdivisionService.getAll().then((postList) => {
-                let preparedPosts : IListedInputItem[] = [];
+                const preparedPosts : IListedInputItem[] = [];
                 postList.forEach(post => {
                     preparedPosts.push({
                         Name: post.name,

@@ -19,7 +19,7 @@ export const MainHeader = () => {
 
     function userFromLocalStorage() {
         if (typeof window !== "undefined") {
-            let userId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
+            const userId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string)?.discord_id : null;
             return userId;
         }
         return null;

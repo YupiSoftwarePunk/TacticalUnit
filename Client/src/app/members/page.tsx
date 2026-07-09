@@ -52,8 +52,8 @@ export default function MembersPage() {
                             formattedJoinDate = `${day}.${month}.${year}`;
                         }
                     }
-                    let setRank = ranks.find(x => x.id?.toString() == element.rankId?.toString());
-                    let setPost = posts.find(x => x.id == element.postsIds?.[0]);
+                    const setRank = ranks.find(x => x.id?.toString() == element.rankId?.toString());
+                    const setPost = posts.find(x => x.id == element.postsIds?.[0]);
 
                     return {
                         rank: setRank ? setRank.name : "Без звания",

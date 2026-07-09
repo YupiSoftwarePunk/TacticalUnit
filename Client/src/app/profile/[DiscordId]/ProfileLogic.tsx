@@ -147,10 +147,10 @@ export function getStoryMenuOptions(disId : string){
 
 
 export async function applyPermissions(menuOptions : IActionMenuOption[], disId : string = "-1") : Promise<IActionMenuOption[]>{
-        let preparedOptions : IActionMenuOption[] = [];
+        const preparedOptions : IActionMenuOption[] = [];
         await UnitService.getPermissionsIds(disId).then((r)=>{
-            let permissions : string[] = r
-            let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null;
+            const permissions : string[] = r
+            const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null;
             permissions.push("any");
             if (user.discord_id == disId){
                 permissions.push("self");

@@ -5,7 +5,7 @@ interface IBaseVar{
 
 export function getBaseVariables() : IBaseVar
 {
-    let baseVars : IBaseVar = {
+    const baseVars : IBaseVar = {
         dom : "http://localhost:6001"
     }
     return baseVars;

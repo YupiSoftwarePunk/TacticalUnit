@@ -1,6 +1,6 @@
 export function getMockStates() : IUnitState[] {
-    let today = new Date();
-    let states : IUnitState[] = [
+    const today = new Date();
+    const states : IUnitState[] = [
         {
             id: "0",
             status: {
@@ -26,8 +26,8 @@ export function getMockStates() : IUnitState[] {
 }
 
 export function getMockSingleDayEvents() : ISingleDayEvent[] {
-    let today = new Date();
-    let states : ISingleDayEvent[] = [
+    const today = new Date();
+    const states : ISingleDayEvent[] = [
         {
             id: "0",
             name: "Кигризский метеорит упал мне в чай!",

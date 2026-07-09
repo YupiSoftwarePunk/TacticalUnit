@@ -8,7 +8,7 @@ import { applyPermissions, getStoryMenuOptions } from "../ProfileLogic";
 import { BaseContainer } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { UnitService } from "@/shared/api/services/unitService";
 
-const storyPage = ({ params }: { params: Promise<{ DiscordId: string }> }) => {
+const StoryPage = ({ params }: { params: Promise<{ DiscordId: string }> }) => {
     const { DiscordId } = React.use(params);
     const [unit, setUnit] = useState<IUnit>();
     const [availableOptions, setAvailableOptions] = useState<IActionMenuOption[]>([]);
@@ -59,4 +59,4 @@ const storyPage = ({ params }: { params: Promise<{ DiscordId: string }> }) => {
     );
 };
 
-export default storyPage;
+export default StoryPage;

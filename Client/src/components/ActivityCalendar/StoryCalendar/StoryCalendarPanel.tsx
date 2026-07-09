@@ -33,7 +33,7 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
 
 
 
-        let activityMatrixFilled : activityCell[] = [];
+        const activityMatrixFilled : activityCell[] = [];
 
         const sdm = new Date(year, month, 1);
         let sdw = sdm.getDay();
@@ -42,7 +42,7 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
         sdw = sdw - 1;
 
         for(let i = 0; i < sdw; i++){
-        let newCell: activityCell = {
+        const newCell: activityCell = {
             id : i,
             date : new Date(),
             isCurrentMonth : false,
@@ -51,14 +51,14 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
         activityMatrixFilled.push(newCell);
         }
         for(let i = 0; i < new Date(year, month+1, 0).getDate(); i++){
-            let cellDate : Date = new Date(year, month, i+1);
-            let cellColors : string[] = []
-            let wasActive  = dates.some(date => 
+            const cellDate : Date = new Date(year, month, i+1);
+            const cellColors : string[] = []
+            const wasActive  = dates.some(date => 
                     date.getFullYear() === cellDate.getFullYear() &&
                     date.getMonth() === cellDate.getMonth() &&
                     date.getDate() === cellDate.getDate()
                 );
-            let newCell: activityCell = {
+            const newCell: activityCell = {
                 id : i + activityMatrixFilled.length,
                 date : cellDate,
                 isCurrentMonth : true,
@@ -72,7 +72,7 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
             if(unitStates.length > 0){
                 unitStates.forEach(state => {
                     if(isDateBetween(cellDate, state.startDate, state.endDate)){
-                        let prepInfo : IContainedInfo = {
+                        const prepInfo : IContainedInfo = {
                             type: "STATE",
                             content: `${state.status.name}`,
                             color: state.status.color,

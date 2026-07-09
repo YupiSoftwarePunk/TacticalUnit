@@ -64,7 +64,7 @@ export default function CreateSubdivPage(){
     const [availableHeadSubdivisions, setAvailableHeadSubdivisions] = useState<IListedInputItem[]>([]);
 
 
-    let [permissions, setPermissions] = useState<IGivedPermission[]>([
+    const [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
             id : "1",
             permissionType : 1,
@@ -107,7 +107,7 @@ export default function CreateSubdivPage(){
                 alert("Вы забыли указать:\n"+problems)
                 return;
             }
-            let newRank : ISubdivision = {
+            const newRank : ISubdivision = {
                 description: subdivisionDescription,
                 appendHeadName: appendHeadName,
                 givedPermissions: permissions,
@@ -122,7 +122,7 @@ export default function CreateSubdivPage(){
 
     useEffect(()=>{
             SubdivisionService.getAll().then((subList) => {
-                let preparedRanks : IListedInputItem[] = [];
+                const preparedRanks : IListedInputItem[] = [];
                 subList.forEach(subdivision => {
                     preparedRanks.push({
                         Name: subdivision.name,

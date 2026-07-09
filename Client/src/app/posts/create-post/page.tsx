@@ -134,7 +134,7 @@ export default function CreatePostPage() {
 
     useEffect(()=>{
         PostService.getAll().then((postList) => {
-            let preparedPosts : IListedInputItem[] = [];
+            const preparedPosts : IListedInputItem[] = [];
             postList.forEach(post => {
                 preparedPosts.push({
                     Name: post.name,

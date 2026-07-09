@@ -132,8 +132,8 @@ const TreeNode = ({ node, showVacant }: { node: StructureNode; showVacant: boole
             return { chain: [node], externalChildren: node.children };
         }
 
-        let collectedChain: StructureNode[] = [node];
-        let collectedExternal: StructureNode[] = [];
+        const collectedChain: StructureNode[] = [node];
+        const collectedExternal: StructureNode[] = [];
 
         const traverse = (currentNode: StructureNode) => {
             currentNode.children.forEach(child => {

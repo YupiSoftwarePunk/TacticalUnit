@@ -33,7 +33,7 @@ export default function BackgroundPage({ params }: { params: Promise<{ DiscordId
     useEffect(()=>{
         const preparedImages : IProfileAttribute[] = [];
         UnitService.getAvailableBg(DiscordId).then((bgs=>{
-            let allKeys = bgs.keys();
+            const allKeys = bgs.keys();
             allKeys.forEach(key => {
                 preparedImages.push({name: key, id: bgs.get(key)!});
             });

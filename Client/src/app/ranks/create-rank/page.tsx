@@ -61,7 +61,7 @@ export default function CreateRankPage(){
     const [color, setColor] = useState<string>("#ffffff");
     const [availableHeadRanks, setAvailableHeadRanks] = useState<IListedInputItem[]>([]);
 
-    let [permissions, setPermissions] = useState<IGivedPermission[]>([
+    const [permissions, setPermissions] = useState<IGivedPermission[]>([
         {
             id : '1',
             permissionType : 1,
@@ -138,7 +138,7 @@ export default function CreateRankPage(){
             return;
         }
 
-        let newRank : IRank = {
+        const newRank : IRank = {
             counterToReach : activityToPromotion,
             color : color,
             name : rankName,
@@ -195,7 +195,7 @@ export default function CreateRankPage(){
 
     useEffect(()=>{
         RankService.getAll().then((rankList) => {
-            let preparedRanks : IListedInputItem[] = [];
+            const preparedRanks : IListedInputItem[] = [];
             rankList.forEach(rank => {
                 preparedRanks.push({
                     Name: rank.name,

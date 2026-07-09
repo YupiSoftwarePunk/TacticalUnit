@@ -16,12 +16,12 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
     const [calendars, setCalendars] = useState<IStoryCalendarPanel>()
 
     let [activityDates, setActivityDates] = useState<Date[]>([]);
-    let [unitStates, setUnitStates] = useState<IUnitState[]>([]);
-    let [singleDayEvents, setSingleDayEvents] = useState<ISingleDayEvent[]>([]);
+    const [unitStates, setUnitStates] = useState<IUnitState[]>([]);
+    const [singleDayEvents, setSingleDayEvents] = useState<ISingleDayEvent[]>([]);
     
     function getTotalMonths(){
 
-        let activityMonths : Date[] = [];
+        const activityMonths : Date[] = [];
         
         activityDates.forEach(d => {
             
@@ -45,7 +45,7 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
                 setSingleDayEvents(getMockSingleDayEvents())
             })
             await UnitService.getActivity(DiscordId).then(a => {
-                let list : Date[] = []
+                const list : Date[] = []
 
                 a.forEach(act => {
                     const [day, month, year] = act.split(".").map(Number);
@@ -65,17 +65,17 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
     function getStartOfTheMonthOffset(year : number, month : number) : number{
         const startDayOfMonth = new Date(year, month, 0);
-        let startDayOfWeek = startDayOfMonth.getDay();
+        const startDayOfWeek = startDayOfMonth.getDay();
 
         return startDayOfWeek;
     }
 
 
     function getCalendar(year : number, month : number){
-        let preparedMonth : activityCell[] = [];
+        const preparedMonth : activityCell[] = [];
         //console.warn(getStartOfTheMonthOffset(year, month)-1);
         for(let i = 0; i < getStartOfTheMonthOffset(year, month); i++){
-        let newCell: activityCell = {
+        const newCell: activityCell = {
             id : i,
             date : new Date(),
             isCurrentMonth : false,
@@ -85,7 +85,7 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
         }
         for(let i = 0; i < new Date(year, month+1, 0).getDate(); i++){
 
-            let newCell: activityCell = {
+            const newCell: activityCell = {
                 id : i + preparedMonth.length,
                 date : new Date(),
                 isCurrentMonth : true,
