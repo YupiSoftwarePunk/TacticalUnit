@@ -49,7 +49,7 @@ const mockG : IGivedPermission[] = [
     }
 ]
 
-export default function createRankPage(){
+export default function CreateRankPage(){
     const router = useRouter();
     const [rankName, setRankName] = useState<string>("");
     const [activityToPromotion, setActivityToPromotion] = useState<number>(1);

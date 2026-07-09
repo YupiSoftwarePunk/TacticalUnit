@@ -28,7 +28,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
 
-
     const [post, setPost] = useState<IPost>({
         id: "0",
         description: "Загрузка описания...",
@@ -48,7 +47,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [members, setMembers] = useState<any[]>([]);
     const [postPrompt, setPostPrompt] = useState<string>("");
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
-
 
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
     const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
@@ -96,8 +94,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         setSubdivisionList(prepList)
     }
 
-
-
     useEffect(() => {
         if (isNaN(numericPostId)) {
             setError("Некорректный ID должности");
@@ -129,11 +125,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         .finally(() => {
             setIsLoading(false);
         });
-
-
-
-
-
     }, [numericPostId]);
 
     if (error !== undefined) {
@@ -210,7 +201,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             onChoice={(e)=>{
                                 setPost({...post, subdivisionId: e.Id})
                                 setSubdivisionPrompt(e.Name!);
-
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 

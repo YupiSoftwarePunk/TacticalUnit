@@ -47,7 +47,7 @@ const mockG : IGivedPermission[] = [
 ]
 
 
-export default function createSubdivPage(){
+export default function CreateSubdivPage(){
     const router = useRouter();
     const [subdivisionName, setSubdivisionName] = useState<string>("");
     const [subdivisionDescription, setSubdivisionDescription] = useState<string>("");

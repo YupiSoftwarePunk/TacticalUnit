@@ -61,7 +61,7 @@ export default function CreateAwardPage() {
             return;
         }
 
-        let newRank: IReward = {
+        let newReward: IReward = {
             color: color,
             conditions: conditions,
             privileges: privileges,
@@ -69,17 +69,14 @@ export default function CreateAwardPage() {
         };
         
         try {
-            const createdReward = await RewardService.add(newRank);
-
+            const createdReward = await RewardService.add(newReward);
             if (imageFile && createdReward?.id) {
                 const formData = new FormData();
                 formData.append("file", imageFile); 
-
                 await ImageService.uploadReward(createdReward.id, {
                     method: "POST",
                     body: formData
                 });
-
                 alert(`Награда "${createdReward.name}" и её изображение успешно созданы!`);
             } 
             else {
