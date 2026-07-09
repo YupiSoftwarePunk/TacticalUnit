@@ -10,16 +10,23 @@ import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalT
 import { AssignInfoHeader } from "@/components/AssignScreens/AssignInfoHeader";
 import { AssignFooter } from "@/components/AssignScreens/AssignFooter";
 import { RewardService } from "@/shared/api/services/RewardService";
-import { ImageService } from "@/shared/api/services/imageService"; 
 import { UnitService } from "@/shared/api/services/unitService";
 import { StaticImage } from "@/components/ImagesComponent/StaticImage";
+
+interface IFormattedUnit {
+    discordId: string;
+    nickname: string;
+    rank: string;
+    roles: string[];
+    steamId?: string;
+}
 
 export default function AssignAwardPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = React.use(params);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [award, setAward] = useState<IReward | null>(null);
-    const [units, setUnits] = useState<any[]>([]);
+    const [units, setUnits] = useState<IFormattedUnit[]>([]);
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
 
@@ -38,7 +45,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                 ]);
                 setAward(rewardData);
 
-                const formattedUnits = allUnits.map((unit: IUnit) => ({
+                const formattedUnits : IFormattedUnit[] = allUnits.map((unit: IUnit) => ({
                     discordId: String(unit.discordId),
                     nickname: unit.nickname,
                     rank: unit.rank?.name || "Без звания",
@@ -49,9 +56,10 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                 setUnits(formattedUnits);
                 setLoading(false);
             } 
-            catch (err: any) {
+            catch (err) {
                 console.error(err);
-                setError(err.message || "Ошибка при загрузке данных с сервера");
+                const errorMessage = err instanceof Error ? err.message : "Ошибка при загрузке данных с сервера";
+                setError(errorMessage);
                 setLoading(false);
             }
         };
@@ -85,9 +93,10 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
             setSelectedUnits(new Set());
             alert("Награды успешно присвоены бойцам!");
         } 
-        catch (err: any) {
+        catch (err) {
             console.error(err);
-            setError(err.message || "Ошибка при назначении награды");
+            const errorMessage = err instanceof Error ? err.message : "Ошибка при назначении награды";
+            setError(errorMessage);
             setIsSaving(false);
         }
     };
@@ -106,7 +115,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
             sortable: false,
             filterable: false,
             className: "w-12",
-            render: (_, item: any) => (
+            render: (_, item: IFormattedUnit) => (
                 <button
                     onClick={() => toggleUnitSelection(item.discordId)}
                     className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
@@ -128,7 +137,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         },
     ];
 
-    const handleExport = (data: any[]) => {
+    const handleExport = (data: IFormattedUnit[]) => {
         console.log("Экспорт данных:", data);
     };
 

@@ -22,14 +22,15 @@ export default function AwardsPage() {
                 const data = await RewardService.getAll();
                 setAwards(data);
             } 
-            catch (err: any) {
-                setError(err.message || "Не удалось загрузить награды");
+            catch (err) {
+                console.error(err);
+                const errorMessage = err instanceof Error ? err.message : "Ошибка при назначении награды";
+                setError(errorMessage);
             } 
             finally {
                 setIsLoading(false);
             }
         };
-
         fetchAwards();
     }, []);
 

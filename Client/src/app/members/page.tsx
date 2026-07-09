@@ -19,14 +19,45 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
 ];
 
+interface IUnitWithActivity extends IUnit {
+    activity_week?: number;
+    activityWeek?: number;
+    activity_month?: number;
+    activityMonth?: number;
+    activity_year?: number;
+    activityYear?: number;
+    activity_total?: number;
+    activityTotal?: number;
+    favoriteKit?: {
+        id: string;
+        name: string;
+    };
+    kit?: string;
+}
+
+interface IMemberRow {
+    rank: string;
+    nickname: string;
+    top_role: string;
+    roles: string[];
+    activity_week: number;
+    activity_month: number;
+    activity_year: number;
+    activity_total: number;
+    kit: string;
+    steamId: string;
+    discordId: string;
+    joinDate: string;
+}
+
 export default function MembersPage() {
-    const [members, setMembers] = useState<any[]>([]);
+    const [members, setMembers] = useState<IMemberRow[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>();
 
     useEffect(() => {
-        let ranks: any[] = [];
-        let posts: any[] = [];
+        let ranks: IRank[] = [];
+        let posts: IPost[] = [];
 
         const fetchMembers = async () => {
             try {
@@ -39,8 +70,8 @@ export default function MembersPage() {
                 const units = await UnitService.getAll();
                 if (!units || !Array.isArray(units)) return;
 
-                const preparedMemberArray = units.map((element: any) => {
-                    const memberRoles: string[] = element.posts?.map((p: any) => p.name).filter(Boolean) || [];
+                const preparedMemberArray: IMemberRow[] = units.map((element: IUnitWithActivity) => {
+                    const memberRoles: string[] = element.posts?.map((p: IPost) => p.name).filter(Boolean) || [];
 
                     let formattedJoinDate = "—";
                     if (element.joined) {
@@ -83,7 +114,7 @@ export default function MembersPage() {
         fetchMembers();
     }, []);
 
-    const handleExport = (dataToExport: any[]) => {
+    const handleExport = (dataToExport: IMemberRow[]) => {
         console.log("Экспорт данных:", dataToExport);
         alert("Модальное окно выбора полей для экспорта");
     };
@@ -117,7 +148,7 @@ export default function MembersPage() {
                             columns={COLUMNS_CONFIG} 
                             onExport={handleExport}
                             defaultSort={{ key: "rank", direction: "desc" }}
-                            renderActions={(item: any) => (
+                            renderActions={(item: IMemberRow) => (
                                 <div className="flex flex-row md:flex-row gap-2 w-full justify-end">
                                     <button 
                                         onClick={() => copyToClipboard(item.steamId)}

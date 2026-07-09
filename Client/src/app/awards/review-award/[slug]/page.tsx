@@ -4,11 +4,7 @@ import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, Descrip
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
-import { PostService } from "@/shared/api/services/postService";
-import { RankService } from "@/shared/api/services/RankService";
 import { RewardService } from "@/shared/api/services/RewardService";
-import { ImageService } from "@/shared/api/services/imageService";
-import { UnitService } from "@/shared/api/services/unitService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -19,6 +15,14 @@ const COLUMNS_CONFIG = [
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
     { key: "roles", label: "Должность", sortable: false, filterable: true },
 ];
+
+interface IAssignedMember {
+    discordId: string;
+    nickname: string;
+    rank: string;
+    roles: string[];
+    steamId: string;
+}
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = React.use(params);
@@ -33,41 +37,42 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         color: "#F100FF"
     });
 
-    const [assignedMembers, setAssignedMembers] = useState<any[]>([]);
+    const [assignedMembers, setAssignedMembers] = useState<IAssignedMember[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>();
 
-    async function loadData() {
-        try {
-            const rewardId = Number(slug);
-            if (isNaN(rewardId)) {
-                throw new Error("Некорректный идентификатор награды (slug)");
-            }
-
-            const [rewardData, assignedData] = await Promise.all([
-                RewardService.getById(slug),
-                RewardService.getAssigned(slug)
-            ]);
-            setReward(rewardData);
-
-            const formattedMembers = assignedData.map((item: IAssignedReward) => ({
-                discordId: item.unit?.discordId || "",
-                nickname: item.unit?.nickname || "Без никнейма",
-                rank: item.unit?.rank?.name || "Без звания",
-                roles: item.unit?.posts?.map(post => post.name) || [],
-                steamId: item.unit?.steamId || ""
-            }));
-            setAssignedMembers(formattedMembers);
-            setLoaded(true);
-
-        } 
-        catch (er: any) {
-            console.warn(er);
-            setError(`Не удалось загрузить данные | ${er.message || er}`);
-        }
-    }
-
     useEffect(() => {
+        async function loadData() {
+            try {
+                const rewardId = Number(slug);
+                if (isNaN(rewardId)) {
+                    throw new Error("Некорректный идентификатор награды (slug)");
+                }
+
+                const [rewardData, assignedData] = await Promise.all([
+                    RewardService.getById(slug),
+                    RewardService.getAssigned(slug)
+                ]);
+                setReward(rewardData);
+
+                const formattedMembers: IAssignedMember[] = assignedData.map((item: IAssignedReward) => ({
+                    discordId: item.unit?.discordId || "",
+                    nickname: item.unit?.nickname || "Без никнейма",
+                    rank: item.unit?.rank?.name || "Без звания",
+                    roles: item.unit?.posts?.map(post => post.name) || [],
+                    steamId: item.unit?.steamId || ""
+                }));
+                setAssignedMembers(formattedMembers);
+                setLoaded(true);
+
+            } 
+            catch (er) {
+                console.error(er);
+                const errorMessage = er instanceof Error ? er.message : "Ошибка при загрузке данных";
+                setError(errorMessage);
+            }
+        }
+
         loadData();
     }, [slug]);
 
