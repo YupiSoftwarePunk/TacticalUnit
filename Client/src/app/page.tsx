@@ -10,6 +10,18 @@ import { useAuth } from "@/context/AuthContext";
 
 type ThemeMode = "dark" | "light" | "system";
 
+interface IExtendedCallbackResponse extends IDiscordCallbackResponse {
+  data?: {
+    access_token?: string;
+    user_id?: string;
+    username?: string;
+  };
+  accessToken?: string;
+  token?: string;
+  userId?: string;
+  name?: string;
+}
+
 const PRIDE_MEMBERS = [
   {
     id: 1,
@@ -99,7 +111,9 @@ function DiscordCallbackHandler() {
     setStatusText(null);
     setErrorDetails(null);
 
-    (window as any).navigation?.reload();
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
     router.refresh();
   };
 
@@ -120,13 +134,13 @@ function DiscordCallbackHandler() {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
 
-        const response = await AuthService.getCallBack(code, state || undefined) as any;
+        const response = await AuthService.getCallBack(code, state || undefined) as IExtendedCallbackResponse;
         console.log("Ответ от бэкенда при обмене кода:", response);
 
         const token = response?.access_token || response?.data?.access_token || response?.accessToken || response?.token;
-        const userId = response?.user?.discord_id || response?.data?.user_id || response?.userId || response?.id;
-        const userName = response?.user?.username || response?.data?.username || response?.userName || response?.name || `User#${userId}`;
-        const userObj = response?.user || response?.data?.user || { discord_id: userId, username: userName };
+        const userId = response?.user?.discord_id || response?.data?.user_id || response?.userId;
+        const userName = response?.user?.username || response?.data?.username || response?.name || `User#${userId}`;
+        const userObj = response?.user || { discord_id: userId || "", username: userName };
 
         if (token) {
           localStorage.setItem("access_token", token);

@@ -38,12 +38,13 @@ export default function BackgroundPage({ params }: { params: Promise<{ DiscordId
                 preparedImages.push({name: key, id: kits.get(key)!});
             });
         }))
-        setImages(preparedImages)
+        setImages(preparedImages);
+        if (preparedImages.length > 0) {
+            setCurrentImage(preparedImages[0]);
+        }
     },[])
     
     const [currentImage, setCurrentImage] = useState<IProfileAttribute>(images[0]);
-
-
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
     function ChooseBg(bg: IProfileAttribute){

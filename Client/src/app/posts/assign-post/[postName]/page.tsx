@@ -120,7 +120,7 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
         { key: "currentPost", label: "Текущая должность", sortable: false, filterable: true },
     ];
 
-    const handleExport = (data: any[]) => {
+    const handleExport = (data: IUnit[]) => {
         console.log("Экспорт данных:", data);
     };
 

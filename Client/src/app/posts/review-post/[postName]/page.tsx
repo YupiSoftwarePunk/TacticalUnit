@@ -22,6 +22,10 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const { postName } = React.use(params);
     const numericPostId = Number(postName);
 
+        if (isNaN(numericPostId)) {
+        return <ErrorScreen error="Некорректный ID должности" />;
+    }
+
     const [canEdit, setCanEdit] = useState(false);
     const [canGrant, setCanGrant] = useState(true);
     const [isNotSaved, setIsNotSaved] = useState(false);
@@ -44,7 +48,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         discordRoleId: ""
     });
 
-    const [members, setMembers] = useState<any[]>([]);
+    const [members, setMembers] = useState<IAssignedReward[]>([]);
     const [postPrompt, setPostPrompt] = useState<string>("");
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
 
@@ -95,12 +99,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     }
 
     useEffect(() => {
-        if (isNaN(numericPostId)) {
-            setError("Некорректный ID должности");
-            setIsLoading(false);
-            return;
-        }
-
         setIsLoading(true);
 
         Promise.all([
@@ -113,8 +111,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
             if (Array.isArray(membersData)) {
                 setMembers(membersData);
             } 
-            else if (membersData && (membersData as any).value) {
-                setMembers((membersData as any).value);
+            else if (membersData && typeof membersData === 'object' && 'value' in membersData && Array.isArray((membersData as { value: IAssignedReward[] }).value)) {
+                setMembers((membersData as { value: IAssignedReward[] }).value);
             }
 
             setPostPrompt(postData.head?.name || "");
@@ -147,7 +145,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             value={post.color} 
                             onChange={(e) => {
                                 if (validateColor(e.target.value)) {
-                                    setPost((prev: any) => ({ ...prev, color: e.target.value }));
+                                    setPost((prev: IPost) => ({ ...prev, color: e.target.value }));
                                     setIsNotSaved(true);
                                 }
                             }}
@@ -157,7 +155,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                         <MultiroleInputField 
                             value={post.name} 
                             onChange={(e) => {
-                                setPost((prev: any) => ({ ...prev, name: e.target.value }));
+                                setPost((prev: IPost) => ({ ...prev, name: e.target.value }));
                                 setIsNotSaved(true);
                             }} 
                             tooltip="Наименование должности" 
@@ -166,7 +164,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                         <DescriptionInputField 
                             value={post.description} 
                             onChange={(e) => {
-                                setPost((prev: any) => ({ ...prev, description: e.target.value }));
+                                setPost((prev: IPost) => ({ ...prev, description: e.target.value }));
                                 setIsNotSaved(true);
                             }} 
                             tooltip="Описание должности" 

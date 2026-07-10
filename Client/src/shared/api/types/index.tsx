@@ -229,10 +229,10 @@ interface IPost {
     name: string;
 }
 
-interface IRank {
-    name: string;
-    color: string;
-}
+// interface IRank {
+//     name: string;
+//     color: string;
+// }
 
 
 

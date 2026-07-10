@@ -139,7 +139,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
         },
     ];
 
-    const handleExport = (data: any[]) => {
+    const handleExport = (data: IUnit[]) => {
         console.log("Экспорт данных:", data);
     };
 

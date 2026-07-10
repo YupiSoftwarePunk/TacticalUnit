@@ -147,9 +147,10 @@ export default function CreateRankPage(){
         }
 
         RankService.add({ method: "POST", body: JSON.stringify(newRank) })
-        .then(async (createdRank: any) => { 
-            console.log("Ответ сервера при создании звания:", createdRank);
-            const targetId = createdRank?.id || createdRank?.Id || createdRank?.data?.id || createdRank?.data?.Id;
+        .then(async (createdRank: IRank[]) => { 
+            console.log("Ответ сервера при создании звания:", createdRank); null;
+            const newrank = createdRank && createdRank.length > 0 ? createdRank[0] : null;
+            const targetId = newrank?.id;
             console.log("Проверка перед отправкой фото:", { imageFile, targetId });
 
             if (imageFile && targetId) {

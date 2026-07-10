@@ -18,6 +18,14 @@ const COLUMNS_CONFIG = [
     { key: "steamId", label: "SteamID", sortable: false, filterable: true },
 ];
 
+interface IMemberRow {
+    nickname: string;
+    top_role: string;
+    kit: string;
+    steamId: string;
+    discordId: string;
+}
+
 export default function PostPage({ params }: { params: Promise<{ rankId: string }> }) {
     const { rankId } = React.use(params);
     const numericRankId = Number(rankId);
@@ -39,7 +47,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
         discordRoleId: "-1"
     });
 
-    const [members, setMembers] = useState<any[]>([]);
+    const [members, setMembers] = useState<IMemberRow[]>([]);
     const [rankPrompt, setRankPrompt] = useState<string>("");
 
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
@@ -81,11 +89,12 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
             setRank(rankData);
             setRankPrompt(rankData.previous?.name || "");
 
-            const rawUnits = Array.isArray(membersData) ? membersData : (membersData as any)?.value || [];
+            const rawUnits = Array.isArray(membersData) ? membersData
+            : (membersData as { value?: IUnit[] })?.value || [];
 
-            const preparedMembers = rawUnits.map((element: any) => {
-                const unit = element.unit || element; 
-                const memberRoles = unit.posts?.map((p: any) => p.name).filter(Boolean) || [];
+            const preparedMembers: IMemberRow[] = rawUnits.map((element) => {
+                const unit = (element as any).unit ? (element as any).unit : element;
+                const memberRoles = unit.posts?.map((p: IPost) => p.name).filter(Boolean) || [];
 
                 return {
                     nickname: unit.nickname || "Без никнейма",
