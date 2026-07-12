@@ -10,6 +10,8 @@ import { Pencil } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 
+// тут нужно внедрить ендпоинт изменения данных награды
+
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true },

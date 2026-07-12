@@ -4,7 +4,10 @@ import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, Descrip
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
-import React, { useEffect, useState } from "react";
+import { validateColor } from "@/typescript/colorValidator";
+import React, { useEffect, useState, useCallback } from "react";
+
+// тут нужно внедрить ендпоинт изменения данных подразделения
 
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
@@ -13,15 +16,25 @@ const COLUMNS_CONFIG = [
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true },
 ];
 
+interface IMemberRow {
+    rank: string;
+    nickname: string;
+    roles: string;
+    kit: string;
+}
+
+interface ISubdivisionWithMembers extends ISubdivision {
+    members?: unknown[];
+    value?: unknown[];
+}
+
 export default function PostPage({ params }: { params: Promise<{ subdivisionName: string }> }) {
-    const { subdivisionName: subdivisionName } = React.use(params);
+    const { subdivisionName } = React.use(params);
     const numericSubdivisionId = Number(subdivisionName);
 
     const [canEdit, setCanEdit] = useState<boolean>(false);
-
-    const [isLoading, setIsLoading] = useState(true);
     const [isNotSaved, setIsNotSaved] = useState(false);
-    
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
 
     const [subdivision, setSubdivision] = useState<ISubdivision>({
@@ -39,30 +52,34 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     });
 
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
-    const [members, setMembers] = useState<any[]>([]);
+    const [members, setMembers] = useState<IMemberRow[]>([]);
 
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
-    const [availableHeadSubdivisions, setAvailableHeadSubdivisions] = useState<IListedInputItem[]>([])
-    
-    useEffect(()=>{
-            SubdivisionService.getAll().then((postList) => {
-                const preparedPosts : IListedInputItem[] = [];
-                postList.forEach(post => {
-                    preparedPosts.push({
-                        Name: post.name,
-                        Id: post.id
-                    })
-                });
-                setAvailableHeadSubdivisions([...preparedPosts]);
-                UpdateHeadSearch("");
-            })
-        },[])
+    const [availableHeadSubdivisions, setAvailableHeadSubdivisions] = useState<IListedInputItem[]>([]);
 
-    function UpdateHeadSearch(prompt : string){
-        let prepList : IListedInputItem[] = []
-        prepList = availableHeadSubdivisions.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
-        setHeadList(prepList)
-    }
+    const UpdateHeadSearch = useCallback((prompt: string) => {
+        const prepList = availableHeadSubdivisions.filter(
+            x => !x.Name?.toLowerCase().search(prompt.toLowerCase())
+        );
+        setHeadList(prepList);
+    }, [availableHeadSubdivisions]);
+
+    useEffect(() => {
+        SubdivisionService.getAll().then((postList) => {
+            const preparedPosts: IListedInputItem[] = [];
+            postList.forEach(post => {
+                preparedPosts.push({
+                    Name: post.name,
+                    Id: post.id
+                });
+            });
+            setAvailableHeadSubdivisions(preparedPosts);
+        });
+    }, []);
+
+    useEffect(() => {
+        UpdateHeadSearch("");
+    }, [availableHeadSubdivisions, UpdateHeadSearch]);
     
     useEffect(() => {
         if (isNaN(numericSubdivisionId)) {
@@ -79,20 +96,28 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
 
                 if (subdivisionData.head?.name) {
                     setSubdivisionPrompt(subdivisionData.head.name);
-                } 
-                else {
+                } else {
                     setSubdivisionPrompt("");
                 }
 
-                if (Array.isArray((subdivisionData as any).members)) {
-                    setMembers((subdivisionData as any).members);
-                } 
-                else if ((subdivisionData as any).value) {
-                    setMembers((subdivisionData as any).value);
-                } 
-                else {
-                    setMembers([]);
-                }
+                const extendedData = subdivisionData as unknown as ISubdivisionWithMembers;
+                const rawMembers = Array.isArray(extendedData.members)
+                    ? extendedData.members
+                    : extendedData.value || [];
+
+                const preparedMembers: IMemberRow[] = rawMembers.map((m) => {
+                    const unit = m && typeof m === "object" && "unit" in m ? (m.unit as IUnit) : (m as IUnit);
+                    const memberRoles = unit?.posts?.map((p) => p.name).filter(Boolean) || [];
+                    
+                    return {
+                        rank: unit?.rank?.name || "Без звания",
+                        nickname: unit?.nickname || "Без никнейма",
+                        roles: memberRoles.join(", ") || "Без должности",
+                        kit: unit?.favoriteKitId || "Не выбран"
+                    };
+                });
+
+                setMembers(preparedMembers);
             })
             .catch((er) => {
                 setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
@@ -111,24 +136,56 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     }
 
     return (
-        <RRForm showSaveChangesButton={isNotSaved} title="Подразделение">
-            <div className="flex flex-1 gap-3">
-                <div className="flex flex-col flex-4">
+        <RRForm 
+            showSaveChangesButton={isNotSaved} 
+            title="Подразделение"
+            editable={canEdit}
+            saveChangesMethod={() => {
+                setIsNotSaved(false);
+            }}
+        >
+            <div className="flex flex-col md:flex-row flex-1 gap-3">
+                <div className="flex flex-col flex-4 w-full">
+                    <div className="flex justify-end mb-2">
+                        <button 
+                            type="button"
+                            onClick={() => setCanEdit(!canEdit)}
+                            className="p-2 bg-black/20 text-white rounded hover:bg-black/50 text-xs transition-all dark:bg-white/10 dark:hover:bg-white/20"
+                        >
+                            {canEdit ? "Просмотр" : "Редактировать"}
+                        </button>
+                    </div>
+
                     <BaseContainer>
                         <ColorInputField 
                             editable={canEdit} 
+                            editMode={true}
                             value={subdivision.color} 
+                            onChange={(e) => {
+                                if (validateColor(e.target.value)) {
+                                    setSubdivision(prev => ({ ...prev, color: e.target.value }));
+                                    setIsNotSaved(true);
+                                }
+                            }}
                         />
                     </BaseContainer>
                     
                     <BaseContainer className="flex-col">
                         <MultiroleInputField 
                             value={subdivision.name} 
+                            onChange={(e) => {
+                                setSubdivision(prev => ({ ...prev, name: e.target.value }));
+                                setIsNotSaved(true);
+                            }}
                             tooltip="Наименование подразделения" 
                             editable={canEdit} 
                         />
                         <DescriptionInputField 
                             value={subdivision.description} 
+                            onChange={(e) => {
+                                setSubdivision(prev => ({ ...prev, description: e.target.value }));
+                                setIsNotSaved(true);
+                            }}
                             tooltip="Описание подразделения" 
                             editable={canEdit} 
                         />
@@ -140,17 +197,15 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                             value={subdivisionPrompt} 
                             tooltip="Подразделение к которому относится это подразделение" 
                             textWhenEmpty="[ Подразделение не указано ]" 
-                            onChange={(e)=>{
+                            onChange={(e) => {
                                 setSubdivisionPrompt(e.target.value);
                                 UpdateHeadSearch(e.target.value);
                                 setIsNotSaved(true);
                             }}
-                            onChoice={(e)=>{
-                                
+                            onChoice={(e) => {
                                 setIsNotSaved(true);
-                                setSubdivision({...subdivision, headId: e.Id})
+                                setSubdivision({ ...subdivision, headId: e.Id });
                                 setSubdivisionPrompt(e.Name!);
-                                
                             }}
                             list={headList}
                         />

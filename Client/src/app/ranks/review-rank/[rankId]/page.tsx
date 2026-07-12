@@ -9,7 +9,9 @@ import { RankService } from "@/shared/api/services/RankService";
 import { ImageService } from "@/shared/api/services/imageService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
-import React, { useEffect, useState, ChangeEvent } from "react";
+import React, { useEffect, useState, ChangeEvent, useCallback } from "react";
+
+// тут нужно внедрить ендпоинт изменения данных звания
 
 const COLUMNS_CONFIG = [
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
@@ -26,12 +28,17 @@ interface IMemberRow {
     discordId: string;
 }
 
+interface IRankAssignment {
+    unit?: IUnit;
+    [key: string]: unknown;
+}
+
 export default function PostPage({ params }: { params: Promise<{ rankId: string }> }) {
     const { rankId } = React.use(params);
     const numericRankId = Number(rankId);
 
     const [canEdit, setCanEdit] = useState(false);
-    const [canGrant, setCanGrant] = useState(true);
+    const [canGrant] = useState(true);
     const [isNotSaved, setIsNotSaved] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
@@ -51,55 +58,62 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const [rankPrompt, setRankPrompt] = useState<string>("");
 
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
-    const [availableHeadRanks, setAvailableHeadRanks] = useState<IListedInputItem[]>([])
+    const [availableHeadRanks, setAvailableHeadRanks] = useState<IListedInputItem[]>([]);
 
-    useEffect(()=>{
+    const UpdateHeadSearch = useCallback((prompt: string) => {
+        const prepList = availableHeadRanks.filter(x => !x.Name?.toLowerCase().search(prompt.toLowerCase()));
+        setHeadList(prepList);
+    }, [availableHeadRanks]);
+
+    useEffect(() => {
         RankService.getAll().then((postList) => {
-            const preparedPosts : IListedInputItem[] = [];
+            const preparedPosts: IListedInputItem[] = [];
             postList.forEach(post => {
                 preparedPosts.push({
                     Name: post.name,
                     Id: post.id?.toString()  
-                })
+                });
             });
-            setAvailableHeadRanks([...preparedPosts]);
-            UpdateHeadSearch("");
-        })
-    },[])
-    
-    function UpdateHeadSearch(prompt : string){
-        let prepList : IListedInputItem[] = []
-        prepList = availableHeadRanks.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
-        setHeadList(prepList)
-    }
+            setAvailableHeadRanks(preparedPosts);
+        });
+    }, []);
 
+    useEffect(() => {
+        UpdateHeadSearch("");
+    }, [availableHeadRanks, UpdateHeadSearch]);
+    
     useEffect(() => {
         if (isNaN(numericRankId)) {
             setError("Некорректный ID звания");
             setIsLoading(false);
             return;
         }
+
         setIsLoading(true);
 
         Promise.all([
             RankService.getById(numericRankId),
             RankService.getAssigned(numericRankId)
         ])
-            .then(([rankData, membersData]) => {
+        .then(([rankData, membersData]) => {
             setRank(rankData);
             setRankPrompt(rankData.previous?.name || "");
 
-            const rawUnits = Array.isArray(membersData) ? membersData
-            : (membersData as { value?: IUnit[] })?.value || [];
+            const rawUnits = Array.isArray(membersData) 
+                ? membersData 
+                : (membersData as { value?: unknown[] })?.value || [];
 
-            const preparedMembers: IMemberRow[] = rawUnits.map((element) => {
-                const unit = (element as any).unit ? (element as any).unit : element;
+            const preparedMembers: IMemberRow[] = (rawUnits as Array<IUnit | IRankAssignment>).map((element) => {
+                const unit = element && typeof element === 'object' && 'unit' in element && element.unit
+                    ? (element.unit as IUnit) 
+                    : (element as IUnit);
+
                 const memberRoles = unit.posts?.map((p: IPost) => p.name).filter(Boolean) || [];
 
                 return {
                     nickname: unit.nickname || "Без никнейма",
                     top_role: memberRoles[0] || "Без должности",
-                    kit: unit.favoriteKit?.name || unit.kit || "Не выбран",
+                    kit: unit.favoriteKitId || "Не выбран", 
                     steamId: unit.steamId ? String(unit.steamId) : "—",
                     discordId: String(unit.discordId)
                 };
@@ -143,7 +157,14 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     }
 
     return (
-        <RRForm>
+        <RRForm 
+            title="Звание" 
+            editable={canEdit} 
+            showSaveChangesButton={isNotSaved} 
+            saveChangesMethod={() => {
+                setIsNotSaved(false);
+            }}
+        >
             <div className="flex flex-col md:flex-row flex-1 gap-6 md:gap-3">
                 <Tooltip tooltipText="Погон" className="flex w-full md:flex-1 max-w-full md:max-w-50" innerClassName="flex w-full">
                     <div className="flex flex-col flex-1 h-full">
@@ -153,7 +174,16 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                                 entityId={rank.id?.toString() || ""}
                                 alt={rank.name}
                                 className="mx-auto max-h-[300px] object-contain p-6 transition-all duration-500"
+                                key={imageVersion}
                             />
+                            <button 
+                                type="button"
+                                onClick={() => setCanEdit(!canEdit)}
+                                className="absolute top-2 right-2 p-2 bg-black/20 text-white rounded hover:bg-black/50 text-xs transition-all"
+                            >
+                                {canEdit ? "Просмотр" : "Редактировать"}
+                            </button>
+
                             {canEdit && (
                                 <>
                                     <label 
@@ -228,7 +258,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                             tooltip="Нижестоящее по иерархии звание" 
                             textWhenEmpty="[ Нижестоящее звание не указано ]"
                         />
-                        <PermissionRollDownList />
+                        <PermissionRollDownList editable={canEdit} />
                     </BaseContainer>
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 opacity-50 w-full">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={rank.discordRoleId}></CopyField>

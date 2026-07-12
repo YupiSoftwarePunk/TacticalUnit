@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { PostService } from "@/shared/api/services/postService";
 import { ChevronDown } from "lucide-react";
 
 export default function ReportsPage() {
-    const [subdivisions, setSubdivisions] = useState<any[]>([]);
-    const [posts, setPosts] = useState<any[]>([]);
+    const [subdivisions, setSubdivisions] = useState<ISubdivision[]>([]);
+    const [posts, setPosts] = useState<IPost[]>([]);
     const [isMetaLoading, setIsMetaLoading] = useState<boolean>(true);
 
     const [metric, setMetric] = useState<string>("Активность");
@@ -50,20 +51,31 @@ export default function ReportsPage() {
     }, []);
 
     useEffect(() => {
-        setIsMetaLoading(true);
+        // Чтобы избежать react-hooks/set-state-in-effect, стейт загрузки по умолчанию 
+        // инициализирован как true. Если нужно сбросить перед вызовом, это делается прямо здесь,
+        // но линтер ругается на вызов функции изменения состояния до асинхронных операций.
+        // Оставляем true по умолчанию, а здесь сразу запускаем Promise.
         
         Promise.all([
             SubdivisionService.getAll(),
             PostService.getAll()
         ])
             .then(([subsRes, postsRes]) => {
-                const subsData = Array.isArray(subsRes) ? subsRes : (subsRes as any)?.value || [];
-                const postsData = Array.isArray(postsRes) ? postsRes : (postsRes as any)?.value || [];
+                // Избавляемся от (subsRes as any)?.value. 
+                // Предполагаем, что сервис возвращает либо массив, либо объект с полем value
+                const subsData = Array.isArray(subsRes) 
+                    ? subsRes 
+                    : (subsRes as { value?: ISubdivision[] })?.value || [];
+                
+                const postsData = Array.isArray(postsRes) 
+                    ? postsRes 
+                    : (postsRes as { value?: IPost[] })?.value || [];
+
                 setSubdivisions(subsData);
                 setPosts(postsData);
 
-                if (subsData.length > 0) setSubdivisionId(subsData[0].id);
-                if (postsData.length > 0) setPostId(postsData[0].id);
+                if (subsData.length > 0 && subsData[0].id) setSubdivisionId(subsData[0].id);
+                if (postsData.length > 0 && postsData[0].id) setPostId(postsData[0].id);
             })
             .catch((err) => {
                 console.error("Не удалось загрузить списки из штаба:", err);
@@ -85,7 +97,8 @@ export default function ReportsPage() {
         setError(null);
         setImageSrc(null);
 
-        const payload: Record<string, any> = {
+        // Record<string, string | number> вместо Record<string, any>
+        const payload: Record<string, string | number> = {
             Metric: metric,
             Coverage: coverage,
         };
@@ -337,11 +350,14 @@ export default function ReportsPage() {
                         )}
 
                         {!isLoading && !error && imageSrc && (
-                            <div className="max-w-full h-auto animate-in fade-in duration-500 shadow-md border border-border-secondary/20 bg-bg-primary p-1 md:p-2">
-                                <img
+                            <div className="max-w-full h-auto animate-in fade-in duration-500 shadow-md border border-border-secondary/20 bg-bg-primary p-1 md:p-2 relative min-h-[500px] w-full">
+                                <Image
                                     src={imageSrc}
                                     alt="Сгенерированный отчёт клана"
-                                    className="object-contain max-h-[500px] md:max-h-[700px] w-full"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 1400px"
+                                    className="object-contain"
+                                    unoptimized // Используйте, если это внешний динамический URL (например, blob или абсолютный URL бэкенда)
                                 />
                             </div>
                         )}

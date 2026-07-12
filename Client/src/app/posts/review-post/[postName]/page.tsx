@@ -8,6 +8,8 @@ import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { validateColor } from "@/typescript/colorValidator";
 import React, { useEffect, useState, useCallback } from "react";
 
+// тут нужно внедрить ендпоинт изменения данных должности
+
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true },

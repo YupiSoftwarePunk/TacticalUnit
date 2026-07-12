@@ -198,10 +198,9 @@ export default function ClanStructurePage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        setLoading(true);
         StructureService.get()
-            .then((res: any) => {
-                const postsData = Array.isArray(res) ? res : res?.value || [];
+            .then((res: JSON) => {
+                const postsData = Array.isArray(res) ? res : [];
                 setRawPosts(postsData);
                 setError(null);
             })
