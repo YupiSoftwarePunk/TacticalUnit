@@ -3,13 +3,10 @@
 import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, PermissionRollDownList, StyledButton } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
-import Tooltip from "@/components/ToolTip/ToolTip";
 import { PostService } from "@/shared/api/services/postService";
-import { RankService } from "@/shared/api/services/RankService";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
-import { UnitService } from "@/shared/api/services/unitService";
 import { validateColor } from "@/typescript/colorValidator";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
@@ -22,14 +19,11 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const { postName } = React.use(params);
     const numericPostId = Number(postName);
 
-        if (isNaN(numericPostId)) {
-        return <ErrorScreen error="Некорректный ID должности" />;
-    }
-
-    const [canEdit, setCanEdit] = useState(false);
-    const [canGrant, setCanGrant] = useState(true);
+    const [canEdit] = useState(false);
+    const [canGrant] = useState(true);
     const [isNotSaved, setIsNotSaved] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+
+    const [isLoading, setIsLoading] = useState(true); 
     const [error, setError] = useState<string | undefined>();
 
     const [post, setPost] = useState<IPost>({
@@ -53,53 +47,51 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
 
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
-    const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([])
+    const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([]);
     
-    useEffect(()=>{
-            PostService.getAll().then((postList) => {
-                const preparedPosts : IListedInputItem[] = [];
-                postList.forEach(post => {
-                    preparedPosts.push({
-                        Name: post.name,
-                        Id: post.id
-                    })
-                });
-                setAvailableHeadPosts([...preparedPosts]);
-                UpdateHeadSearch("");
-            })
-        },[])
-
-    function UpdateHeadSearch(prompt : string){
-        let prepList : IListedInputItem[] = []
-        prepList = availableHeadPosts.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
-        setHeadList(prepList)
-    }
-
     const [subdivisionList, setSubdivisionList] = useState<IListedInputItem[]>([]);
-    const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([])
-    
-    useEffect(()=>{
-            SubdivisionService.getAll().then((postList) => {
-                const preparedPosts : IListedInputItem[] = [];
-                postList.forEach(subdiv => {
-                    preparedPosts.push({
-                        Name: subdiv.name,
-                        Id: subdiv.id
-                    })
-                });
-                setAvailableSubdivisions([...preparedPosts]);
-                UpdateSubdivisionSearch("");
-            })
-        },[])
+    const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([]);
 
-    function UpdateSubdivisionSearch(prompt : string){
-        let prepList : IListedInputItem[] = []
-        prepList = availableSubdivisions.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
-        setSubdivisionList(prepList)
-    }
+    const updateHeadSearch = useCallback((prompt: string) => {
+        const prepList = availableHeadPosts.filter(x => !x.Name?.toLowerCase().search(prompt.toLowerCase()));
+        setHeadList(prepList);
+    }, [availableHeadPosts]);
+
+    const updateSubdivisionSearch = useCallback((prompt: string) => {
+        const prepList = availableSubdivisions.filter(x => !x.Name?.toLowerCase().search(prompt.toLowerCase()));
+        setSubdivisionList(prepList);
+    }, [availableSubdivisions]);
 
     useEffect(() => {
-        setIsLoading(true);
+        PostService.getAll().then((postList) => {
+            const preparedPosts: IListedInputItem[] = postList.map(p => ({
+                Name: p.name,
+                Id: p.id
+            }));
+            setAvailableHeadPosts(preparedPosts);
+        });
+    }, []);
+
+    useEffect(() => {
+        updateHeadSearch("");
+    }, [availableHeadPosts, updateHeadSearch]);
+
+    useEffect(() => {
+        SubdivisionService.getAll().then((subdivList) => {
+            const preparedSubdivs: IListedInputItem[] = subdivList.map(subdiv => ({
+                Name: subdiv.name,
+                Id: subdiv.id
+            }));
+            setAvailableSubdivisions(preparedSubdivs);
+        });
+    }, []);
+
+    useEffect(() => {
+        updateSubdivisionSearch("");
+    }, [availableSubdivisions, updateSubdivisionSearch]);
+
+    useEffect(() => {
+        if (isNaN(numericPostId)) return;
 
         Promise.all([
             PostService.getById(numericPostId),
@@ -126,6 +118,10 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         });
     }, [numericPostId]);
 
+    if (isNaN(numericPostId)) {
+        return <ErrorScreen error="Некорректный ID должности" />;
+    }
+
     if (error !== undefined) {
         return <ErrorScreen error={error} />;
     }
@@ -135,7 +131,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     }
 
     return (
-        <RRForm title="Должность" editable={canEdit} showSaveChangesButton={isNotSaved} saveChangesMethod={()=>{setIsNotSaved(false)}}>
+        <RRForm title="Должность" editable={canEdit} showSaveChangesButton={isNotSaved} saveChangesMethod={() => { setIsNotSaved(false); }}>
             <div className="flex flex-1 gap-3">
                 <div className="flex flex-col flex-4">
                     <BaseContainer>
@@ -176,13 +172,13 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             editable={canEdit} 
                             value={postPrompt} 
                             onChange={(e) => {
-                                UpdateHeadSearch(e.target.value);
+                                updateHeadSearch(e.target.value);
                                 setPostPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
-                            onChoice={(e)=>{
+                            onChoice={(e: IListedInputItem) => {
                                 setIsNotSaved(true);
-                                setPost({...post, headId: e.Id})
+                                setPost(prev => ({ ...prev, headId: e.Id }));
                                 setPostPrompt(e.Name!);
                             }}
                             list={headList}
@@ -193,25 +189,25 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             editable={canEdit} 
                             value={subdivisionPrompt} 
                             onChange={(e) => {
-                                UpdateSubdivisionSearch(e.target.value);
+                                updateSubdivisionSearch(e.target.value);
                                 setSubdivisionPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
-                            onChoice={(e)=>{
-                                setPost({...post, subdivisionId: e.Id})
+                            onChoice={(e: IListedInputItem) => {
+                                setIsNotSaved(true);
+                                setPost(prev => ({ ...prev, subdivisionId: e.Id }));
                                 setSubdivisionPrompt(e.Name!);
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 
                             textWhenEmpty="[ Подразделение не указано ]"
                         />
-                        <PermissionRollDownList editable={canEdit}></PermissionRollDownList>
+                        <PermissionRollDownList editable={canEdit} />
                     </BaseContainer>
                     <div className="flex opacity-50">
-                        <CopyField className="flex flex-1" title="Discord Id" copyInfo={post.discordRoleId}></CopyField>
-                        <StyledButton title={"обновить роль"}></StyledButton>
+                        <CopyField className="flex flex-1" title="Discord Id" copyInfo={post.discordRoleId || ""} />
+                        <StyledButton title={"обновить роль"} />
                     </div>
-                    
                 </div>
             </div>
             <AccordingUnitsTable 

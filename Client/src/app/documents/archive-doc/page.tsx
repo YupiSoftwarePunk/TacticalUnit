@@ -14,6 +14,12 @@ interface IDocumentData {
     uploadDate: string;
 }
 
+const mockDocs: IDocumentData[] = [
+    { id: "doc-1", name: "Инструкция по использованию кружки", authorNickname: "Администратор (Я)", authorDiscordId: "1257757034821193865", uploadDate: "2026-07-01" },
+    { id: "doc-2", name: "Регламент обслуживания общевойсковой столовой", authorNickname: "Vanguard_6", authorDiscordId: "0987654321", uploadDate: "2026-06-15" },
+    { id: "doc-3", name: "План выпекания булочек с корицей на ближайшие сборы", authorNickname: "Alex_Chem", authorDiscordId: "1122334455", uploadDate: "2026-07-10" },
+];
+
 export default function DocumentArchivePage() {
     const [documents, setDocuments] = useState<IDocumentData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -23,13 +29,7 @@ export default function DocumentArchivePage() {
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
 
-    useEffect(() => {
-        const mockDocs: IDocumentData[] = [
-            { id: "doc-1", name: "Инструкция по использованию кружки", authorNickname: "Администратор (Я)", authorDiscordId: "1257757034821193865", uploadDate: "2026-07-01" },
-            { id: "doc-2", name: "Регламент обслуживания общевойсковой столовой", authorNickname: "Vanguard_6", authorDiscordId: "0987654321", uploadDate: "2026-06-15" },
-            { id: "doc-3", name: "План выпекания булочек с корицей на ближайшие сборы", authorNickname: "Alex_Chem", authorDiscordId: "1122334455", uploadDate: "2026-07-10" },
-        ];
-        
+    useEffect(() => {        
         setDocuments(mockDocs);
         setIsLoading(false);
     }, []);
@@ -40,7 +40,7 @@ export default function DocumentArchivePage() {
             label: "Название документа",
             header: "Название документа",
             accessor: "name",
-            render: (value: any, row: any) => (
+            render: (value: string, row: IDocumentData) => (
                 <Link 
                     href={`/documents/${row.id}`}
                     className="text-text-primary font-text-bold hover:text-accent border-b border-transparent hover:border-accent transition-colors block text-wrap py-1">
@@ -53,7 +53,7 @@ export default function DocumentArchivePage() {
             label: "Никнейм автора",
             header: "Никнейм автора",
             accessor: "authorNickname",
-            render: (value: any, row: any) => (
+            render: (value: string, row: IDocumentData) => (
                 <Link 
                     href={`/profile/${row.authorDiscordId}`}
                     className="text-accent font-text-bold hover:text-text-primary-accent transition-colors">
@@ -66,7 +66,7 @@ export default function DocumentArchivePage() {
             label: "Дата загрузки",
             header: "Дата загрузки",
             accessor: "uploadDate",
-            render: (value: any) => {
+            render: (value: string) => {
                 if (!value) return <span className="font-text text-text-secondary/40">[ Не указана ]</span>;
                 const date = new Date(value);
                 return (
