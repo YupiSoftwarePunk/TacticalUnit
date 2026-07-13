@@ -1,14 +1,19 @@
 'use client';
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { MainHeader } from "@/components/Header/MainHeader";
-import { Upload, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Upload, FileText, CheckCircle2, AlertTriangle, Check } from "lucide-react";
+import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
+import { UnitService } from "@/shared/api/services/unitService";
 
 export default function UploadDocumentPage() {
     const [documentName, setDocumentName] = useState<string>("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+    const [units, setUnits] = useState<IUnit[]>([]);
+    const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
+    
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,6 +74,62 @@ export default function UploadDocumentPage() {
         }
     };
 
+
+    const tableColumns: ColumnConfig[] = [
+        {
+            key: "selection",
+            label: "Выбор",
+            sortable: false,
+            filterable: false,
+            className: "w-12",
+            render: (_, item: IUnit) => (
+                <button
+                    onClick={() => toggleUnitSelection(item.discordId)}
+                    className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
+                >
+                    {selectedUnits.has(item.discordId) && (
+                        <Check className="w-4 h-4" />
+                    )}
+                </button>
+            )
+        },
+        { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
+        { 
+            key: "rank", 
+            label: "Текущее звание", 
+            sortable: true, 
+            filterable: true,
+            render: (rank: IRank) => rank?.name || "Без звания"
+        },
+        { 
+            key: "posts", 
+            label: "Должность", 
+            sortable: false, 
+            filterable: true,
+            render: (posts: IPost[]) => posts?.map(p => p.name).join(", ") || "Нет должности"
+        },
+    ];
+
+    const handleExport = (data: IUnit[]) => {
+        console.log("Экспорт данных:", data);
+    };
+
+    useEffect(()=>{
+        UnitService.getAll().then((list)=>{
+            setUnits(list);
+        })
+    },[])
+    const toggleUnitSelection = (discordId: string) => {
+        const newSelected = new Set(selectedUnits);
+        if (newSelected.has(discordId)) {
+            newSelected.delete(discordId);
+        } 
+        else {
+            newSelected.add(discordId);
+        }
+        setSelectedUnits(newSelected);
+    };
+
     return (
         <div className="w-full min-h-screen bg-bg-primary transition-colors duration-300 font-text pb-20 flex flex-col overflow-x-hidden">
             <MainHeader />
@@ -82,11 +143,11 @@ export default function UploadDocumentPage() {
                 </div>
 
                 <form onSubmit={handleSaveDocument} className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
-                    <div className="lg:col-span-1 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-5 transition-colors duration-300 h-full justify-between">
+                    <div className="lg:col-span-1 max-lg:col-span-3 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-5 transition-colors duration-300 h-full justify-between">
                         <div className="flex flex-col gap-5">
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-xs font-text-bold uppercase tracking-widest text-text-secondary">
-                                    Название документа
+                                    Название акта
                                 </label>
                                 <input
                                     type="text"
@@ -128,7 +189,7 @@ export default function UploadDocumentPage() {
                         </div>
                     </div>
 
-                    <div className="lg:col-span-2 h-full">
+                    <div className="lg:col-span-2 max-lg:col-span-3 h-full">
                         <div
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
@@ -183,8 +244,37 @@ export default function UploadDocumentPage() {
                             )}
                         </div>
                     </div>
+                    
+                    <div className="mt-16 flex flex-col col-span-3">
+                        <div className="flex justify-between items-end mb-6">
+                            <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
+                                Выберите бойцов для присвоения акта
+                            </h2>
+                            <span className="text-sm font-text text-text-secondary">
+                                Выбрано: {selectedUnits.size}
+                            </span>
+                        </div>
+
+                        <div className="border border-black/10 dark:border-white/5 overflow-hidden mb-6">
+                            <UniversalTable 
+                                data={units}
+                                columns={tableColumns}
+                                onExport={handleExport}
+                                defaultSort={{ key: "rank", direction: "desc" }}
+                            />
+                        </div>
+
+                        {/* <AssignFooter 
+                            onCancel={handleCancel}
+                            onAssign={handleAssign}
+                            selectedCount={selectedUnits.size}
+                            isSaving={isSaving}
+                            buttonText="Присвоить"
+                        /> */}
+                    </div>
                 </form>
             </main>
         </div>
     );
 }
+
