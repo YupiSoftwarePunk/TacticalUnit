@@ -6,7 +6,7 @@ import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import { PostService } from "@/shared/api/services/postService";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { validateColor } from "@/typescript/colorValidator";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 // тут нужно внедрить ендпоинт изменения данных должности
 
@@ -45,24 +45,20 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     });
 
     const [members, setMembers] = useState<IAssignedReward[]>([]);
+    
     const [postPrompt, setPostPrompt] = useState<string>("");
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
 
-    const [headList, setHeadList] = useState<IListedInputItem[]>([]);
     const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([]);
-    
-    const [subdivisionList, setSubdivisionList] = useState<IListedInputItem[]>([]);
     const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([]);
 
-    const updateHeadSearch = useCallback((prompt: string) => {
-        const prepList = availableHeadPosts.filter(x => !x.Name?.toLowerCase().search(prompt.toLowerCase()));
-        setHeadList(prepList);
-    }, [availableHeadPosts]);
+    const headList = useMemo(() => {
+        return availableHeadPosts.filter(x => x.Name?.toLowerCase().startsWith(postPrompt.toLowerCase()));
+    }, [availableHeadPosts, postPrompt]);
 
-    const updateSubdivisionSearch = useCallback((prompt: string) => {
-        const prepList = availableSubdivisions.filter(x => !x.Name?.toLowerCase().search(prompt.toLowerCase()));
-        setSubdivisionList(prepList);
-    }, [availableSubdivisions]);
+    const subdivisionList = useMemo(() => {
+        return availableSubdivisions.filter(x => x.Name?.toLowerCase().startsWith(subdivisionPrompt.toLowerCase()));
+    }, [availableSubdivisions, subdivisionPrompt]);
 
     useEffect(() => {
         PostService.getAll().then((postList) => {
@@ -75,10 +71,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     }, []);
 
     useEffect(() => {
-        updateHeadSearch("");
-    }, [availableHeadPosts, updateHeadSearch]);
-
-    useEffect(() => {
         SubdivisionService.getAll().then((subdivList) => {
             const preparedSubdivs: IListedInputItem[] = subdivList.map(subdiv => ({
                 Name: subdiv.name,
@@ -87,10 +79,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
             setAvailableSubdivisions(preparedSubdivs);
         });
     }, []);
-
-    useEffect(() => {
-        updateSubdivisionSearch("");
-    }, [availableSubdivisions, updateSubdivisionSearch]);
 
     useEffect(() => {
         if (isNaN(numericPostId)) return;
@@ -174,7 +162,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             editable={canEdit} 
                             value={postPrompt} 
                             onChange={(e) => {
-                                updateHeadSearch(e.target.value);
                                 setPostPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
@@ -191,7 +178,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             editable={canEdit} 
                             value={subdivisionPrompt} 
                             onChange={(e) => {
-                                updateSubdivisionSearch(e.target.value);
                                 setSubdivisionPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
@@ -202,7 +188,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 
-                            textWhenEmpty="[ Подразделение не указано ]"
+                            textWhenEmpty="[ Подразделение не указана ]"
                         />
                         <PermissionRollDownList editable={canEdit} />
                     </BaseContainer>

@@ -36,6 +36,7 @@ interface IRankAssignment {
 export default function PostPage({ params }: { params: Promise<{ rankId: string }> }) {
     const { rankId } = React.use(params);
     const numericRankId = Number(rankId);
+    const isIdInvalid = isNaN(numericRankId);
 
     const [canEdit, setCanEdit] = useState(false);
     const [canGrant] = useState(true);
@@ -75,17 +76,12 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                 });
             });
             setAvailableHeadRanks(preparedPosts);
+            setHeadList(preparedPosts);
         });
     }, []);
-
-    useEffect(() => {
-        UpdateHeadSearch("");
-    }, [availableHeadRanks, UpdateHeadSearch]);
     
     useEffect(() => {
-        if (isNaN(numericRankId)) {
-            setError("Некорректный ID звания");
-            setIsLoading(false);
+        if (isIdInvalid) {
             return;
         }
 
