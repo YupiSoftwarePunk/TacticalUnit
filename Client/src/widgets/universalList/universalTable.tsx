@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useMemo } from "react";
 
-export interface ColumnConfig {
+export interface ColumnConfig<T = Record<string, unknown>> {
     key: string;
     label: string;
     sortable?: boolean;
     filterable?: boolean;
     className?: string;
-    render?: (value: any, item: any) => React.ReactNode;
+    render?: (value: unknown, item: T) => React.ReactNode;
 }
 
 interface SortConfig {
@@ -17,13 +17,13 @@ interface SortConfig {
 
 interface UniversalTableProps<T> {
     data: T[];
-    columns: ColumnConfig[];
+    columns: ColumnConfig<T>[];
     onExport: (data: T[]) => void;
     defaultSort?: SortConfig;
     renderActions?: (item: T) => React.ReactNode;
 }
 
-const UniversalTable = <T extends Record<string, any>>({ 
+const UniversalTable = <T extends Record<string, unknown>>({ 
     data, 
     columns, 
     onExport, 
@@ -45,8 +45,16 @@ const UniversalTable = <T extends Record<string, any>>({
             sortableItems.sort((a, b) => {
                 const valA = a[sortConfig.key];
                 const valB = b[sortConfig.key];
-                if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-                if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+
+                if (typeof valA === "number" && typeof valB === "number") {
+                    return sortConfig.direction === "asc" ? valA - valB : valB - valA;
+                }
+
+                const strA = String(valA ?? "");
+                const strB = String(valB ?? "");
+
+                if (strA < strB) return sortConfig.direction === "asc" ? -1 : 1;
+                if (strA > strB) return sortConfig.direction === "asc" ? 1 : -1;
                 return 0;
             });
         }

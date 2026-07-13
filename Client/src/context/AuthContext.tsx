@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 import { AuthService } from "@/shared/api/services/authService";
 
 interface AuthContextType {
@@ -19,7 +19,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [isLoading, setIsLoading] = useState(true);
     const isProcessed = useRef(false);
 
-    const checkAuth = async () => {
+    const logout = useCallback(() => {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("access_token");
+            window.location.href = "/";
+        }
+        setUser(null);
+    }, []);
+
+    const checkAuth = useCallback(async () => {
         const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
         
         if (!token) {
@@ -39,14 +47,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         finally {
             setIsLoading(false);
         }
-    };
+    }, [logout]);
 
     useEffect(() => {
         if (isProcessed.current) return;
         isProcessed.current = true;
 
         checkAuth();
-    }, []);
+    }, [checkAuth]);
 
     const login = async () => {
         try {
@@ -58,12 +66,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         catch (error) {
             console.error("Не удалось сгенерировать ссылку авторизации Discord:", error);
         }
-    };
-
-    const logout = () => {
-        localStorage.removeItem("access_token");
-        setUser(null);
-        window.location.href = "/"; 
     };
 
     return (
