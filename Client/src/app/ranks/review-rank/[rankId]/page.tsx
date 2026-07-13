@@ -85,8 +85,6 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
             return;
         }
 
-        setIsLoading(true);
-
         Promise.all([
             RankService.getById(numericRankId),
             RankService.getAssigned(numericRankId)

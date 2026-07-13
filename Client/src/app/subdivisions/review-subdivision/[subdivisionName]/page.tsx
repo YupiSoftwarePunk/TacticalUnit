@@ -31,6 +31,7 @@ interface ISubdivisionWithMembers extends ISubdivision {
 export default function PostPage({ params }: { params: Promise<{ subdivisionName: string }> }) {
     const { subdivisionName } = React.use(params);
     const numericSubdivisionId = Number(subdivisionName);
+    const isIdInvalid = isNaN(numericSubdivisionId);
 
     const [canEdit, setCanEdit] = useState<boolean>(false);
     const [isNotSaved, setIsNotSaved] = useState(false);
@@ -74,21 +75,14 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                 });
             });
             setAvailableHeadSubdivisions(preparedPosts);
+            setHeadList(preparedPosts);
         });
     }, []);
-
-    useEffect(() => {
-        UpdateHeadSearch("");
-    }, [availableHeadSubdivisions, UpdateHeadSearch]);
     
     useEffect(() => {
-        if (isNaN(numericSubdivisionId)) {
-            setError("Некорректный ID подразделения");
-            setIsLoading(false);
+        if (isIdInvalid) {
             return;
         }
-
-        setIsLoading(true);
 
         SubdivisionService.getById(numericSubdivisionId)
             .then((subdivisionData) => {
@@ -96,7 +90,8 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
 
                 if (subdivisionData.head?.name) {
                     setSubdivisionPrompt(subdivisionData.head.name);
-                } else {
+                } 
+                else {
                     setSubdivisionPrompt("");
                 }
 
