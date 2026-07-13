@@ -112,7 +112,7 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
             else{
                 setPillarsTransitionStatus(false);
                 
-                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset-1));
+                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset-2));
                 refresh();
             }
             const interval = setTimeout(()=>{ setPillarsOffset(0); refresh(); }, 50);
