@@ -52,7 +52,7 @@ export default function DocumentArchivePage() {
                 <Link 
                     href={`/profile/${row.authorDiscordId}`}
                     className="text-accent font-text-bold hover:text-text-primary-accent transition-colors">
-                    @{value}
+                    {value}
                 </Link>
             )
         },
