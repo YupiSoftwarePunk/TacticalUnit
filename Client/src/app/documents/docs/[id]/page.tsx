@@ -125,7 +125,10 @@ export default function DocumentPage() {
         <div className="w-full min-h-screen bg-bg-primary transition-colors duration-300 font-text pb-10 flex flex-col overflow-x-hidden text-text-primary">
             <MainHeader />
             <main className="max-w-[1400px] w-full mx-auto pt-10 md:pt-10 px-4 md:px-6 flex-shrink-0">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start animate-in fade-in duration-500">
+                <h1 className="text-2xl md:text-4xl font-header text-text-primary uppercase tracking-wider pb-10">
+                        Страница документа
+                </h1>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 animate-in fade-in duration-500">
                     <div className="lg:col-span-1 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-6 transition-colors duration-300">
                         
                         <div className="flex flex-col gap-1.5">
