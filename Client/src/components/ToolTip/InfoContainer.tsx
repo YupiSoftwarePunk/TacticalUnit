@@ -1,6 +1,13 @@
 import { useState } from "react";
 
 
+export interface IContainedInfo {
+    id?: string;
+    content: React.ReactNode;
+    color?: string;
+    dates?: string;
+}
+
 interface CardProps {
     children?: React.ReactNode;
     className?: string;
