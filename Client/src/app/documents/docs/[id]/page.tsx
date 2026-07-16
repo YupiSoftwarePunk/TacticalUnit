@@ -122,9 +122,9 @@ export default function DocumentPage() {
     }
 
     return (
-        <div className="w-full min-h-screen bg-bg-primary transition-colors duration-300 font-text pb-20 flex flex-col overflow-x-hidden text-text-primary">
+        <div className="w-full min-h-screen bg-bg-primary transition-colors duration-300 font-text pb-10 flex flex-col overflow-x-hidden text-text-primary">
             <MainHeader />
-            <main className="max-w-[1400px] w-full mx-auto pt-10 md:pt-18 px-4 md:px-6 flex-shrink-0">
+            <main className="max-w-[1400px] w-full mx-auto pt-10 md:pt-10 px-4 md:px-6 flex-shrink-0">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start animate-in fade-in duration-500">
                     <div className="lg:col-span-1 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-6 transition-colors duration-300">
                         
@@ -172,66 +172,48 @@ export default function DocumentPage() {
                             <span className="w-8 h-0.5 bg-accent mt-1"></span>
                         </div>
 
-                        <div className="flex flex-col gap-6">
-                            {document.events && document.events.length > 0 ? (
-                                document.events.map((group, groupIndex) => (
-                                    <div 
-                                        key={groupIndex} 
-                                        className="border border-border-secondary/30 bg-bg-primary/10 p-5 md:p-6 flex flex-col gap-4 animate-in fade-in duration-300">
-                                        <div className="flex items-center gap-2.5 border-b border-border-secondary/20 pb-3">
-                                            {group.color && (
-                                                <div 
-                                                    className="w-3.5 h-3.5 rounded-full shrink-0" 
-                                                    style={{ backgroundColor: group.color }}
-                                                />
-                                            )}
-                                            <h3 className="font-text-bold text-sm md:text-base text-text-primary uppercase tracking-wider">
-                                                {group.title}
-                                            </h3>
-                                            <span className="text-[11px] text-text-secondary/50 font-text italic ml-auto">
-                                                Всего: {group.history.length}
-                                            </span>
-                                        </div>
+                        <div className="flex flex-col gap-3">
+                            {(() => {
+                                const allEvents = document.events
+                                    ? document.events.flatMap(group => group.history)
+                                    : [];
 
-                                        <div className="flex flex-col gap-3.5 pl-2">
-                                            {group.history.map((item) => (
-                                                <div 
-                                                    key={item.id} 
-                                                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-bg-secondary/40 border border-border-secondary/20 hover:border-border-secondary/50 transition-colors"
-                                                >
-                                                    <div className="flex items-start gap-3">
-                                                        {item.color && (
-                                                            <span 
-                                                                className="w-2 h-2 rounded-full shrink-0 mt-1.5" 
-                                                                style={{ backgroundColor: item.color }}
-                                                            />
-                                                        )}
-                                                        <div className="flex flex-col gap-0.5">
-                                                            <p className="text-xs md:text-sm text-text-primary font-text leading-relaxed">
-                                                                {item.content}
-                                                            </p>
-                                                            <span className="text-[10px] text-text-secondary/40 font-mono">
-                                                                ID: {item.id}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    {item.dates && (
-                                                        <div className="flex items-center gap-1.5 shrink-0 self-start sm:self-center text-[11px] text-text-secondary/60 bg-bg-primary/30 px-2 py-1 border border-border-secondary/10">
-                                                            <Calendar className="w-3 h-3 text-accent" />
-                                                            <span className="font-text-bold">{item.dates}</span>
-                                                        </div>
-                                                    )}
+                                if (allEvents.length > 0) {
+                                    return allEvents.map((item) => (
+                                        <div 
+                                            key={item.id} 
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-bg-primary/10 border border-border-secondary/20 hover:border-border-secondary/40 hover:bg-bg-primary/20 transition-all duration-200 animate-in fade-in duration-300">
+                                            <div className="flex items-start gap-3">
+                                                {item.color && (
+                                                    <span 
+                                                        className="w-2 h-2 rounded-full shrink-0 mt-1.5" 
+                                                        style={{ backgroundColor: item.color }}
+                                                    />
+                                                )}
+                                                <div className="flex flex-col gap-0.5">
+                                                    <p className="text-xs md:text-sm text-text-primary font-text leading-relaxed">
+                                                        {item.content}
+                                                    </p>
                                                 </div>
-                                            ))}
+                                            </div>
+
+                                            {item.dates && (
+                                                <div className="flex items-center gap-1.5 shrink-0 self-start sm:self-center text-[11px] text-text-secondary/60 bg-bg-secondary border border-border-secondary/10 px-2.5 py-1">
+                                                    <Calendar className="w-3.5 h-3.5 text-accent" />
+                                                    <span className="font-text-bold">{item.dates}</span>
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="p-8 text-center text-xs text-text-secondary/40 font-text uppercase tracking-widest italic border border-dashed border-border-secondary/20">
-                                    События отсутствуют
-                                </div>
-                            )}
+                                    ));
+                                } 
+                                else {
+                                    return (
+                                        <div className="p-8 text-center text-xs text-text-secondary/40 font-text uppercase tracking-widest italic border border-dashed border-border-secondary/20">
+                                            События отсутствуют
+                                        </div>
+                                    );
+                                }
+                            })()}
                         </div>
                     </div>
                 </div>
