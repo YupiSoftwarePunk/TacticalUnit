@@ -431,9 +431,10 @@ interface ISelectionList{
     title? : string,
     maxSelectedItems? : number,
     searchField?: boolean,
-    maxListHeight? : string // "100px", "1fr", etc.
+    maxListHeight? : string // "100px", "1fr", etc.,
+    radiobutton? : boolean
 }
-export const SelectionList = ({title = "", className = "", onSelection, list = [], searchField = false, maxSelectedItems = -1, maxListHeight} : ISelectionList)=>{
+export const SelectionList = ({title = "", className = "", onSelection, list = [], searchField = false, maxSelectedItems = -1, maxListHeight, radiobutton = false} : ISelectionList)=>{
     let [idStory, setIdStory] = useState<string[]>([]);
     const [visibleList, setVisibleList] = useState<IListedInputItem[]>(list);
     
@@ -442,7 +443,20 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
 
     function addItemIntoList(item : IListedInputItem){
         let alteredList = [...list];
+
+        if (radiobutton){
+            let previous = alteredList.find(x=>x.selected == true);
+            if (previous?.id != item.id){
+                alteredList.forEach(element => {
+                    element.selected = false;
+                });
+                item.selected = true;
+                onSelection!(alteredList);
+            }
+            return
+        }
         let foundItem = alteredList.find(x=>x.id == item.id);
+        
         if(foundItem!.selected == true){
             // console.warn("item was in the list")
             foundItem!.selected = false
@@ -503,8 +517,15 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
         {title && <h2 className="text-2xl">{title}</h2>}
         {searchField && <MultiroleInputField value={searchPrompt} onChange={(e)=>{Search(e.target.value); setSearchPrompt(e.target.value)}} editMode={true} editable={true} watermark="Поиск по названию или ID"></MultiroleInputField>}
         <div className="flex flex-col">
-            <p className="flex text-right self-end text-text-secondary">Макс: {maxSelectedItems < 0? "Не ограничено" : maxSelectedItems}</p>
-            <div className={`flex flex-col min-h-5 bg-bg-dark border border-border-primary ${maxListHeight? `max-h-[${maxListHeight}] overflow-scroll` : ""}`} style={{maxHeight: `${maxListHeight? `${maxListHeight}` : ""}`}}>
+            <div className="flex justify-between flex-row-reverse">
+                
+                <p className="flex text-right self-end text-text-secondary">Макс: {maxSelectedItems < 0? "Не ограничено" : maxSelectedItems}</p>
+                {
+                    (maxSelectedItems > 1 || maxSelectedItems < 0) &&
+                    <p className="flex text-right self-end text-text-secondary">Выбрано: {`${idStory.length} из ${list.length}`}</p>
+                }
+            </div>
+            <div className={`flex overflow-visible flex-col min-h-5 bg-bg-dark border border-border-primary ${maxListHeight? `max-h-[${maxListHeight}] overflow-scroll` : ""}`} style={{maxHeight: `${maxListHeight? `${maxListHeight}` : ""}`}}>
                 {visibleList.map((item)=>(
                     <button key={item.id} className={`text-lg text-left ${item.selected ? "hover:my-1" : ""} transition-all`} onClick={()=>{addItemIntoList(item)}}>
                         <ToolTip className={`${item.selected ? "mx-3 my-2 px-3 py-2 border-accent hover:border-accent-hover bg-bg-secondary" : "px-6 py-4 hover:py-5 border-transparent hover:border-border-secondary"} border transition-all`} tooltipText={item.description} tooltipAlignment="left"><p className="text-text-primary">{item.name}</p></ToolTip>

@@ -5,9 +5,11 @@ import { MainHeader } from "@/components/Header/MainHeader";
 import { Upload, FileText, CheckCircle2, AlertTriangle, Check } from "lucide-react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import { UnitService } from "@/shared/api/services/unitService";
-import { BaseContainer, IListedInputItem, ListedInputField, SelectionList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { BaseContainer, IListedInputItem, ListedInputField, MultiroleInputField, SelectionList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { useSearchParams } from "next/navigation";
 import { RewardService } from "@/shared/api/services/RewardService";
+import { PostService } from "@/shared/api/services/postService";
+import { RankService } from "@/shared/api/services/RankService";
 
 export default function UploadDocumentPage() {
     const searchParameters = useSearchParams()
@@ -24,7 +26,37 @@ export default function UploadDocumentPage() {
     const [documentPrompt, setDocumentPrompt] = useState<string>("")
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | undefined>()
 
-    const [allRewards, setAllRewards] = useState<IListedInputItem[]>();
+    const [multiroleList, setMultiroleList] = useState<IListedInputItem[]>([]);
+    const [rankTweaking, setRankTweaking] = useState<IListedInputItem[]>([
+        {
+            name: "Повышению",
+            id: "0",
+            selected: true
+        },
+        {
+            name: "Понижению",
+            id: "1",
+            selected: false
+        }
+    ]);
+    const [amountOfSteps, setAmountOfSteps] = useState<number>(1);
+    const [sanctions, setSanctions] = useState<IListedInputItem[]>([
+        {
+            name: "Благодарность",
+            id: "0",
+            selected: false
+        },
+        {
+            name: "Выговор",
+            id: "1",
+            selected: false
+        },
+        {
+            name: "Строгий выговор",
+            id: "2",
+            selected: false
+        },
+    ]);
     
     
     useEffect(()=>{
@@ -34,7 +66,47 @@ export default function UploadDocumentPage() {
     useEffect(()=>{
         if(actType == "rewards"){
             RewardService.getAll().then((rds)=>{
-                setAllRewards(rds);
+                let preparedList : IListedInputItem[] = [];
+                rds.forEach(el => {
+                    preparedList.push(
+                        {
+                            name : el.name,
+                            description : el.privileges,
+                            id : el.id,
+                            selected : false
+                        }
+                    )
+                });
+                setMultiroleList(preparedList);
+            })
+        }else if(actType == "posts"){
+            PostService.getAll().then((pst)=>{
+                let preparedList : IListedInputItem[] = [];
+                pst.forEach(el => {
+                    preparedList.push(
+                        {
+                            name : el.name,
+                            description : el.description,
+                            id : el.id,
+                            selected : false
+                        }
+                    )
+                });
+                setMultiroleList(preparedList);
+            })
+        }else if(actType == "ranks"){
+            RankService.getAll().then((rnk)=>{
+                let preparedList : IListedInputItem[] = [];
+                rnk.forEach(el => {
+                    preparedList.push(
+                        {
+                            name : el.name,
+                            id : el.id,
+                            selected : false
+                        }
+                    )
+                });
+                setMultiroleList(preparedList);
             })
         }
     }, [])
@@ -309,9 +381,19 @@ export default function UploadDocumentPage() {
                 </div>
                 
                 }
-                {actType == "rewards" && 
-                    <SelectionList className="min-h-10" title="Выберите награды из списка" onSelection={(items)=>{setAllRewards([...items])}} maxListHeight="500px" searchField list={allRewards}></SelectionList>
+                {actType == "rewards" && <SelectionList className="min-h-10" title="Выберите награды из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>}
+                {actType == "posts" && <SelectionList className="min-h-10" title="Выберите должности из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>}
+                {actType == "ranks" && <SelectionList className="min-h-10" title="Выберите звание из списка" onSelection={(items)=>{setMultiroleList([...items])}} maxSelectedItems={1} searchField list={multiroleList}></SelectionList>}
+                {actType == "rank-altering" && 
+                <div className="flex flex-col">
+                <SelectionList className="min-h-10" title="Количество ступеней к" onSelection={(items)=>{setRankTweaking([...items])}} maxSelectedItems={1} radiobutton list={rankTweaking}></SelectionList>
+                <BaseContainer className="flex-col">
+                    <p>Кол-во ступеней:</p>
+                    <MultiroleInputField value={amountOfSteps} onChange={(e)=>{setAmountOfSteps(Math.max(Number(e.target.value), 1))}} type="num" editable editMode></MultiroleInputField>  
+                </BaseContainer>
+                </div>
                 }
+                {actType == "sanctions" && <SelectionList className="min-h-10" title="Выберите тип санкции" onSelection={(items)=>{setSanctions([...items])}} maxSelectedItems={1} radiobutton list={sanctions}></SelectionList>}
                 <div className="mt-16 flex flex-col col-span-3">
                             <div className="flex justify-between items-end mb-6">
                                 <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">

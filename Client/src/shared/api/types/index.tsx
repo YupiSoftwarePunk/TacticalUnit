@@ -30,7 +30,7 @@ interface ISubdivision{
 }
 
 interface IRank{
-    id?: number,
+    id: string,
     counterToReach : number,
     higherId?: number,
     previous?: IRank,
