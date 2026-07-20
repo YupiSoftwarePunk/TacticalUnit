@@ -3,7 +3,7 @@ import { ImageService, ImageType } from "@/shared/api/services/imageService";
 
 interface StaticImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
     type: ImageType;
-    entityId: number | string;
+    entityId: number | string | undefined;
 }
 
 const ALLOWED_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp"];
@@ -16,7 +16,7 @@ export const StaticImage: React.FC<StaticImageProps> = ({
     ...props
 }) => {
     const [extIndex, setExtIndex] = useState<number>(0);
-    let [isFallback, setIsFallback] = useState<boolean>(true);
+    const [isFallback, setIsFallback] = useState<boolean>(true);
     const [fallbackExtIndex, setFallbackExtIndex] = useState<number>(0);
 
     useEffect(() => {
@@ -32,7 +32,6 @@ export const StaticImage: React.FC<StaticImageProps> = ({
             } 
             else {
                 setIsFallback(true);
-                isFallback = true;
             }
         } 
         else {
@@ -42,7 +41,7 @@ export const StaticImage: React.FC<StaticImageProps> = ({
         }
     };
 
-    const src = isFallback
+    const src = isFallback || !entityId
         ? `${ImageService.getDefaultImageUrl(type)}${ALLOWED_EXTENSIONS[fallbackExtIndex]}`
         : `${ImageService.getEntityImageUrl(type, entityId)}${ALLOWED_EXTENSIONS[extIndex]}`;
 

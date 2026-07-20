@@ -41,7 +41,7 @@ export default function Profile({ params }: { params: Promise<{ DiscordId: strin
         <div className="flex flex-col min-h-screen text-text-secondary bg-bg-primary font-text">
             <MainHeader></MainHeader>
             <div className="flex min-h-[200px] h-[25vh] md:min-h-[300px] md:h-[30vh] bg-black relative">
-                <ProfileBGImage discordId={DiscordId} canEdit={true}></ProfileBGImage>
+                <ProfileBGImage backgroundPictureId={unitData?.backgroundPictureId} canEdit={true}></ProfileBGImage>
             </div>
             <div className="flex flex-col md:flex-row flex-1 justify-center py-4 px-2 max-w-[1400px] mx-auto w-full gap-3">
 
@@ -77,7 +77,7 @@ export default function Profile({ params }: { params: Promise<{ DiscordId: strin
                             <div className="w-full max-w-[320px] aspect-square border-b border-border-primary overflow-hidden flex justify-center items-center">
                                 <StaticImage
                                     type="kit"
-                                    entityId={DiscordId} 
+                                    entityId={unitData?.favoriteKitId} 
                                     alt="Избранный кит бойца"
                                     className="object-top object-cover w-full h-full text-white bg-transparent"
                                 />
