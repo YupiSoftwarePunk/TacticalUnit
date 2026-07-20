@@ -34,7 +34,13 @@ export const MainHeader = () => {
         else {
             applyTheme("dark");
         }
-        setMounted(true);
+
+        requestAnimationFrame(() => {
+            if (savedTheme === "light") {
+                setIsDark(false);
+            }
+            setMounted(true);
+        });
     }, []);
 
     const toggleTheme = () => {

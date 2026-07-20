@@ -1,4 +1,4 @@
-import { act, useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { ActivityCalendarCell } from "../ActivityCalendarCell";
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import { ActivityCalendarPillar, IActivityCalendarPillar } from "./ActivityCalendarPillar";
@@ -17,13 +17,11 @@ interface IActivityCalendar{
 }
 export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
     const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
-    let [monthsMatrix, setMonthsMatrix] = useState<IActivityCalendarPillar[]>([])
+    const [monthsMatrix, setMonthsMatrix] = useState<IActivityCalendarPillar[]>([])
     const [selectedMonthDisplay, setSelectedMonthDisplay] = useState<string>();
     const [pillarsOffset, setPillarsOffset] = useState<number>(0);
     const [pillarsTransitionStatus, setPillarsTransitionStatus] = useState<boolean> (false);
-    let [activityDates, setActivityDates] = useState<Date[]> ([]);
-
-    let preparedMonths : IActivityCalendarPillar[] = [];
+    const [activityDates, setActivityDates] = useState<Date[]> ([]);
 
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -34,22 +32,20 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
     const [selectedYearDisplay, setSelectedYearDisplay] = useState<number>(currentYear);
     const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
 
-    let previouslySelectedMonthIndexOffset = -1;
+    const previouslySelectedMonthIndexOffset = useRef<number>(-1);
 
-    function createPillars(){
+    function createPillars(dates: Date[] = activityDates){
         const activityMonths : Date[] = [];
-        activityDates.forEach(d => {
-            
+        dates.forEach(d => {
             if (activityMonths.find(x=>x.getMonth() == d.getMonth() && x.getFullYear() == d.getFullYear()) == undefined){
                 activityMonths.push(d);
-
             }
         });
         let pillars : IActivityCalendarPillar[] = [];
         activityMonths.forEach(d => {
 
             const monthDays = new Date(d.getFullYear(), d.getMonth(), 0).getDate();
-            const monthActivity = activityDates.filter(x=>(x.getMonth() == d.getMonth() && x.getFullYear() == d.getFullYear()))
+            const monthActivity = dates.filter(x=>(x.getMonth() == d.getMonth() && x.getFullYear() == d.getFullYear()))
             const totalActivity : number = (monthActivity.length / monthDays) * 100;
 
             pillars.push({
@@ -62,21 +58,22 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
             })
         });
         pillars = pillars.sort((a,b)=>a.Date!.getTime() - b.Date!.getTime())
-        pillars[pillars.length-1].isSelected = true;
+        if (pillars.length > 0) {
+            pillars[pillars.length - 1].isSelected = true;
+        }
         return pillars;
     }
 
 
-    function refreshMonthsDisplay(){
-        const monthsToSet : IActivityCalendarPillar[] = monthsMatrix;
+    function refreshMonthsDisplay(monthsToSet: IActivityCalendarPillar[] = monthsMatrix){
         const selectedMonthIndex = monthsToSet.findIndex(x=>x.isSelected == true);
 
             const monthsMargin = 4; //both directions
             const amountOfMonthsToDisplay = 5;
             const amountOfMonthsToTheRight = 2;
-            const calculatedPillarOffset = previouslySelectedMonthIndexOffset - amountOfMonthsToDisplay + 1;
+            const calculatedPillarOffset = previouslySelectedMonthIndexOffset.current - amountOfMonthsToDisplay + 1;
             const refresh = () => {if(selectedMonthIndex != undefined){
-            preparedMonths = [];
+            const preparedMonths: IActivityCalendarPillar[] = [];
 
             let monthsToTheRight = 0;
             let testIndex = selectedMonthIndex + 1;
@@ -105,17 +102,18 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
         if (calculatedPillarOffset <= 2 && calculatedPillarOffset >= -2 && selectedMonthIndex + calculatedPillarOffset != monthsToSet.length+1){
             if (calculatedPillarOffset == 2 && selectedMonthIndex == monthsToSet.length-2){
                 setPillarsTransitionStatus(false);
-                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset+1));
-            }else if(selectedMonthIndex >= monthsToSet.length-2){
+                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset.current+1));
+            }
+            else if(selectedMonthIndex >= monthsToSet.length-2){
 
             }
             else{
                 setPillarsTransitionStatus(false);
                 
-                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset-2));
+                setPillarsOffset(20 * (currentMonth - previouslySelectedMonthIndexOffset.current-2));
                 refresh();
             }
-            const interval = setTimeout(()=>{ setPillarsOffset(0); refresh(); }, 50);
+            setTimeout(()=>{ setPillarsOffset(0); refresh(); }, 50);
         }
         else{
             refresh();
@@ -171,20 +169,12 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
                 const [day, month, year] = act.split(".").map(Number);
                 list.push(new Date(year, month-1, day))
             });
-            activityDates = list;
             setActivityDates(list);
-            setMonthsMatrix(createPillars());
-            monthsMatrix = createPillars();
-            
-
+            const pillars = createPillars(list);
+            setMonthsMatrix(pillars);
             setActivityMatrix(fillMonthMatrix(currentYear, currentMonth, list));
-            refreshMonthsDisplay();
+            refreshMonthsDisplay(pillars);
         })
-    }, [])
-    useEffect(()=>{
-
-        setSelectedMonthDisplay(monthsStr[selectedMonth]);
-        setMonthsMatrix(preparedMonths);
     }, [])
 
     function lowerSelectedMonth(){
@@ -217,40 +207,43 @@ export const ActivityCalendar = ({UnitDiscordId} : IActivityCalendar) =>{
 
 
     const setActiveMonthById = (monthId : number) => {
-        const m = monthsMatrix.find(x => x.isSelected === true);
-        m!.isSelected = false;
         const electedMonth = monthsMatrix.find(x => x.Id === monthId);
-        previouslySelectedMonthIndexOffset = monthsMatrix.indexOf(electedMonth!);
-        
-        setMonthsMatrix([...monthsMatrix]);
-        if (electedMonth != null){
-            electedMonth.isSelected = true;
-            if (electedMonth.Date) {
-                setSelectedYearDisplay(electedMonth.Date.getFullYear());
-                setSelectedMonthDisplay(monthsStr[electedMonth.Date.getMonth()])
-                setSelectedMonth(electedMonth.Date.getMonth())
-                setActivityMatrix(fillMonthMatrix(electedMonth.Date.getFullYear(), electedMonth.Date.getMonth(), activityDates));
-            }
+
+        if (electedMonth) {
+            previouslySelectedMonthIndexOffset.current = monthsMatrix.indexOf(electedMonth);
         }
-        refreshMonthsDisplay();
+        const updatedMonths = monthsMatrix.map(x => ({ ...x, isSelected: x.Id === monthId }));
+        setMonthsMatrix(updatedMonths);
+
+        if (electedMonth != null && electedMonth.Date) {
+            setSelectedYearDisplay(electedMonth.Date.getFullYear());
+            setSelectedMonthDisplay(monthsStr[electedMonth.Date.getMonth()]);
+            setSelectedMonth(electedMonth.Date.getMonth());
+            setActivityMatrix(fillMonthMatrix(electedMonth.Date.getFullYear(), electedMonth.Date.getMonth(), activityDates));
+        }
+        refreshMonthsDisplay(updatedMonths);
     }
     const setActiveMonthByListIndex = (monthId : number) => {
         const m = monthsMatrix.find(x => x.isSelected === true);
-        m!.isSelected = false;
-        previouslySelectedMonthIndexOffset = monthsMatrix.indexOf(m!);
-        const electedMonth = monthsMatrix[monthId];
-        previouslySelectedMonthIndexOffset = monthsMatrix.indexOf(electedMonth!);
-        setMonthsMatrix([...monthsMatrix]);
-        if (electedMonth != null){
-            electedMonth.isSelected = true;
-            if (electedMonth.Date) {
-                setSelectedYearDisplay(electedMonth.Date.getFullYear());
-                setSelectedMonthDisplay(monthsStr[electedMonth.Date.getMonth()])
-                setSelectedMonth(electedMonth.Date.getMonth())
-                setActivityMatrix(fillMonthMatrix(electedMonth.Date.getFullYear(), electedMonth.Date.getMonth(), activityDates));
-            }
+
+        if (m) {
+            previouslySelectedMonthIndexOffset.current = monthsMatrix.indexOf(m);
         }
-        refreshMonthsDisplay();
+        const electedMonth = monthsMatrix[monthId];
+
+        if (electedMonth) {
+            previouslySelectedMonthIndexOffset.current = monthsMatrix.indexOf(electedMonth);
+        }
+        const updatedMonths = monthsMatrix.map((x, idx) => ({ ...x, isSelected: idx === monthId }));
+        setMonthsMatrix(updatedMonths);
+
+        if (electedMonth != null && electedMonth.Date) {
+            setSelectedYearDisplay(electedMonth.Date.getFullYear());
+            setSelectedMonthDisplay(monthsStr[electedMonth.Date.getMonth()]);
+            setSelectedMonth(electedMonth.Date.getMonth());
+            setActivityMatrix(fillMonthMatrix(electedMonth.Date.getFullYear(), electedMonth.Date.getMonth(), activityDates));
+        }
+        refreshMonthsDisplay(updatedMonths);
     }
 
     return(
