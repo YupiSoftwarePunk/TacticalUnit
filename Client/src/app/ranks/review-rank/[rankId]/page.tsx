@@ -61,7 +61,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const [availableHeadRanks, setAvailableHeadRanks] = useState<IListedInputItem[]>([]);
 
     const UpdateHeadSearch = useCallback((prompt: string) => {
-        const prepList = availableHeadRanks.filter(x => !x.Name?.toLowerCase().search(prompt.toLowerCase()));
+        const prepList = availableHeadRanks.filter(x => !x.name?.toLowerCase().search(prompt.toLowerCase()));
         setHeadList(prepList);
     }, [availableHeadRanks]);
 
@@ -70,8 +70,8 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
             const preparedPosts: IListedInputItem[] = [];
             postList.forEach(post => {
                 preparedPosts.push({
-                    Name: post.name,
-                    Id: post.id?.toString()  
+                    name: post.name,
+                    id: post.id?.toString()  
                 });
             });
             setAvailableHeadRanks(preparedPosts);
@@ -251,8 +251,8 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                             }} 
                             onChoice={(e)=>{
                                 setIsNotSaved(true);
-                                setRank({...rank, lowerId: e.Id ? parseInt(e.Id, 10) : undefined});
-                                setRankPrompt(e.Name!);
+                                setRank({...rank, lowerId: e.id ? parseInt(e.id, 10) : undefined});
+                                setRankPrompt(e.name!);
                             }}
                             list={headList}
                             tooltip="Нижестоящее по иерархии звание" 

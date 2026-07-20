@@ -26,20 +26,31 @@ export function isDateBetweenDates(dateInQuestion : Date, lowerDate? : Date, big
         return isBetween;
     }
 
-export function isDateBetween(dateInQuestion: Date, lowerDate: Date, biggerDate: Date, inclusive: boolean = true): boolean {
+export function isDateBetween(dateInQuestion: Date, lowerDate: Date | undefined, biggerDate: Date | undefined, inclusive: boolean = true): boolean {
     const targetTime = dateInQuestion.getTime();
-    
-    
-    const minTime = Math.min(lowerDate.getTime(), biggerDate.getTime());
-    const maxTime = Math.max(lowerDate.getTime(), biggerDate.getTime());
+    console.warn(`dates: ${dateInQuestion} | ${lowerDate} | ${biggerDate}`)
+    if (lowerDate && biggerDate){
+        
+        const minTime = Math.min(lowerDate.getTime(), biggerDate.getTime());
+        const maxTime = Math.max(lowerDate.getTime(), biggerDate.getTime());
 
-    if (inclusive) {
-        return targetTime >= minTime && targetTime <= maxTime;
-    } else {
-        return targetTime > minTime && targetTime < maxTime;
+        if (inclusive) {
+            return targetTime >= minTime && targetTime <= maxTime;
+        } else {
+            return targetTime > minTime && targetTime < maxTime;
+        }
+    }else{
+        // console.warn("UNDEFINED!!!!!!!")
+        if(lowerDate && targetTime > lowerDate.getTime()){ 
+            // console.warn("LOWER AND TRUE"); 
+            return true}
+        else if (biggerDate && targetTime <= biggerDate.getTime()){ 
+            // console.warn("BIGGER AND TRUE"); 
+            return true}
+        else{return false;}
     }
 }
-export function isInThisMonth(dateInQuestion : Date, year : number, monthIndex : number){
+export function isInThisMonth(dateInQuestion : Date | undefined, year : number, monthIndex : number){
         let isBetween : boolean = false;
         
         if(!dateInQuestion){return false}

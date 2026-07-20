@@ -59,7 +59,7 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
 
     const UpdateHeadSearch = useCallback((prompt: string) => {
         const prepList = availableHeadSubdivisions.filter(
-            x => !x.Name?.toLowerCase().search(prompt.toLowerCase())
+            x => !x.name?.toLowerCase().search(prompt.toLowerCase())
         );
         setHeadList(prepList);
     }, [availableHeadSubdivisions]);
@@ -69,8 +69,8 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
             const preparedPosts: IListedInputItem[] = [];
             postList.forEach(post => {
                 preparedPosts.push({
-                    Name: post.name,
-                    Id: post.id
+                    name: post.name,
+                    id: post.id
                 });
             });
             setAvailableHeadSubdivisions(preparedPosts);
@@ -204,8 +204,8 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                             }}
                             onChoice={(e) => {
                                 setIsNotSaved(true);
-                                setSubdivision({ ...subdivision, headId: e.Id });
-                                setSubdivisionPrompt(e.Name!);
+                                setSubdivision({ ...subdivision, headId: e.id });
+                                setSubdivisionPrompt(e.name!);
                             }}
                             list={headList}
                         />

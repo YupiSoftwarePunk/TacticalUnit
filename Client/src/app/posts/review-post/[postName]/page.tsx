@@ -55,12 +55,12 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([]);
 
     const updateHeadSearch = useCallback((prompt: string) => {
-        const prepList = availableHeadPosts.filter(x => !x.Name?.toLowerCase().search(prompt.toLowerCase()));
+        const prepList = availableHeadPosts.filter(x => !x.name?.toLowerCase().search(prompt.toLowerCase()));
         setHeadList(prepList);
     }, [availableHeadPosts]);
 
     const updateSubdivisionSearch = useCallback((prompt: string) => {
-        const prepList = availableSubdivisions.filter(x => !x.Name?.toLowerCase().search(prompt.toLowerCase()));
+        const prepList = availableSubdivisions.filter(x => !x.name?.toLowerCase().search(prompt.toLowerCase()));
         setSubdivisionList(prepList);
     }, [availableSubdivisions]);
 
@@ -180,8 +180,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }} 
                             onChoice={(e: IListedInputItem) => {
                                 setIsNotSaved(true);
-                                setPost(prev => ({ ...prev, headId: e.Id }));
-                                setPostPrompt(e.Name!);
+                                setPost(prev => ({ ...prev, headId: e.id }));
+                                setPostPrompt(e.name!);
                             }}
                             list={headList}
                             tooltip="Нижестоящая по иерархии должность" 
@@ -197,8 +197,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }} 
                             onChoice={(e: IListedInputItem) => {
                                 setIsNotSaved(true);
-                                setPost(prev => ({ ...prev, subdivisionId: e.Id }));
-                                setSubdivisionPrompt(e.Name!);
+                                setPost(prev => ({ ...prev, subdivisionId: e.id }));
+                                setSubdivisionPrompt(e.name!);
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 

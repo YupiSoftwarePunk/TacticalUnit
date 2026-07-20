@@ -3,7 +3,7 @@ import { MainHeader } from "@/components/Header/MainHeader"
 import StoryCalendarPanel, { IStoryCalendarPanel } from "./StoryCalendarPanel";
 import { useEffect, useState } from "react";
 import { UnitService } from "@/shared/api/services/unitService";
-import { isInThisMonth } from "../dateWorks";
+import { isDateBetween, isInThisMonth } from "../dateWorks";
 import { getMockSingleDayEvents, getMockStates } from "./MockStory";
 
 
@@ -99,18 +99,18 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
 
     return(
-        <div className="flex flex-1 flex-col gap-10 font-text-bold justify-center overflow-clip">
+        <div className="flex flex-1 flex-col gap-10 font-text-bold justify-center ">
                 <h1 className={`flex w-full text-accent font-text-bold uppercase tracking-wider text-2xl justify-center transition-all`}>
                     История бойца
                 </h1>
                 <div className="flex self-center w-full justify-center">
                     <div className="flex self-center">
 
-                    <div className={`grid overflow-visible grid-cols-5 max-[1800px]:grid-cols-4 max-[1600px]:grid-cols-3 max-[1300px]:grid-cols-2 max-[1000px]:grid-cols-1 self-center justify-start gap-2 mb-28 flex-wrap `}>
+                    <div className={`grid overflow-visible grid-cols-3 max-[1300px]:grid-cols-2 max-[1000px]:grid-cols-1  self-center justify-start gap-2 mb-28 flex-wrap `}>
                         {getTotalMonths().map(d=>(
                             <StoryCalendarPanel key={d.toDateString()} year={d.getFullYear()} month={d.getMonth()} 
                             ActivityDaysList={activityDates} 
-                            unitStates={unitStates.filter(x=> (isInThisMonth(x.startDate, d.getFullYear(), d.getMonth()) || isInThisMonth(x.endDate, d.getFullYear(), d.getMonth())) )} 
+                            unitStates={unitStates.filter(x=> (isInThisMonth(x.startDate, d.getFullYear(), d.getMonth()) || isInThisMonth(x.endDate, d.getFullYear(), d.getMonth())) || (isDateBetween(d, x.startDate, x.endDate)) )} 
                             singleDayEvents={singleDayEvents.filter(x=>(isInThisMonth(x.dateTime, d.getFullYear(), d.getMonth())))}></StoryCalendarPanel>
                         ))
                         }

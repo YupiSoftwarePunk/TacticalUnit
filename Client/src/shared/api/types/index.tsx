@@ -116,8 +116,8 @@ interface IUnitState{
     id? : string,
     // unit : IUnit,
     status : IState,
-    startDate : Date,
-    endDate : Date,
+    startDate : Date | undefined,
+    endDate : Date | undefined,
     unitId? : string
 }
 
