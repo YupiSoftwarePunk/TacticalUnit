@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ImageService, ImageType } from "@/shared/api/services/imageService";
 
 interface StaticImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -15,15 +15,18 @@ export const StaticImage: React.FC<StaticImageProps> = ({
     alt,
     ...props
 }) => {
+    const [prevKey, setPrevKey] = useState<string>(`${type}-${entityId}`);
     const [extIndex, setExtIndex] = useState<number>(0);
-    const [isFallback, setIsFallback] = useState<boolean>(true);
+    const [isFallback, setIsFallback] = useState<boolean>(false);
     const [fallbackExtIndex, setFallbackExtIndex] = useState<number>(0);
 
-    useEffect(() => {
+    const currentKey = `${type}-${entityId}`;
+    if (currentKey !== prevKey) {
+        setPrevKey(currentKey);
         setExtIndex(0);
         setIsFallback(false);
         setFallbackExtIndex(0);
-    }, [type, entityId]);
+    }
 
     const handleError = () => {
         if (!isFallback) {

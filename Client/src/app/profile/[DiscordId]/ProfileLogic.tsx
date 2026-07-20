@@ -18,13 +18,13 @@ export function getProfileMenuOptions(disId : string){
         {
             id : 2,
             name : "Изменить шапку профиля",
-            url : `/profile/${disId}/background`,
+            url : `/profile/${disId}/background`,   // uploadBackground()
             accessOnRoles : ["1", "self"]
         },
         {
             id : 3,
             name : "Изменить избранный кит",
-            url : `/profile/${disId}/kit`,
+            url : `/profile/${disId}/kit`,  // uploadKit()
             accessOnRoles : ["1", "self"]
         },
         {
