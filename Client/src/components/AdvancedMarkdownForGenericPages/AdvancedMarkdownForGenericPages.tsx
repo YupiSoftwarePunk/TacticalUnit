@@ -444,7 +444,7 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
         let alteredList = [...list];
         let foundItem = alteredList.find(x=>x.id == item.id);
         if(foundItem!.selected == true){
-            console.warn("item was in the list")
+            // console.warn("item was in the list")
             foundItem!.selected = false
             setIdStory(idStory.filter(x=>x != foundItem?.id!));
         }else{
@@ -452,7 +452,7 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
             if(idStory.length + 1 > maxSelectedItems && idStory.length > 0 && maxSelectedItems > 0){
                 alteredList.find(x=>x.id == idStory[idStory.length - 1])!.selected = false;
                 
-                console.warn(`intervention found, deleting: ${alteredList.find(x=>x.id == idStory[idStory.length - 1])?.id}; posting: ${foundItem?.id}`)
+                // console.warn(`intervention found, deleting: ${alteredList.find(x=>x.id == idStory[idStory.length - 1])?.id}; posting: ${foundItem?.id}`)
                 idStory.pop();
 
             }
