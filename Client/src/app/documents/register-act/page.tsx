@@ -66,7 +66,7 @@ export default function UploadDocumentPage() {
     useEffect(()=>{
         if(actType == "rewards"){
             RewardService.getAll().then((rds)=>{
-                let preparedList : IListedInputItem[] = [];
+                const preparedList : IListedInputItem[] = [];
                 rds.forEach(el => {
                     preparedList.push(
                         {
@@ -79,9 +79,10 @@ export default function UploadDocumentPage() {
                 });
                 setMultiroleList(preparedList);
             })
-        }else if(actType == "posts"){
+        }
+        else if(actType == "posts"){
             PostService.getAll().then((pst)=>{
-                let preparedList : IListedInputItem[] = [];
+                const preparedList : IListedInputItem[] = [];
                 pst.forEach(el => {
                     preparedList.push(
                         {
@@ -94,9 +95,10 @@ export default function UploadDocumentPage() {
                 });
                 setMultiroleList(preparedList);
             })
-        }else if(actType == "ranks"){
+        }
+        else if(actType == "ranks"){
             RankService.getAll().then((rnk)=>{
-                let preparedList : IListedInputItem[] = [];
+                const preparedList : IListedInputItem[] = [];
                 rnk.forEach(el => {
                     preparedList.push(
                         {

@@ -46,7 +46,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const [imageVersion, setImageVersion] = useState<number>(0);
 
     const [rank, setRank] = useState<IRank>({
-        id: 0,
+        id: "0",
         counterToReach: 0,
         color: "#f3f3f3",
         name: "Загрузка...",
