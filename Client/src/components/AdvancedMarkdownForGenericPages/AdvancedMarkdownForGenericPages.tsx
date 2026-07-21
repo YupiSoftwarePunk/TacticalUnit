@@ -33,14 +33,15 @@ interface IMultiroleInputField{
     tooltip? : string,
     type? : "text" | "num",
     watermark? : string,
-    maxLength? : number
+    maxLength? : number,
+    uppercase? : boolean
 }
 
-export const MultiroleInputField = ({className = "", editingClassName = "", editable, onClick, onChange, value, tooltip, type="text", watermark, maxLength} : IMultiroleInputField) =>{
-    const [editMode, setEditMode] = useState<boolean>();
+export const MultiroleInputField = ({className = "", editingClassName = "", uppercase, editable, onClick, onChange, value, tooltip, type="text", watermark, maxLength, editMode} : IMultiroleInputField) =>{
+    const [insideEditMode, setInsideEditMode] = useState<boolean>();
     function tryEditing(){
         if(editable){
-            setEditMode(true);
+            setInsideEditMode(true);
         }
     }
     const [filling, setFilling] = useState<boolean>(`${value}`.length != 0)
@@ -60,23 +61,23 @@ export const MultiroleInputField = ({className = "", editingClassName = "", edit
     }
 
     return  <Tooltip verticalPlacement="top" className_Tooltip="text-[16px]" tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
-        <div className="flex flex-1" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setEditMode(false)}}>
-            <div className={`flex  w-full  text-text-primary font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${className} ${editable? "absolute" : ""} ${editMode? "pointer-events-none" : ""}`} >
-                <h1 className={`flex  w-full absolute font-text-bold uppercase tracking-wider text-lg transition-all ${editMode? "opacity-0" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
+        <div className="flex flex-1" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setInsideEditMode(false)}}>
+            <div className={`flex  w-full  text-text-primary font-text-bold uppercase tracking-wider text-lg py-2 transition-all ${className} ${editable? "absolute" : ""} ${editMode || insideEditMode? "pointer-events-none" : ""}`} >
+                <h1 className={`flex  w-full absolute font-text-bold tracking-wider text-lg transition-all ${uppercase? "uppercase" :""} ${editMode|| insideEditMode? "opacity-0" : ""}`} style={{paddingLeft: `${editMode || insideEditMode? "12" : "0"}px`}}>
                 {`${value? value : "[ Пусто ]"}`}
                 </h1>
                 </div>
                 {editable &&
                 type == "text" &&
-                <div className={`flex relative flex-col ${editingClassName} ${editMode? "" : " opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
-                    <input value={value} type="text" onChange={changeSequence} className={`flex  ${editMode? "" : " opacity-0 pointer-events-none"}  flex flex-1 text-accent font-text-bold uppercase tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
+                <div className={`flex relative flex-col ${editingClassName} ${editMode || insideEditMode? "" : " opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
+                    <input value={value} type="text" onChange={changeSequence} className={`flex  ${editMode || insideEditMode? "" : " opacity-0 pointer-events-none"}  flex flex-1 text-accent font-text-bold ${uppercase? "uppercase" :""} tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                     {watermark&& <p className={`absolute text-text-secondary size-full content-center px-3 pointer-events-none text-t ext-primary  transition-all`} style={{opacity: `${filling? "0" : "0.5"}`}}>{watermark}</p>}
                 </div>
                 }
                 {editable &&
                 type == "num" &&
-                <div className={`flex flex-col ${editingClassName} ${editMode? "" : " opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
-                    <input value={value} type="number" onChange={changeSequence} className={`flex ${editMode? "" : " opacity-0 pointer-events-none"} flex flex-1 text-accent font-text-bold uppercase tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
+                <div className={`flex flex-col ${editingClassName} ${editMode || insideEditMode? "" : " opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
+                    <input value={value} type="number" onChange={changeSequence} className={`flex ${editMode || insideEditMode? "" : " opacity-0 pointer-events-none"} flex flex-1 text-accent font-text-bold ${uppercase? "uppercase" :""} tracking-wider text-lg resize-none py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
                 
                 </div>
                 }
@@ -160,8 +161,10 @@ export const DescriptionInputField = ({className = "", displayOnEmpty, editingCl
 }
 
 export interface IListedInputItem{
-    Id? : string,
-    Name? : string
+    id? : string,
+    name? : string,
+    description? : string,
+    selected? : boolean
 }
 interface IListedInputField{
     className? : string
@@ -217,13 +220,13 @@ export function ListedInputField({className, editingClassName, textWhenEmpty, ed
                 <div onMouseEnter={()=>{setIsOverMenu(true)}} onMouseLeave={()=>{setIsOverMenu(false); if(!isFocused){setEditMode(false);}}} className={`cursor-pointer absolute overflow-scroll flex font-text-bold p-2 m-2 gap-2 flex-col z-1 top-full min-h-10 max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${isFocused || isOverMenu ? "" :"opacity-0 pointer-events-none"}`} style={{minHeight: `${isFocused || isOverMenu? "" :"0px"}`}}>
                 {
                 list.map((item)=>(
-                    <div key={list.findIndex(x=>x.Id == item.Id)} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" 
+                    <div key={list.findIndex(x=>x.id == item.id)} className="text-text-primary bg-bg-secondary px-4 hover:bg-accent hover:text-black transition-all" 
                     onClick={()=>{
                     setIsFocused(false)
                     setIsOverMenu(false)
                     onChoice!(item)
                     }}
-            >{`${item.Name? item.Name : "[ Пусто ]"}`}</div>
+            >{`${item.name? item.name : "[ Пусто ]"}`}</div>
                 ))
                 }
                 </div>
@@ -419,4 +422,116 @@ export const StyledButton = ({title = "[ Не указано ]", onClick, classN
     return(
         <button className={`flex font-text-bold ${view == "main"? "text-text-primary px-6 py-2":"text-text-secondary px-2"} hover:text-text-primary-accent hover:bg-bg-secondary cursor-pointer transition-all ${className} `}>{title}</button>
     )
+}
+interface ISelectionList{
+    list?: IListedInputItem[],
+    selectedList?: IListedInputItem[],
+    onSelection?: (selectedItemsOutput : IListedInputItem[]) => void,
+    className? : string,
+    title? : string,
+    maxSelectedItems? : number,
+    searchField?: boolean,
+    maxListHeight? : string // "100px", "1fr", etc.,
+    radiobutton? : boolean
+}
+export const SelectionList = ({title = "", className = "", onSelection, list = [], searchField = false, maxSelectedItems = -1, maxListHeight, radiobutton = false} : ISelectionList)=>{
+    let [idStory, setIdStory] = useState<string[]>([]);
+    const [visibleList, setVisibleList] = useState<IListedInputItem[]>(list);
+    
+    const [searchPrompt, setSearchPrompt] = useState<string>("");
+
+
+    function addItemIntoList(item : IListedInputItem){
+        let alteredList = [...list];
+
+        if (radiobutton){
+            let previous = alteredList.find(x=>x.selected == true);
+            if (previous?.id != item.id){
+                alteredList.forEach(element => {
+                    element.selected = false;
+                });
+                item.selected = true;
+                onSelection!(alteredList);
+            }
+            return
+        }
+        let foundItem = alteredList.find(x=>x.id == item.id);
+        
+        if(foundItem!.selected == true){
+            // console.warn("item was in the list")
+            foundItem!.selected = false
+            setIdStory(idStory.filter(x=>x != foundItem?.id!));
+        }else{
+            
+            if(idStory.length + 1 > maxSelectedItems && idStory.length > 0 && maxSelectedItems > 0){
+                alteredList.find(x=>x.id == idStory[idStory.length - 1])!.selected = false;
+                
+                // console.warn(`intervention found, deleting: ${alteredList.find(x=>x.id == idStory[idStory.length - 1])?.id}; posting: ${foundItem?.id}`)
+                idStory.pop();
+
+            }
+            idStory.unshift(foundItem?.id!)
+            setIdStory([...idStory]);
+            foundItem!.selected = true;
+        }
+        // setSelectedItems([...alteredList]);
+        // console.warn(idStory)
+        // console.warn(alteredList)
+        onSelection!(alteredList);
+    }
+
+    function Search(prompt : string){
+        prompt = prompt.toLowerCase().trim();
+        let preparedList : IListedInputItem[];
+        if(prompt){
+            preparedList = list.filter(x=>!x.id?.search(prompt))
+            // console.warn("searching by ID")
+            if (preparedList.length == 0){
+                // console.warn("unsucsessful, searching by name")
+                preparedList = list.filter(x=>!x.name?.toLowerCase().search(prompt) )
+            }
+            // console.warn(preparedList)
+        }else{
+            preparedList = list;
+        }
+        setVisibleList(preparedList);
+    }
+    const [timeoutSet, setTimeoutSet] = useState(false);
+    const [firstTimeFillFulfilled, setFirstTimeFillFulfilled] = useState(false);
+    useEffect(()=>{
+        if(!timeoutSet && !firstTimeFillFulfilled){
+
+            if(visibleList.length == 0) {
+                setTimeout(()=>{Search(""); setTimeoutSet(false);}, 500)
+                setTimeoutSet(true)
+            }
+            if(visibleList.length > 0) {
+                // console.warn("Fulfilled")
+                setFirstTimeFillFulfilled(true);
+            }
+            }
+            
+        })
+
+    return(<div className={`flex flex-col gap-3 px-4 py-6 bg-bg-secondary text-text-primary ${className}`}>
+        {title && <h2 className="text-2xl">{title}</h2>}
+        {searchField && <MultiroleInputField value={searchPrompt} onChange={(e)=>{Search(e.target.value); setSearchPrompt(e.target.value)}} editMode={true} editable={true} watermark="Поиск по названию или ID"></MultiroleInputField>}
+        <div className="flex flex-col">
+            <div className="flex justify-between flex-row-reverse">
+                
+                <p className="flex text-right self-end text-text-secondary">Макс: {maxSelectedItems < 0? "Не ограничено" : maxSelectedItems}</p>
+                {
+                    (maxSelectedItems > 1 || maxSelectedItems < 0) &&
+                    <p className="flex text-right self-end text-text-secondary">Выбрано: {`${idStory.length} из ${list.length}`}</p>
+                }
+            </div>
+            <div className={`flex overflow-visible flex-col min-h-5 bg-bg-dark border border-border-primary ${maxListHeight? `max-h-[${maxListHeight}] overflow-scroll` : ""}`} style={{maxHeight: `${maxListHeight? `${maxListHeight}` : ""}`}}>
+                {visibleList.map((item)=>(
+                    <button key={item.id} className={`text-lg text-left ${item.selected ? "hover:my-1" : ""} transition-all`} onClick={()=>{addItemIntoList(item)}}>
+                        <ToolTip className={`${item.selected ? "mx-3 my-2 px-3 py-2 border-accent hover:border-accent-hover bg-bg-secondary" : "px-6 py-4 hover:py-5 border-transparent hover:border-border-secondary"} border transition-all`} tooltipText={item.description} tooltipAlignment="left"><p className="text-text-primary">{item.name}</p></ToolTip>
+                    </button>
+                    ))}
+            </div>
+        </div>
+    </div>)
 }

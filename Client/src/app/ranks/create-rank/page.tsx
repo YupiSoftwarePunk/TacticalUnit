@@ -117,7 +117,7 @@ export default function CreateRankPage(){
 
     function UpdateSearch(prompt : string){
         let prepList : IListedInputItem[] = []
-        prepList = availableHeadRanks.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        prepList = availableHeadRanks.filter(x=>!x.name?.toLowerCase().search(prompt.toLowerCase()))
         setHeadList(prepList)
     }
 
@@ -199,8 +199,8 @@ export default function CreateRankPage(){
             const preparedRanks : IListedInputItem[] = [];
             rankList.forEach(rank => {
                 preparedRanks.push({
-                    Name: rank.name,
-                    Id: rank.id?.toString()
+                    name: rank.name,
+                    id: rank.id?.toString()
                 })
             });
             setAvailableHeadRanks([...preparedRanks]);
@@ -288,7 +288,7 @@ export default function CreateRankPage(){
                                 tooltip="Вышестоящее звание" 
                                 list={headList} 
                                 value={headPrompt} 
-                                onChoice={(el) => { setHeadPrompt(el.Name!); setHeadId(el.Id) }} 
+                                onChoice={(el) => { setHeadPrompt(el.name!); setHeadId(el.id) }} 
                                 onChange={(e) => { setHeadPrompt(e.target.value); UpdateSearch(e.target.value) }} 
                                 editable={true} 
                                 editMode={true}

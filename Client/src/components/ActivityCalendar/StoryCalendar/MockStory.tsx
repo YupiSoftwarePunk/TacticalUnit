@@ -7,8 +7,8 @@ export function getMockStates() : IUnitState[] {
                 color: "#FF2222",
                 name: "Празднование мохрового ковра"
             },
-            startDate: new Date(today.getFullYear(), Math.max(today.getMonth()-1, 0), today.getDate()),
-            endDate: today
+            startDate: today,
+            endDate: undefined
         },
         {
             id: "1",

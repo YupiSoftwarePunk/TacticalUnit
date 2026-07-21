@@ -93,7 +93,7 @@ export default function CreateSubdivPage(){
 
     function UpdateSearch(prompt : string){
         let prepList : IListedInputItem[] = []
-        prepList = availableHeadSubdivisions.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        prepList = availableHeadSubdivisions.filter(x=>!x.name?.toLowerCase().search(prompt.toLowerCase()))
         setHeadList(prepList)
     }
 
@@ -125,8 +125,8 @@ export default function CreateSubdivPage(){
                 const preparedRanks : IListedInputItem[] = [];
                 subList.forEach(subdivision => {
                     preparedRanks.push({
-                        Name: subdivision.name,
-                        Id: subdivision.id
+                        name: subdivision.name,
+                        id: subdivision.id
                     })
                 });
                 setAvailableHeadSubdivisions([...preparedRanks]);
@@ -146,7 +146,7 @@ export default function CreateSubdivPage(){
             </BaseContainer>
 
             <BaseContainer>
-                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name);  setHeadId(el.Id); UpdateSearch(headPrompt? headPrompt : "")}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
+                <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.name);  setHeadId(el.id); UpdateSearch(headPrompt? headPrompt : "")}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
                 <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>

@@ -92,7 +92,7 @@ export default function CreatePostPage() {
 
     function UpdateSearch(prompt : string, list : IListedInputItem[] = headList){
         let prepList : IListedInputItem[] = []
-        prepList = availableHeadPosts.filter(x=>!x.Name?.toLowerCase().search(prompt.toLowerCase()))
+        prepList = availableHeadPosts.filter(x=>!x.name?.toLowerCase().search(prompt.toLowerCase()))
         setHeadList(prepList)
     }
 
@@ -137,8 +137,8 @@ export default function CreatePostPage() {
             const preparedPosts : IListedInputItem[] = [];
             postList.forEach(post => {
                 preparedPosts.push({
-                    Name: post.name,
-                    Id: post.id
+                    name: post.name,
+                    id: post.id
                 })
             });
             setAvailableHeadPosts([...preparedPosts]);
@@ -167,7 +167,7 @@ export default function CreatePostPage() {
                     </BaseContainer>
 
                     <BaseContainer className="w-full">
-                        <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.Name!); setHeadPostId(el.Id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
+                        <ListedInputField tooltip="Вышестоящая должность" list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.name!); setHeadPostId(el.id)}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
                     </BaseContainer>
 
                     <BaseContainer className="w-full">

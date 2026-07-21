@@ -53,18 +53,18 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([]);
 
     const headList = useMemo(() => {
-        return availableHeadPosts.filter(x => x.Name?.toLowerCase().startsWith(postPrompt.toLowerCase()));
+        return availableHeadPosts.filter(x => x.name?.toLowerCase().startsWith(postPrompt.toLowerCase()));
     }, [availableHeadPosts, postPrompt]);
 
     const subdivisionList = useMemo(() => {
-        return availableSubdivisions.filter(x => x.Name?.toLowerCase().startsWith(subdivisionPrompt.toLowerCase()));
+        return availableSubdivisions.filter(x => x.name?.toLowerCase().startsWith(subdivisionPrompt.toLowerCase()));
     }, [availableSubdivisions, subdivisionPrompt]);
 
     useEffect(() => {
         PostService.getAll().then((postList) => {
             const preparedPosts: IListedInputItem[] = postList.map(p => ({
-                Name: p.name,
-                Id: p.id
+                name: p.name,
+                id: p.id
             }));
             setAvailableHeadPosts(preparedPosts);
         });
@@ -73,8 +73,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     useEffect(() => {
         SubdivisionService.getAll().then((subdivList) => {
             const preparedSubdivs: IListedInputItem[] = subdivList.map(subdiv => ({
-                Name: subdiv.name,
-                Id: subdiv.id
+                name: subdiv.name,
+                id: subdiv.id
             }));
             setAvailableSubdivisions(preparedSubdivs);
         });
@@ -167,8 +167,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }} 
                             onChoice={(e: IListedInputItem) => {
                                 setIsNotSaved(true);
-                                setPost(prev => ({ ...prev, headId: e.Id }));
-                                setPostPrompt(e.Name!);
+                                setPost(prev => ({ ...prev, headId: e.id }));
+                                setPostPrompt(e.name!);
                             }}
                             list={headList}
                             tooltip="Нижестоящая по иерархии должность" 
@@ -183,8 +183,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }} 
                             onChoice={(e: IListedInputItem) => {
                                 setIsNotSaved(true);
-                                setPost(prev => ({ ...prev, subdivisionId: e.Id }));
-                                setSubdivisionPrompt(e.Name!);
+                                setPost(prev => ({ ...prev, subdivisionId: e.id }));
+                                setSubdivisionPrompt(e.name!);
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 
