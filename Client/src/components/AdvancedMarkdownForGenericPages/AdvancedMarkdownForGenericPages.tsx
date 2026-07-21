@@ -435,17 +435,17 @@ interface ISelectionList{
     radiobutton? : boolean
 }
 export const SelectionList = ({title = "", className = "", onSelection, list = [], searchField = false, maxSelectedItems = -1, maxListHeight, radiobutton = false} : ISelectionList)=>{
-    let [idStory, setIdStory] = useState<string[]>([]);
+    const [idStory, setIdStory] = useState<string[]>([]);
     const [visibleList, setVisibleList] = useState<IListedInputItem[]>(list);
     
     const [searchPrompt, setSearchPrompt] = useState<string>("");
 
 
     function addItemIntoList(item : IListedInputItem){
-        let alteredList = [...list];
+        const alteredList = [...list];
 
         if (radiobutton){
-            let previous = alteredList.find(x=>x.selected == true);
+            const previous = alteredList.find(x=>x.selected == true);
             if (previous?.id != item.id){
                 alteredList.forEach(element => {
                     element.selected = false;
@@ -455,7 +455,7 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
             }
             return
         }
-        let foundItem = alteredList.find(x=>x.id == item.id);
+        const foundItem = alteredList.find(x=>x.id == item.id);
         
         if(foundItem!.selected == true){
             // console.warn("item was in the list")
