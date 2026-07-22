@@ -194,6 +194,9 @@ export default function DocumentPage() {
                                                     />
                                                 )}
                                                 <div className="flex flex-col gap-0.5">
+                                                    <span className="text-[10px] font-text-bold uppercase tracking-widest text-text-secondary/60">
+                                                        [{item.id}]
+                                                    </span>
                                                     <p className="text-xs md:text-sm text-text-primary font-text leading-relaxed">
                                                         {item.content}
                                                     </p>
