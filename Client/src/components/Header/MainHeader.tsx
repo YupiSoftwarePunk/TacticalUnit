@@ -15,7 +15,7 @@ export const MainHeader = () => {
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const { user, isAuthenticated, isLoading, login, logout } = useAuth();
-    const [profileLink, setProfileLink] = useState<string>("");
+    const profileLink = (mounted ? userFromLocalStorage() : null) || user?.discord_id || "";
 
     function userFromLocalStorage() {
         if (typeof window !== "undefined") {
@@ -26,19 +26,21 @@ export const MainHeader = () => {
     }
 
     useEffect(() => {
-        setProfileLink(userFromLocalStorage());
-    }, [isAuthenticated]);
-
-    useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme === "light") {
-            setIsDark(false);
+            requestAnimationFrame(() => setIsDark(false));
             applyTheme("light");
         } 
         else {
             applyTheme("dark");
         }
-        setMounted(true);
+
+        requestAnimationFrame(() => {
+            if (savedTheme === "light") {
+                setIsDark(false);
+            }
+            setMounted(true);
+        });
     }, []);
 
     const toggleTheme = () => {

@@ -139,6 +139,7 @@ export default function CreateRankPage(){
         }
 
         const newRank : IRank = {
+            id: "0",
             counterToReach : activityToPromotion,
             color : color,
             name : rankName,

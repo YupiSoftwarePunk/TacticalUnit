@@ -6,25 +6,21 @@ import { UnitService } from "@/shared/api/services/unitService";
 import { isDateBetween, isInThisMonth } from "../dateWorks";
 import { getMockSingleDayEvents, getMockStates } from "./MockStory";
 
-
 interface IStoryCalendar{
     DiscordId : string,
 }
 
 const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
-
     const [calendars, setCalendars] = useState<IStoryCalendarPanel>()
 
-    let [activityDates, setActivityDates] = useState<Date[]>([]);
+    const [activityDates, setActivityDates] = useState<Date[]>([]);
     const [unitStates, setUnitStates] = useState<IUnitState[]>([]);
     const [singleDayEvents, setSingleDayEvents] = useState<ISingleDayEvent[]>([]);
     
     function getTotalMonths(){
-
         const activityMonths : Date[] = [];
         
         activityDates.forEach(d => {
-            
             if (activityMonths.find(x=>x.getMonth() == d.getMonth() && x.getFullYear() == d.getFullYear()) == undefined){
                 activityMonths.push(d);
                 
@@ -40,33 +36,29 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
                 setUnitStates(s);
                 setUnitStates(getMockStates());
             })
+
             await UnitService.getEventStory(DiscordId).then(e=>{
                 setSingleDayEvents(e)
                 setSingleDayEvents(getMockSingleDayEvents())
             })
+
             await UnitService.getActivity(DiscordId).then(a => {
                 const list : Date[] = []
-
                 a.forEach(act => {
                     const [day, month, year] = act.split(".").map(Number);
                     list.push(new Date(year, month-1, day))
                 });
-                activityDates = list;
                 setActivityDates(list);
-                
             })
-            
         }
-        
         receive();
     },[])
-
 
 
     function getStartOfTheMonthOffset(year : number, month : number) : number{
         const startDayOfMonth = new Date(year, month, 0);
         const startDayOfWeek = startDayOfMonth.getDay();
-
+        
         return startDayOfWeek;
     }
 
@@ -122,4 +114,5 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
         </div>
     )
 }
+
 export default StoryCalendar;

@@ -21,18 +21,13 @@ const mockDocs: IDocumentData[] = [
 ];
 
 export default function DocumentArchivePage() {
-    const [documents, setDocuments] = useState<IDocumentData[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [documents] = useState<IDocumentData[]>(mockDocs);
+    const [isLoading] = useState<boolean>(false);
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [authorFilter, setAuthorFilter] = useState<string>("");
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
-
-    useEffect(() => {        
-        setDocuments(mockDocs);
-        setIsLoading(false);
-    }, []);
 
     const columnsLayout: ColumnConfig[] = useMemo(() => [
         {
@@ -57,7 +52,7 @@ export default function DocumentArchivePage() {
                 <Link 
                     href={`/profile/${row.authorDiscordId}`}
                     className="text-accent font-text-bold hover:text-text-primary-accent transition-colors">
-                    @{value}
+                    {value}
                 </Link>
             )
         },

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Suspense } from "react";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { Upload, FileText, CheckCircle2, AlertTriangle, Check } from "lucide-react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
@@ -11,7 +11,7 @@ import { RewardService } from "@/shared/api/services/RewardService";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 
-export default function UploadDocumentPage() {
+function UploadDocumentContent() {
     const searchParameters = useSearchParams()
     const actType = searchParameters?.get('type') // Types possible: "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions"
 
@@ -82,7 +82,7 @@ export default function UploadDocumentPage() {
     useEffect(()=>{
         if(actType == "rewards"){
             RewardService.getAll().then((rds)=>{
-                let preparedList : IListedInputItem[] = [];
+                const preparedList : IListedInputItem[] = [];
                 rds.forEach(el => {
                     preparedList.push(
                         {
@@ -95,9 +95,10 @@ export default function UploadDocumentPage() {
                 });
                 setMultiroleList(preparedList);
             })
-        }else if(actType == "posts"){
+        }
+        else if(actType == "posts"){
             PostService.getAll().then((pst)=>{
-                let preparedList : IListedInputItem[] = [];
+                const preparedList : IListedInputItem[] = [];
                 pst.forEach(el => {
                     preparedList.push(
                         {
@@ -110,9 +111,10 @@ export default function UploadDocumentPage() {
                 });
                 setMultiroleList(preparedList);
             })
-        }else if(actType == "ranks"){
+        }
+        else if(actType == "ranks"){
             RankService.getAll().then((rnk)=>{
-                let preparedList : IListedInputItem[] = [];
+                const preparedList : IListedInputItem[] = [];
                 rnk.forEach(el => {
                     preparedList.push(
                         {
@@ -460,3 +462,10 @@ export default function UploadDocumentPage() {
     );
 }
 
+export default function UploadDocumentPage() {
+    return (
+        <Suspense fallback={<div className="w-full min-h-screen bg-bg-primary flex items-center justify-center text-text-primary">Загрузка...</div>}>
+            <UploadDocumentContent />
+        </Suspense>
+    );
+}

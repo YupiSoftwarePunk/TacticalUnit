@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ImageService, ImageType } from "@/shared/api/services/imageService";
 
 interface StaticImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
     type: ImageType;
-    entityId: number | string;
+    entityId: number | string | undefined;
 }
 
 const ALLOWED_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp"];
@@ -15,15 +15,18 @@ export const StaticImage: React.FC<StaticImageProps> = ({
     alt,
     ...props
 }) => {
+    const [prevKey, setPrevKey] = useState<string>(`${type}-${entityId}`);
     const [extIndex, setExtIndex] = useState<number>(0);
-    let [isFallback, setIsFallback] = useState<boolean>(true);
+    const [isFallback, setIsFallback] = useState<boolean>(false);
     const [fallbackExtIndex, setFallbackExtIndex] = useState<number>(0);
 
-    useEffect(() => {
+    const currentKey = `${type}-${entityId}`;
+    if (currentKey !== prevKey) {
+        setPrevKey(currentKey);
         setExtIndex(0);
         setIsFallback(false);
         setFallbackExtIndex(0);
-    }, [type, entityId]);
+    }
 
     const handleError = () => {
         if (!isFallback) {
@@ -32,7 +35,6 @@ export const StaticImage: React.FC<StaticImageProps> = ({
             } 
             else {
                 setIsFallback(true);
-                isFallback = true;
             }
         } 
         else {
@@ -42,7 +44,7 @@ export const StaticImage: React.FC<StaticImageProps> = ({
         }
     };
 
-    const src = isFallback
+    const src = isFallback || !entityId
         ? `${ImageService.getDefaultImageUrl(type)}${ALLOWED_EXTENSIONS[fallbackExtIndex]}`
         : `${ImageService.getEntityImageUrl(type, entityId)}${ALLOWED_EXTENSIONS[extIndex]}`;
 

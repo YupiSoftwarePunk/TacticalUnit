@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { ActivityCalendarCell, IActivityCalendarCell } from "../ActivityCalendarCell";
 import { isDateBetween, isDateBetweenDates } from "../dateWorks";
 import { mixColors } from "../colorConverter";
@@ -17,21 +17,11 @@ const monthsStr = [
         "Апрель","Май","Июнь",
         "Июль","Август","Сентябрь",
         "Октябрь","Ноябрь","Декабрь"
-    ];
-const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = [], singleDayEvents = []} : IStoryCalendarPanel) =>{
-    const [activityMatrix, setActivityMatrix] = useState<activityCell[]>([])
-    
+];
 
+const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = [], singleDayEvents = []} : IStoryCalendarPanel) =>{
     
     function fillMonthMatrix(dates : Date[] = ActivityDaysList){
-        // console.warn("cal refreshed")
-        // console.warn(year + "  " + month)
-        // console.warn("-----------------")
-        // console.warn(unitStates);
-        // console.warn(singleDayEvents);
-        
-
-
 
         const activityMatrixFilled : activityCell[] = [];
 
@@ -110,13 +100,10 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
         }
         return activityMatrixFilled;
     }
-    useEffect(()=>{
-        setActivityMatrix(fillMonthMatrix())
-    },[])
-
-
-
-
+    const activityMatrix = useMemo(
+        () => fillMonthMatrix(),
+        [year, month, ActivityDaysList, unitStates, singleDayEvents]
+    );
 
     return (
         <div className="flex flex-col content-center justify-center gap-6 text-text-primary">

@@ -36,6 +36,7 @@ interface IRankAssignment {
 export default function PostPage({ params }: { params: Promise<{ rankId: string }> }) {
     const { rankId } = React.use(params);
     const numericRankId = Number(rankId);
+    const isIdInvalid = isNaN(numericRankId);
 
     const [canEdit, setCanEdit] = useState(false);
     const [canGrant] = useState(true);
@@ -45,7 +46,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const [imageVersion, setImageVersion] = useState<number>(0);
 
     const [rank, setRank] = useState<IRank>({
-        id: 0,
+        id: "0",
         counterToReach: 0,
         color: "#f3f3f3",
         name: "Загрузка...",
@@ -75,28 +76,41 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                 });
             });
             setAvailableHeadRanks(preparedPosts);
+            setHeadList(preparedPosts);
         });
     }, []);
-
-    useEffect(() => {
-        UpdateHeadSearch("");
-    }, [availableHeadRanks, UpdateHeadSearch]);
     
     useEffect(() => {
-        if (isNaN(numericRankId)) {
-            setError("Некорректный ID звания");
-            setIsLoading(false);
+        if (isIdInvalid) {
             return;
         }
 
-        setIsLoading(true);
-
         Promise.all([
             RankService.getById(numericRankId),
-            RankService.getAssigned(numericRankId)
+            RankService.getAssigned(numericRankId),
+            RankService.getPermissions(numericRankId)
         ])
-        .then(([rankData, membersData]) => {
-            setRank(rankData);
+        .then(([rankData, membersData, permissionsData]) => {
+            const rawPermissions: unknown[] = Array.isArray(permissionsData) 
+                ? permissionsData 
+                : (permissionsData ? [permissionsData] : []);
+
+            const formattedPermissions: IGivedPermission[] = rawPermissions.map((p) => {
+                const item = p as Record<string, unknown>;
+                if (item && typeof item === 'object' && 'permission' in item) {
+                    return item as unknown as IGivedPermission;
+                }
+                return {
+                    id: item?.id,
+                    inherit: false,
+                    permission: item as unknown as IPermission
+                } as IGivedPermission;
+            });
+
+            setRank({
+                ...rankData,
+                givedPermissions: formattedPermissions
+            });
             setRankPrompt(rankData.previous?.name || "");
 
             const rawUnits = Array.isArray(membersData) 
@@ -258,7 +272,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                             tooltip="Нижестоящее по иерархии звание" 
                             textWhenEmpty="[ Нижестоящее звание не указано ]"
                         />
-                        <PermissionRollDownList editable={canEdit} />
+                        <PermissionRollDownList editable={canEdit} givedPermissionList={rank.givedPermissions}/>
                     </BaseContainer>
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 opacity-50 w-full">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={rank.discordRoleId}></CopyField>

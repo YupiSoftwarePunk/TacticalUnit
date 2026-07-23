@@ -7,6 +7,7 @@ export interface ColumnConfig {
     sortable?: boolean;
     filterable?: boolean;
     className?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render?: (value: any, item: any) => React.ReactNode;
 }
 
@@ -21,14 +22,17 @@ interface UniversalTableProps<T> {
     onExport: (data: T[]) => void;
     defaultSort?: SortConfig;
     renderActions?: (item: T) => React.ReactNode;
+    className?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const UniversalTable = <T extends Record<string, any>>({ 
     data, 
     columns, 
     onExport, 
     defaultSort = { key: "rank", direction: "desc" },
-    renderActions
+    renderActions,
+    className = ""
 } : UniversalTableProps<T>) => {
     const visibleColumns = useMemo(() => {
         return columns.filter(col => !col.key.startsWith("activity"));
@@ -72,7 +76,7 @@ const UniversalTable = <T extends Record<string, any>>({
     };
 
     return (
-        <div className="w-full bg-bg-primary text-text-primary font-text">
+        <div className={`w-full bg-bg-primary text-text-primary font-text ${className}`}>
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-end gap-4 mb-4 border-b border-bg-secondary pb-4">
                 <div className="flex flex-col xs:flex-row justify-between sm:justify-start items-stretch xs:items-center gap-4 sm:gap-6 w-full sm:w-auto">
                     <button 
@@ -118,9 +122,9 @@ const UniversalTable = <T extends Record<string, any>>({
                 </div>
             )}
 
-            <div className="w-full block md:table-container">
+            <div className="w-full block md:table-container md:max-h-[440px] md:overflow-y-auto border border-bg-secondary/20 rounded-md">
                 <table className="w-full block md:table border-collapse text-left">
-                    <thead className="hidden md:table-header-group border-b-2 border-bg-secondary">
+                    <thead className="hidden md:table-header-group sticky top-0 z-10 bg-bg-primary border-b-2 border-bg-secondary">
                         <tr>
                             {visibleColumns.map(col => (
                                 <th key={col.key} className="p-4 text-xs uppercase tracking-widest text-text-secondary font-bold">

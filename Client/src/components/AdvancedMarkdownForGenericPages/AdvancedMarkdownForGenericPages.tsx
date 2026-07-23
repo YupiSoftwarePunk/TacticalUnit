@@ -6,6 +6,7 @@ import ToolTip from "../ToolTip/ToolTip";
 import { Check, ChevronDown, X } from "lucide-react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import Link from "next/link";
+import {IMemberRow} from "@/app/subdivisions/review-subdivision/[subdivisionName]/page";
 
 interface IBaseContainer{
     className? : string
@@ -200,9 +201,6 @@ export function ListedInputField({className, editingClassName, textWhenEmpty, ed
         setEditMode(false)
     }
 
-    useEffect(()=>{
-       
-    })
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [isOverMenu, setIsOverMenu] = useState<boolean>(false);
     return  <Tooltip verticalPlacement="top" className_Tooltip="text-[16px]" tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
@@ -258,15 +256,15 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
         let midList :IGivedPermission[] = [...[], ...givedPermissionList!];
 
         if(givedPermissionList!.find(x=>x.id == PermissionId)){
-            // console.warn("unSet")
             givedPermissionList!.find(x=>x.id == PermissionId)!.inherit = false;
             midList = midList.filter(x=>x.id != PermissionId);
             //return midList.filter(x=>x.Id != PermissionId)
-        }else if (allPermissionsList){
-            // console.warn("Set")
-            midList.push(allPermissionsList?.find(x=>x.id == PermissionId)!)
-            
-            //return midList;
+        }
+        else if (allPermissionsList){
+            const foundPerm = allPermissionsList.find(x => x.id === PermissionId);
+            if (foundPerm) {
+                midList.push(foundPerm);
+            }
         }
         onChange?onChange(midList):false;
         return midList;
@@ -297,11 +295,14 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
         <div className={`relative flex min-h-0 transition-all ${permissionsExtended? "" : "h-0  overflow-clip pointer-events-none"}`} > {/* onClick={attemptToEdit}  */}
             <div  className={`flex flex-1  font-text-bold min-h-0 p-2 gap-2 flex-col mt-2 z-1 top-full  max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${permissionsExtended? "" :"h-0 pointer-events-none"}`} style={{minHeight: `${permissionsExtended? "" :"0px"}`}}>
                 {!editable && givedPermissionList && 
-                    givedPermissionList!.map((item)=>(
-                    <div key={item.permission.name} className="flex">
-                        <p className="hover:bg-bg-secondary gap-3 flex flex-1">{item.permission.name}</p>
-                    </div>
-                ))
+                    givedPermissionList.map((item, index) => {
+                        const permName = item?.permission?.name || "[ Без названия ]";
+                        return (
+                            <div key={item?.id || index} className="flex">
+                                <p className="hover:bg-bg-secondary gap-3 flex flex-1">{permName}</p>
+                            </div>
+                        );
+                    })
                 }
                 {!givedPermissionList && <p>[ Список отсутствует ]</p>}
                 {editable && allPermissionsList && givedPermissionList &&
@@ -338,6 +339,7 @@ interface IAccordingUnitsTable{
     TableName? : string,
     rightsToGrant? : boolean,
     UrlToGrantPage? : string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     GIVEN_DATA? : Record<string, any>[],
     GIVEN_COLUMNS_LAYOUT? : ColumnConfig[]
 }
@@ -376,7 +378,7 @@ export const AccordingUnitsTable = ({TableName, rightsToGrant, UrlToGrantPage, G
 
 
 interface ICheckButton{
-    onClick: (value : any)=>void,
+    onClick: (value : unknown)=>void,
     title : string,
     value : boolean,
     showCross? : boolean,
@@ -433,21 +435,29 @@ interface ISelectionList{
     title? : string,
     maxSelectedItems? : number,
     searchField?: boolean,
-    maxListHeight? : string // "100px", "1fr", etc.,
+    maxListHeight? : string
     radiobutton? : boolean
 }
 export const SelectionList = ({title = "", className = "", onSelection, list = [], searchField = false, maxSelectedItems = -1, maxListHeight, radiobutton = false} : ISelectionList)=>{
-    let [idStory, setIdStory] = useState<string[]>([]);
-    const [visibleList, setVisibleList] = useState<IListedInputItem[]>(list);
-    
-    const [searchPrompt, setSearchPrompt] = useState<string>("");
+    const [idStory, setIdStory] = useState<string[]>([]);
 
+    const [searchPrompt, setSearchPrompt] = useState<string>("");
+    const prompt = searchPrompt.toLowerCase().trim();
+    const visibleList = prompt
+        ? (() => {
+            let preparedList = list.filter(x => !x.id?.search(prompt));
+            if (preparedList.length === 0) {
+                preparedList = list.filter(x => !x.name?.toLowerCase().search(prompt));
+            }
+            return preparedList;
+        })()
+        : list;
 
     function addItemIntoList(item : IListedInputItem){
-        let alteredList = [...list];
+        const alteredList = [...list];
 
         if (radiobutton){
-            let previous = alteredList.find(x=>x.selected == true);
+            const previous = alteredList.find(x=>x.selected == true);
             if (previous?.id != item.id){
                 alteredList.forEach(element => {
                     element.selected = false;
@@ -457,67 +467,29 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
             }
             return
         }
-        let foundItem = alteredList.find(x=>x.id == item.id);
-        
-        if(foundItem!.selected == true){
-            // console.warn("item was in the list")
-            foundItem!.selected = false
-            setIdStory(idStory.filter(x=>x != foundItem?.id!));
-        }else{
-            
-            if(idStory.length + 1 > maxSelectedItems && idStory.length > 0 && maxSelectedItems > 0){
-                alteredList.find(x=>x.id == idStory[idStory.length - 1])!.selected = false;
-                
-                // console.warn(`intervention found, deleting: ${alteredList.find(x=>x.id == idStory[idStory.length - 1])?.id}; posting: ${foundItem?.id}`)
-                idStory.pop();
+        const foundItem = alteredList.find(x=>x.id == item.id);
+        if (!foundItem || !foundItem.id) return;
 
+        if(foundItem!.selected == true){
+            foundItem!.selected = false
+            setIdStory(idStory.filter(x=>x != foundItem.id));
+        }
+        else{
+            if(idStory.length + 1 > maxSelectedItems && idStory.length > 0 && maxSelectedItems > 0){
+                const itemToRemove = alteredList.find(x => x.id === idStory[idStory.length - 1]);
+                if (itemToRemove) itemToRemove.selected = false;
+                idStory.pop();
             }
-            idStory.unshift(foundItem?.id!)
+            idStory.unshift(foundItem.id)
             setIdStory([...idStory]);
             foundItem!.selected = true;
         }
-        // setSelectedItems([...alteredList]);
-        // console.warn(idStory)
-        // console.warn(alteredList)
         onSelection!(alteredList);
     }
 
-    function Search(prompt : string){
-        prompt = prompt.toLowerCase().trim();
-        let preparedList : IListedInputItem[];
-        if(prompt){
-            preparedList = list.filter(x=>!x.id?.search(prompt))
-            // console.warn("searching by ID")
-            if (preparedList.length == 0){
-                // console.warn("unsucsessful, searching by name")
-                preparedList = list.filter(x=>!x.name?.toLowerCase().search(prompt) )
-            }
-            // console.warn(preparedList)
-        }else{
-            preparedList = list;
-        }
-        setVisibleList(preparedList);
-    }
-    const [timeoutSet, setTimeoutSet] = useState(false);
-    const [firstTimeFillFulfilled, setFirstTimeFillFulfilled] = useState(false);
-    useEffect(()=>{
-        if(!timeoutSet && !firstTimeFillFulfilled){
-
-            if(visibleList.length == 0) {
-                setTimeout(()=>{Search(""); setTimeoutSet(false);}, 500)
-                setTimeoutSet(true)
-            }
-            if(visibleList.length > 0) {
-                // console.warn("Fulfilled")
-                setFirstTimeFillFulfilled(true);
-            }
-            }
-            
-        })
-
     return(<div className={`flex flex-col gap-3 px-4 py-6 bg-bg-secondary text-text-primary ${className}`}>
         {title && <h2 className="text-2xl">{title}</h2>}
-        {searchField && <MultiroleInputField value={searchPrompt} onChange={(e)=>{Search(e.target.value); setSearchPrompt(e.target.value)}} editMode={true} editable={true} watermark="Поиск по названию или ID"></MultiroleInputField>}
+        {searchField && <MultiroleInputField value={searchPrompt} onChange={(e)=>{setSearchPrompt(e.target.value)}} editMode={true} editable={true} watermark="Поиск по названию или ID"></MultiroleInputField>}
         <div className="flex flex-col">
             <div className="flex justify-between flex-row-reverse">
                 

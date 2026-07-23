@@ -10,16 +10,16 @@ import Tooltip from "../ToolTip/ToolTip";
 import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 
 interface IProfileBGImage {
-    discordId: string;
+    backgroundPictureId: string | undefined;
     canEdit? : boolean;
 }
 
-export const ProfileBGImage = ({ discordId, canEdit = false }: IProfileBGImage) => {
+export const ProfileBGImage = ({ backgroundPictureId, canEdit = false }: IProfileBGImage) => {
     return (
         <div className="flex size-full relative">
             <StaticImage  
                 type="background"
-                entityId={discordId}
+                entityId={backgroundPictureId || "default"}
                 alt="Profile background image"
                 className="flex object-top grayscale-40 object-cover self-center size-full text-white"
             />

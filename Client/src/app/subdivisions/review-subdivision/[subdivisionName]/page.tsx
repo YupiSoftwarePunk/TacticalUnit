@@ -16,7 +16,7 @@ const COLUMNS_CONFIG = [
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true },
 ];
 
-interface IMemberRow {
+export interface IMemberRow {
     rank: string;
     nickname: string;
     roles: string;
@@ -31,6 +31,7 @@ interface ISubdivisionWithMembers extends ISubdivision {
 export default function PostPage({ params }: { params: Promise<{ subdivisionName: string }> }) {
     const { subdivisionName } = React.use(params);
     const numericSubdivisionId = Number(subdivisionName);
+    const isIdInvalid = isNaN(numericSubdivisionId);
 
     const [canEdit, setCanEdit] = useState<boolean>(false);
     const [isNotSaved, setIsNotSaved] = useState(false);
@@ -74,29 +75,45 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                 });
             });
             setAvailableHeadSubdivisions(preparedPosts);
+            setHeadList(preparedPosts);
         });
     }, []);
-
-    useEffect(() => {
-        UpdateHeadSearch("");
-    }, [availableHeadSubdivisions, UpdateHeadSearch]);
     
     useEffect(() => {
-        if (isNaN(numericSubdivisionId)) {
-            setError("Некорректный ID подразделения");
-            setIsLoading(false);
+        if (isIdInvalid) {
             return;
         }
 
-        setIsLoading(true);
+        Promise.all([
+            SubdivisionService.getById(numericSubdivisionId),
+            SubdivisionService.getPermissions(numericSubdivisionId)
+        ])
+            .then(([subdivisionData, permissionsData]) => {
+                const rawPermissions: unknown[] = Array.isArray(permissionsData) 
+                    ? permissionsData 
+                    : (permissionsData ? [permissionsData] : []);
 
-        SubdivisionService.getById(numericSubdivisionId)
-            .then((subdivisionData) => {
-                setSubdivision(subdivisionData);
+                const formattedPermissions: IGivedPermission[] = rawPermissions.map((p) => {
+                    const item = p as Record<string, unknown>;
+                    if (item && typeof item === 'object' && 'permission' in item) {
+                        return item as unknown as IGivedPermission;
+                    }
+                    return {
+                        id: item?.id,
+                        inherit: false,
+                        permission: item as unknown as IPermission
+                    } as IGivedPermission;
+                });
+
+                setSubdivision({
+                    ...subdivisionData,
+                    givedPermissions: formattedPermissions
+                });
 
                 if (subdivisionData.head?.name) {
                     setSubdivisionPrompt(subdivisionData.head.name);
-                } else {
+                } 
+                else {
                     setSubdivisionPrompt("");
                 }
 
@@ -209,7 +226,7 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                             }}
                             list={headList}
                         />
-                        <PermissionRollDownList editable={canEdit}></PermissionRollDownList>
+                        <PermissionRollDownList editable={canEdit} givedPermissionList={subdivision.givedPermissions} />
                     </BaseContainer>
                     <div className="flex opacity-50">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={subdivision.discordRoleId}></CopyField>

@@ -6,7 +6,7 @@ import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import { PostService } from "@/shared/api/services/postService";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { validateColor } from "@/typescript/colorValidator";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 // тут нужно внедрить ендпоинт изменения данных должности
 
@@ -45,62 +45,69 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     });
 
     const [members, setMembers] = useState<IAssignedReward[]>([]);
+    
     const [postPrompt, setPostPrompt] = useState<string>("");
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
 
-    const [headList, setHeadList] = useState<IListedInputItem[]>([]);
     const [availableHeadPosts, setAvailableHeadPosts] = useState<IListedInputItem[]>([]);
-    
-    const [subdivisionList, setSubdivisionList] = useState<IListedInputItem[]>([]);
     const [availableSubdivisions, setAvailableSubdivisions] = useState<IListedInputItem[]>([]);
 
-    const updateHeadSearch = useCallback((prompt: string) => {
-        const prepList = availableHeadPosts.filter(x => !x.name?.toLowerCase().search(prompt.toLowerCase()));
-        setHeadList(prepList);
-    }, [availableHeadPosts]);
+    const headList = useMemo(() => {
+        return availableHeadPosts.filter(x => x.name?.toLowerCase().startsWith(postPrompt.toLowerCase()));
+    }, [availableHeadPosts, postPrompt]);
 
-    const updateSubdivisionSearch = useCallback((prompt: string) => {
-        const prepList = availableSubdivisions.filter(x => !x.name?.toLowerCase().search(prompt.toLowerCase()));
-        setSubdivisionList(prepList);
-    }, [availableSubdivisions]);
+    const subdivisionList = useMemo(() => {
+        return availableSubdivisions.filter(x => x.name?.toLowerCase().startsWith(subdivisionPrompt.toLowerCase()));
+    }, [availableSubdivisions, subdivisionPrompt]);
 
     useEffect(() => {
         PostService.getAll().then((postList) => {
             const preparedPosts: IListedInputItem[] = postList.map(p => ({
-                Name: p.name,
-                Id: p.id
+                name: p.name,
+                id: p.id
             }));
             setAvailableHeadPosts(preparedPosts);
         });
     }, []);
 
     useEffect(() => {
-        updateHeadSearch("");
-    }, [availableHeadPosts, updateHeadSearch]);
-
-    useEffect(() => {
         SubdivisionService.getAll().then((subdivList) => {
             const preparedSubdivs: IListedInputItem[] = subdivList.map(subdiv => ({
-                Name: subdiv.name,
-                Id: subdiv.id
+                name: subdiv.name,
+                id: subdiv.id
             }));
             setAvailableSubdivisions(preparedSubdivs);
         });
     }, []);
 
     useEffect(() => {
-        updateSubdivisionSearch("");
-    }, [availableSubdivisions, updateSubdivisionSearch]);
-
-    useEffect(() => {
         if (isNaN(numericPostId)) return;
 
         Promise.all([
             PostService.getById(numericPostId),
-            PostService.getAssigned(numericPostId)
+            PostService.getAssigned(numericPostId),
+            PostService.getPermissions(numericPostId)
         ])
-        .then(([postData, membersData]) => {
-            setPost(postData);
+        .then(([postData, membersData, permissionsData]) => {
+            const rawPermissions = Array.isArray(permissionsData) 
+                ? permissionsData 
+                : (permissionsData ? [permissionsData] : []);
+
+            const formattedPermissions: IGivedPermission[] = rawPermissions.map((p) => {
+                if (p && typeof p === 'object' && 'permission' in p) {
+                    return p as IGivedPermission;
+                }
+                return {
+                    id: p?.id,
+                    inherit: false,
+                    permission: p
+                } as IGivedPermission;
+            });
+
+            setPost({
+                ...postData,
+                givedPermissions: formattedPermissions
+            });
             
             if (Array.isArray(membersData)) {
                 setMembers(membersData);
@@ -149,7 +156,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }}
                         />
                     </BaseContainer>
-                    <BaseContainer className="flex-col">
+                    <BaseContainer className="flex-col mb-2">
                         <MultiroleInputField 
                             value={post.name} 
                             onChange={(e) => {
@@ -160,6 +167,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             editable={canEdit}
                         />
                         <DescriptionInputField 
+                            className="mt-3"
                             value={post.description} 
                             onChange={(e) => {
                                 setPost((prev: IPost) => ({ ...prev, description: e.target.value }));
@@ -174,7 +182,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             editable={canEdit} 
                             value={postPrompt} 
                             onChange={(e) => {
-                                updateHeadSearch(e.target.value);
                                 setPostPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
@@ -191,7 +198,6 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             editable={canEdit} 
                             value={subdivisionPrompt} 
                             onChange={(e) => {
-                                updateSubdivisionSearch(e.target.value);
                                 setSubdivisionPrompt(e.target.value);
                                 setIsNotSaved(true);
                             }} 
@@ -202,9 +208,9 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 
-                            textWhenEmpty="[ Подразделение не указано ]"
+                            textWhenEmpty="[ Подразделение не указана ]"
                         />
-                        <PermissionRollDownList editable={canEdit} />
+                        <PermissionRollDownList editable={canEdit} givedPermissionList={post.givedPermissions}/>
                     </BaseContainer>
                     <div className="flex opacity-50">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={post.discordRoleId || ""} />

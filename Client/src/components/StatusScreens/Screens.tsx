@@ -1,6 +1,6 @@
 'use client';
 import React from "react";
-import { CircleX, Cog, RefreshCw } from "lucide-react";
+import { CircleX, Cog, Link, RefreshCw } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { MainHeader } from "../Header/MainHeader";
 
@@ -69,11 +69,11 @@ export const ErrorScreen = ({ error }: IErrorScreen) => {
                     className="w-full sm:w-auto hover:bg-accent px-6 py-2.5 sm:py-1 hover:text-black transition-all cursor-pointer text-center uppercase tracking-wider text-sm sm:text-base" 
                     onClick={() => router.back()}
                 >Назад</button>
-                <a 
+                <Link 
                     href="/" 
-                    className="w-full sm:w-auto hover:bg-accent px-6 py-2.5 sm:py-1 hover:text-black transition-all text-center uppercase tracking-wider text-sm sm:text-base">
-                    Главная страница
-                </a>
+                    className="w-full sm:w-auto hover:bg-accent px-6 py-2.5 sm:py-1 hover:text-black transition-all text-center uppercase tracking-wider text-sm sm:text-base"/>
+                    Главная страница 
+                <Link />
             </div>
         </div>
     );
