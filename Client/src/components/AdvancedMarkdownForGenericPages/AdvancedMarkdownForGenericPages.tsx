@@ -431,15 +431,23 @@ interface ISelectionList{
     title? : string,
     maxSelectedItems? : number,
     searchField?: boolean,
-    maxListHeight? : string // "100px", "1fr", etc.,
+    maxListHeight? : string
     radiobutton? : boolean
 }
 export const SelectionList = ({title = "", className = "", onSelection, list = [], searchField = false, maxSelectedItems = -1, maxListHeight, radiobutton = false} : ISelectionList)=>{
     const [idStory, setIdStory] = useState<string[]>([]);
-    const [visibleList, setVisibleList] = useState<IListedInputItem[]>(list);
-    
-    const [searchPrompt, setSearchPrompt] = useState<string>("");
 
+    const [searchPrompt, setSearchPrompt] = useState<string>("");
+    const prompt = searchPrompt.toLowerCase().trim();
+    const visibleList = prompt
+        ? (() => {
+            let preparedList = list.filter(x => !x.id?.search(prompt));
+            if (preparedList.length === 0) {
+                preparedList = list.filter(x => !x.name?.toLowerCase().search(prompt));
+            }
+            return preparedList;
+        })()
+        : list;
 
     function addItemIntoList(item : IListedInputItem){
         const alteredList = [...list];
@@ -460,7 +468,7 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
 
         if(foundItem!.selected == true){
             foundItem!.selected = false
-            setIdStory(idStory.filter(x=>x != foundItem?.id!));
+            setIdStory(idStory.filter(x=>x != foundItem.id));
         }
         else{
             if(idStory.length + 1 > maxSelectedItems && idStory.length > 0 && maxSelectedItems > 0){
@@ -468,48 +476,16 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
                 if (itemToRemove) itemToRemove.selected = false;
                 idStory.pop();
             }
-            idStory.unshift(foundItem?.id!)
+            idStory.unshift(foundItem.id)
             setIdStory([...idStory]);
             foundItem!.selected = true;
         }
         onSelection!(alteredList);
     }
 
-    function Search(prompt : string){
-        prompt = prompt.toLowerCase().trim();
-        let preparedList : IListedInputItem[];
-        if(prompt){
-            preparedList = list.filter(x=>!x.id?.search(prompt))
-            // console.warn("searching by ID")
-            if (preparedList.length == 0){
-                // console.warn("unsucsessful, searching by name")
-                preparedList = list.filter(x=>!x.name?.toLowerCase().search(prompt) )
-            }
-            // console.warn(preparedList)
-        }
-        else{
-            preparedList = list;
-        }
-        setVisibleList(preparedList);
-    }
-
-    useEffect(()=>{
-        const prompt = searchPrompt.toLowerCase().trim();
-        if (prompt) {
-            let preparedList = list.filter(x => !x.id?.search(prompt));
-            if (preparedList.length === 0) {
-                preparedList = list.filter(x => !x.name?.toLowerCase().search(prompt));
-            }
-            setVisibleList(preparedList);
-        } 
-        else {
-            setVisibleList(list);
-        }
-    }, [list, searchPrompt]);
-
     return(<div className={`flex flex-col gap-3 px-4 py-6 bg-bg-secondary text-text-primary ${className}`}>
         {title && <h2 className="text-2xl">{title}</h2>}
-        {searchField && <MultiroleInputField value={searchPrompt} onChange={(e)=>{Search(e.target.value); setSearchPrompt(e.target.value)}} editMode={true} editable={true} watermark="Поиск по названию или ID"></MultiroleInputField>}
+        {searchField && <MultiroleInputField value={searchPrompt} onChange={(e)=>{setSearchPrompt(e.target.value)}} editMode={true} editable={true} watermark="Поиск по названию или ID"></MultiroleInputField>}
         <div className="flex flex-col">
             <div className="flex justify-between flex-row-reverse">
                 
