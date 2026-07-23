@@ -17,4 +17,7 @@ export const RankService = {
     getAssigned: (id: number | string) => apiClient<IRank[]>(`/rank/${id}/assign`),
     assignToUnit: (id: number | string, unitDiscordId: string, options : RequestInit) => apiClient<IRank>(`/rank/${id}/assign/${unitDiscordId}`, options),
     getUnitAssignment: (id: number | string, unitId: number | string) => apiClient<IRank>(`/rank/${id}/assign/${unitId}`),
+
+    // /api/v1/rank/{id-звания}/assign/{discord-id-бойца}?doc={id-документа}
+
 };

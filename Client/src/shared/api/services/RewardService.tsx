@@ -23,4 +23,8 @@ export const RewardService = {
         body: JSON.stringify({ discordId: String(data.discordId) })
     }),
     getUnitAssignment: (id: string, unitId: string) => apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}`),
+
+    // get /api/v1/reward/actual  именно это отображать на витрине, и есть чекбокс чтобы отображались все
+
+    // /api/v1/reward/{id-награды}/assign?doc={id-документа} 
 };

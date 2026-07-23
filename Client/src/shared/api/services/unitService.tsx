@@ -18,7 +18,7 @@ export const UnitService = {
     getActivity: (id: number | string) => apiClient<string[]>(`/unit/${id}/activity`),
     putActivity: (id: number | string, options : RequestInit) => apiClient<Date>(`/unit/${id}/activity`, options),  // fix activity
 
-    getPermissionsIds: (UnitDiscordId: number | string) => apiClient<string[]>(`/unit/${UnitDiscordId}/permission`), 
+    getPermissionsIds: (UnitDiscordId: number | string) => apiClient<string[]>(`/unit/${UnitDiscordId}/permission`), // олучить все разрешения бойца.
 
     getDismissedUnits: () => apiClient<IUnit[]>(`/unit-dismissed`), 
     getRetiredUnits: () => apiClient<IUnit[]>(`/unit-retirement`), 
@@ -30,4 +30,16 @@ export const UnitService = {
     setUnitBg: (id : string, options : RequestInit) => apiClient<Map<string, string>>(`/unit/${id}/background`, options), 
     getAvailableKit: (id : string) => apiClient<Map<string, string>>(`/unit/${id}/kit`), 
     setUnitKit: (id : string, options : RequestInit) => apiClient<Map<string, string>>(`/unit/${id}/kit`, options), 
+
+    // /api/v1/unit/actual
+
+    ///api/v1/unit/{discord-id-бойца}/status/{ключ-статуса}?override={false}&doc={id-документа} не закончены
+
+    // /api/v1/unit/can/rank
+
+    // /api/v1/unit/can/rank/{discord-id-другого-бойца}
+
+    // /api/v1/unit/can/posts
+
+    // /api/v1/unit/{discord-id-бойца}?doc={id-документа}
 };
