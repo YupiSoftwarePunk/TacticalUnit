@@ -5,7 +5,7 @@ import { MainHeader } from "@/components/Header/MainHeader";
 import { Upload, FileText, CheckCircle2, AlertTriangle, Check } from "lucide-react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import { UnitService } from "@/shared/api/services/unitService";
-import { BaseContainer, IListedInputItem, ListedInputField, MultiroleInputField, SelectionList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
+import { BaseContainer, CheckButton, DescriptionInputField, IListedInputItem, ListedInputField, MultiroleInputField, SelectionList } from "@/components/AdvancedMarkdownForGenericPages/AdvancedMarkdownForGenericPages";
 import { useSearchParams } from "next/navigation";
 import { RewardService } from "@/shared/api/services/RewardService";
 import { PostService } from "@/shared/api/services/postService";
@@ -15,16 +15,32 @@ export default function UploadDocumentPage() {
     const searchParameters = useSearchParams()
     const actType = searchParameters?.get('type') // Types possible: "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions"
 
-    const [documentName, setDocumentName] = useState<string>("");
+    const actTypesInfo = new Map<string, {title : string, description : string}>();
+    
+    const [title, setTitle] = useState("")
+    const [description, setDescription] = useState("")
+    
+    useEffect(()=>{
+        actTypesInfo.set("rewards", {title : "Акт награждения", description : "Выбранным бойцам будут вручены выбранные награды."})
+        actTypesInfo.set("posts", {title : "Акт назначения на должность(-и)", description : "Выбранные бойцы будут назначены на выбранные должности. Опционально, они могут быть сняты с предыдущих должностей, за исключением тех, что отсутствуют в списке доступных к выбору. К выбору доступны все должности, не являющиеся для Вас вышестоящими. К выбору доступны все бойцы из актуального состава клана. Попытка снять с бойца все должности будет проигнорирована."})
+        actTypesInfo.set("ranks", {title : "Акт присвоения звания", description : "Выбранным бойцам будет присвоено выбранное звание вне зависимости от их предыдущего звания. К выбору доступны все существующие в клане звания. К выбору доступны все бойцы из актуального состава клана."})
+        actTypesInfo.set("rank-altering", {title : "Акт повышения/понижения в звании", description : "Выбранные бойцы будут повышены или понижены на количество указанных ступеней. «1» ступень будет означать «очередное» повышение, а «2» и больше – внеочередное. К выбору доступны все бойцы из актуального состава клана. Попытка понижения ниже минимального звания будет проигнорирована. Попытка повышения выше максимального существующего звания или максимально доступного по должности будет проигнорирована. Последнее ограничение может быть проигнорировано включением соответствующей опции."})
+        actTypesInfo.set("sanctions", {title : "Акт выдачи благодарностей/выговоров", description : "Выбранным бойцам будет прибавлен выбранный статус. При установлении нового статуса будет арифметически учитываться текущий активный статус. То есть благодарность повышает, а выговор снижает текущий статус на 1 ступень. Строгий выговор понижает на 2 ступени."})
+        setTitle(actTypesInfo.get(actType!)!.title)
+        setDescription(actTypesInfo.get(actType!)!.description)
+    },[]);
+
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [units, setUnits] = useState<IUnit[]>([]);
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
-    const [typeOfDocument, setTypeOfDocument] = useState<"selection" | "new" | "existing">("selection");
+    const [typeOfDocument, setTypeOfDocument] = useState<"selection" | "new" | "existing" | "empty">("selection");
     const [documentsAtDisposal, setDocumentsAtDisposal] = useState<IListedInputItem[]>([]);
     const [documentPrompt, setDocumentPrompt] = useState<string>("")
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | undefined>()
+
+    const [removePreviousPosts, setRemovePreviousPosts] = useState(false);
 
     const [multiroleList, setMultiroleList] = useState<IListedInputItem[]>([]);
     const [rankTweaking, setRankTweaking] = useState<IListedInputItem[]>([
@@ -118,10 +134,10 @@ export default function UploadDocumentPage() {
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
             setSelectedFile(file);
-            if (!documentName) {
-                const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-                setDocumentName(nameWithoutExt);
-            }
+            // if (!documentName) {
+            //     const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+            //     setDocumentName(nameWithoutExt);
+            // }
         }
     };
 
@@ -134,17 +150,17 @@ export default function UploadDocumentPage() {
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             const file = e.dataTransfer.files[0];
             setSelectedFile(file);
-            if (!documentName) {
-                const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-                setDocumentName(nameWithoutExt);
-            }
+            // if (!documentName) {
+            //     const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+            //     setDocumentName(nameWithoutExt);
+            // }
         }
     };
 
     const handleSaveDocument = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedFile || !documentName.trim()) {
-            setStatus({ type: 'error', message: 'Заполните название документа и выберите файл' });
+        if (!selectedFile) {
+            setStatus({ type: 'error', message: 'Выберите файл' });
             return;
         }
 
@@ -153,12 +169,12 @@ export default function UploadDocumentPage() {
 
         const formData = new FormData();
         formData.append("file", selectedFile);
-        formData.append("name", documentName.trim());
+        // formData.append("name", documentName.trim());
 
         try {
             // обращение к ендпоинту
             setStatus({ type: 'success', message: 'Документ успешно загружен в базу данных' });
-            setDocumentName("");
+            // setDocumentName("");
             setSelectedFile(null);
             if (fileInputRef.current) fileInputRef.current.value = "";
         } 
@@ -238,38 +254,19 @@ export default function UploadDocumentPage() {
                     </h1>
                     <span className="block w-12 h-0.5 bg-accent mt-1.5"></span>
                 </div>
-                {typeOfDocument == "selection" &&
-                                <div className="flex flex-col min-h-[300px] lg:min-h-[400px] border border-border-primary items-center w-full justify-center content-center gap-5">
-                                    <h2 className="text-2xl">Документ</h2>
-                                    <div className="gap-4 flex flex-col">
-                                        <button onClick={()=>{setTypeOfDocument("existing")}} className="bg-bg-secondary border border-border-secondary p-6 px-10 text-xl transition-all hover:border-accent hover:bg-bg-accent">Выбрать существующий</button>
-                                        <button onClick={()=>{setTypeOfDocument("new")}} className=" px-10 text-lg text-text-secondary hover:text-text-primary-accent transition-all">Добавить новый</button>
-
-                                    </div>
-                                </div>
-                }
-                
-                {typeOfDocument != "selection" 
-                &&
-                <div className="flex flex-col w-full">
-                    <button onClick={()=>{setTypeOfDocument("selection")}} className="h-[50px] hover:bg-bg-accent border border-transparent hover:border-accent transition-all">Назад</button>
-
-                    {typeOfDocument == "new" &&
-                        <form onSubmit={handleSaveDocument} className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
-                            <div className="lg:col-span-1 max-lg:col-span-3 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-5 transition-colors duration-300 h-full justify-between">
+                <div className={`col-span-3 bg-bg-secondary border border-border-secondary p-4 md:p-6 shadow-sm flex flex-col gap-5 transition-colors duration-300 h-full justify-between`}>
                                 <div className="flex flex-col gap-5">
                                     <div className="flex flex-col gap-1.5">
                                         <label className="text-xs font-text-bold uppercase tracking-widest text-text-secondary">
                                             Название акта
                                         </label>
-                                        <input
-                                            type="text"
-                                            value={documentName}
-                                            onChange={(e) => setDocumentName(e.target.value)}
-                                            placeholder="Введите название..."
-                                            disabled={isLoading}
-                                            className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none rounded-none h-[38px] transition-colors font-text placeholder:text-text-secondary/40"
-                                        />
+                                        <h2 className="w-full text-xl p-2 text-text-primary focus:border-accent outline-none rounded-none h-[38px] transition-colors font-text placeholder:text-text-secondary/40">
+                                            {title}
+                                        </h2>
+                                        <label className="text-xs font-text-bold uppercase tracking-widest text-text-secondary mt-3">
+                                            Описание вида акта
+                                        </label>
+                                        <DescriptionInputField className="" value={description} ></DescriptionInputField>
                                     </div>
 
                                     {status && (
@@ -288,10 +285,10 @@ export default function UploadDocumentPage() {
                                     )}
                                 </div>
 
-                                <div className="pt-4 mt-auto">
+                                {/* <div className="pt-4 mt-auto">
                                     <button
                                         type="submit"
-                                        disabled={isLoading || !selectedFile || !documentName.trim()}
+                                        disabled={isLoading || !selectedFile}
                                         className="relative group inline-block disabled:opacity-50 disabled:pointer-events-none w-full"
                                     >
                                         <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
@@ -299,10 +296,37 @@ export default function UploadDocumentPage() {
                                             {isLoading ? "Сохранение..." : "Сохранить"}
                                         </div>
                                     </button>
-                                </div>
-                            </div>
+                                </div> */}
+                </div>
+                <div className="flex flex-col">
+                    <div className="flex">
+                        <h2 className="text-2xl px-2 font-text border border-border-secondary border-b-0">Документ</h2>
+                        <div className="flex flex-1 border-b border-border-secondary"></div>
+                    </div>
 
-                            <div className="lg:col-span-2 max-lg:col-span-3 h-full text-text-primary">
+                {typeOfDocument == "selection" &&
+                                <div className="flex flex-col  min-h-[300px] lg:min-h-[400px] border border-t-0 border-border-secondary items-center w-full justify-center content-center gap-5">
+                                    <div className="gap-4 flex flex-col">
+                                        <button onClick={()=>{setTypeOfDocument("existing")}} className="bg-bg-secondary border border-border-secondary p-6 px-10 text-xl transition-all hover:border-accent hover:bg-bg-accent">Выбрать существующий</button>
+                                        <button onClick={()=>{setTypeOfDocument("new")}} className="bg-bg-secondary border border-border-secondary p-6 px-10 text-xl transition-all hover:border-accent hover:bg-bg-accent">Добавить новый</button>
+                                        <button onClick={()=>{setTypeOfDocument("empty")}} className=" px-10 text-lg text-text-secondary hover:text-text-primary-accent transition-all">Без документа</button>
+
+                                    </div>
+                                </div>
+                }
+                
+                {typeOfDocument != "selection" 
+                &&
+                <div className="flex flex-col w-full border border-t-0 border-border-secondary">
+                    <button onClick={()=>{setTypeOfDocument("selection")}} className="h-[50px] hover:bg-bg-accent border border-transparent hover:border-accent transition-all">Назад</button>
+
+                    
+                    {(typeOfDocument == "new" || typeOfDocument == "empty") &&
+                        <form onSubmit={handleSaveDocument} className={`grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start`}>
+                            
+                            
+                            {typeOfDocument == "new" && 
+                            <div className="lg:col-span-3 max-lg:col-span-3 h-full text-text-primary">
                                 <div className="flex w-full  border-border-secondary">
                                     
                                     <div className="flex flex-col w-full">
@@ -366,6 +390,7 @@ export default function UploadDocumentPage() {
                                     
                                 </div>
                             </div>
+                            }   
                             
                             
                         </form>
@@ -381,8 +406,17 @@ export default function UploadDocumentPage() {
                 </div>
                 
                 }
+                </div>
+
                 {actType == "rewards" && <SelectionList className="min-h-10" title="Выберите награды из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>}
-                {actType == "posts" && <SelectionList className="min-h-10" title="Выберите должности из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>}
+                {actType == "posts" && 
+                <div className="flex flex-col">
+                    <BaseContainer className="flex">
+                        <CheckButton className="text-xl flex-1 text-text-primary" title="Снять с других должностей" value={removePreviousPosts} onClick={()=>{setRemovePreviousPosts(!removePreviousPosts)}}></CheckButton>
+                    </BaseContainer>
+                    <SelectionList className="min-h-10" title="Выберите должности из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>
+                </div>
+                }
                 {actType == "ranks" && <SelectionList className="min-h-10" title="Выберите звание из списка" onSelection={(items)=>{setMultiroleList([...items])}} maxSelectedItems={1} searchField list={multiroleList}></SelectionList>}
                 {actType == "rank-altering" && 
                 <div className="flex flex-col">

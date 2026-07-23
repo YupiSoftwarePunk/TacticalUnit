@@ -131,12 +131,12 @@ interface IDescriptionInputField{
     displayOnEmpty? : string
 }
 
-export const DescriptionInputField = ({className = "", displayOnEmpty, editingClassName = "", editable, onClick, onChange, value = "", tooltip,watermark} : IDescriptionInputField) =>{
+export const DescriptionInputField = ({className = "", displayOnEmpty, editingClassName = "", editable, onClick, onChange, value = "", tooltip,watermark, editMode} : IDescriptionInputField) =>{
     //const [editMode, setEditMode] = useState<boolean>();
-    const [editMode, setEditMode] = useState<boolean>();
+    const [innerEditMode, setInnerEditMode] = useState<boolean>();
     function tryEditing(){
         if(editable){
-            setEditMode(true);
+            setInnerEditMode(true);
         }
     }
     const [filling, setFilling] = useState<boolean>(`${value}`.length != 0)
@@ -144,15 +144,15 @@ export const DescriptionInputField = ({className = "", displayOnEmpty, editingCl
     const textSize = 16;
     
     return  <Tooltip tooltipText={tooltip? tooltip:""} className={`flex relative size-full font-text-bold`}>
-        <div className="flex flex-1 gap-5" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setEditMode(false)}}>
-            <div className={`flex  text-text-secondary wrap-anywhere tracking-wider  text-[${textSize}px] py-2 transition-all inset-0 ${className} ${editable? "absolute": ""} ${editMode? " pointer-events-none" : ""}`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}>
-                <p className={`flex whitespace-pre-wrap tracking-wider transition-all inset-0 text-wrap  ${editMode? "opacity-0" : ""}`} >
+        <div className="flex flex-1 gap-5" onClick={()=>{tryEditing()}} onMouseLeave={()=>{setInnerEditMode(false)}}>
+            <div className={`flex  text-text-secondary wrap-anywhere tracking-wider  text-[${textSize}px] py-2 transition-all inset-0 ${className} ${editable? "absolute": ""} ${editMode || innerEditMode? " pointer-events-none" : ""}`} style={{paddingLeft: `${editMode || innerEditMode? "12" : "0"}px`}}>
+                <p className={`flex whitespace-pre-wrap tracking-wider transition-all inset-0 text-wrap  ${editMode || innerEditMode? "opacity-0" : ""}`} >
                 {value? value : displayOnEmpty? displayOnEmpty : "[ описание пусто ]"}
                 </p>
                 </div>
                 {editable &&
-                <div className={`flex text-text-secondary relative text-[${textSize}px] ${editingClassName} ${editMode? "" : "absolute opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
-                    <TextareaAutosize minRows={3} value={value} onChange={(e)=>{onChange!(e); setFilling(`${e.target.value}`.length != 0)}} className={`flex ${editMode? "" : " opacity-0 pointer-events-none"} inset-x-4  flex flex-1  tracking-wider  py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode? "12" : "0"}px`}}/>
+                <div className={`flex text-text-secondary relative text-[${textSize}px] ${editingClassName} ${editMode || innerEditMode? "" : "absolute opacity-0 pointer-events-none size-full"} flex-1 transition-all`}>
+                    <TextareaAutosize minRows={3} value={value} onChange={(e)=>{onChange!(e); setFilling(`${e.target.value}`.length != 0)}} className={`flex ${editMode || innerEditMode? "" : " opacity-0 pointer-events-none"} inset-x-4  flex flex-1  tracking-wider  py-2 bg-bg-primary transition-all`} style={{paddingLeft: `${editMode || innerEditMode? "12" : "0"}px`}}/>
                     {watermark&& <p className={`absolute size-full px-3 py-2 pointer-events-none ext-primary  transition-all`} style={{opacity: `${filling? "0" : "0.5"}`}}>{watermark}</p>}
                 </div>
                 }
@@ -378,15 +378,17 @@ export const AccordingUnitsTable = ({TableName, rightsToGrant, UrlToGrantPage, G
 interface ICheckButton{
     onClick: (value : any)=>void,
     title : string,
-    value : boolean
+    value : boolean,
+    showCross? : boolean,
+    className? : string
 }
 
-export const CheckButton = ({onClick, title = "[ Назв. не присвоено ]", value = false} : ICheckButton) => {
+export const CheckButton = ({onClick, title = "[ Назв. не присвоено ]", value = false, showCross, className} : ICheckButton) => {
     const [hovering, setHovering] = useState<boolean>();
-    return(<button className="flex hover:bg-bg-accent text-text-secondary transition-all" onClick={onClick} onMouseEnter={()=>{setHovering(true)}} onMouseLeave={()=>{setHovering(false)}}>
-                    <p className="flex flex-1">{title}</p>
-                    <div className={`flex m-1 border border-border-secondary ${hovering? "text-text-primary-accent" : ""} transition-all`}>
-                        {!value? <X></X> : <Check></Check>}
+    return(<button className={`flex ${className? className : "text-text-secondary"} hover:bg-bg-accent transition-all`} onClick={onClick} onMouseEnter={()=>{setHovering(true)}} onMouseLeave={()=>{setHovering(false)}}>
+                    <p className="flex flex-1 self-center">{title}</p>
+                    <div className={`flex m-1 border  ${hovering? "text-text-primary-accent border-border-primary" : "border-border-secondary"} transition-all`}>
+                        {!value? showCross? <X></X> : <X className="text-transparent"></X> : <Check></Check>}
                     </div>
                 </button>)
 }
