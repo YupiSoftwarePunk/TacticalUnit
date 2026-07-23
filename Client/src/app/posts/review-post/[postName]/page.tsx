@@ -156,7 +156,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }}
                         />
                     </BaseContainer>
-                    <BaseContainer className="flex-col">
+                    <BaseContainer className="flex-col mb-2">
                         <MultiroleInputField 
                             value={post.name} 
                             onChange={(e) => {
@@ -167,6 +167,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             editable={canEdit}
                         />
                         <DescriptionInputField 
+                            className="mt-3"
                             value={post.description} 
                             onChange={(e) => {
                                 setPost((prev: IPost) => ({ ...prev, description: e.target.value }));
