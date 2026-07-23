@@ -16,7 +16,7 @@ const COLUMNS_CONFIG = [
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true },
 ];
 
-interface IMemberRow {
+export interface IMemberRow {
     rank: string;
     nickname: string;
     roles: string;

@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useMemo } from "react";
 
-export interface ColumnConfig {
+export interface ColumnConfig<T = Record<string, unknown>> {
     key: string;
     label: string;
     sortable?: boolean;
     filterable?: boolean;
     className?: string;
-    render?: (value: any, item: any) => React.ReactNode;
+    render?: (value: unknown, item: T) => React.ReactNode;
 }
 
 interface SortConfig {
@@ -24,6 +24,7 @@ interface UniversalTableProps<T> {
     className?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const UniversalTable = <T extends Record<string, any>>({ 
     data, 
     columns, 

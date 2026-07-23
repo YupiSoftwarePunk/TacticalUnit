@@ -6,6 +6,7 @@ import ToolTip from "../ToolTip/ToolTip";
 import { Check, ChevronDown, X } from "lucide-react";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import Link from "next/link";
+import {IMemberRow} from "@/app/subdivisions/review-subdivision/[subdivisionName]/page";
 
 interface IBaseContainer{
     className? : string
@@ -338,6 +339,7 @@ interface IAccordingUnitsTable{
     TableName? : string,
     rightsToGrant? : boolean,
     UrlToGrantPage? : string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     GIVEN_DATA? : Record<string, any>[],
     GIVEN_COLUMNS_LAYOUT? : ColumnConfig[]
 }
