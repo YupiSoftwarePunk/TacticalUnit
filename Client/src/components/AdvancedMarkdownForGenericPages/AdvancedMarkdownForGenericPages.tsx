@@ -200,9 +200,6 @@ export function ListedInputField({className, editingClassName, textWhenEmpty, ed
         setEditMode(false)
     }
 
-    useEffect(()=>{
-       
-    })
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [isOverMenu, setIsOverMenu] = useState<boolean>(false);
     return  <Tooltip verticalPlacement="top" className_Tooltip="text-[16px]" tooltipText={tooltip? tooltip:""} className={`flex relative size-full`}>
@@ -258,15 +255,15 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
         let midList :IGivedPermission[] = [...[], ...givedPermissionList!];
 
         if(givedPermissionList!.find(x=>x.id == PermissionId)){
-            // console.warn("unSet")
             givedPermissionList!.find(x=>x.id == PermissionId)!.inherit = false;
             midList = midList.filter(x=>x.id != PermissionId);
             //return midList.filter(x=>x.Id != PermissionId)
-        }else if (allPermissionsList){
-            // console.warn("Set")
-            midList.push(allPermissionsList?.find(x=>x.id == PermissionId)!)
-            
-            //return midList;
+        }
+        else if (allPermissionsList){
+            const foundPerm = allPermissionsList.find(x => x.id === PermissionId);
+            if (foundPerm) {
+                midList.push(foundPerm);
+            }
         }
         onChange?onChange(midList):false;
         return midList;
@@ -379,7 +376,7 @@ export const AccordingUnitsTable = ({TableName, rightsToGrant, UrlToGrantPage, G
 
 
 interface ICheckButton{
-    onClick: (value : any)=>void,
+    onClick: (value : unknown)=>void,
     title : string,
     value : boolean
 }
@@ -459,27 +456,22 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
             return
         }
         const foundItem = alteredList.find(x=>x.id == item.id);
-        
+        if (!foundItem || !foundItem.id) return;
+
         if(foundItem!.selected == true){
-            // console.warn("item was in the list")
             foundItem!.selected = false
             setIdStory(idStory.filter(x=>x != foundItem?.id!));
-        }else{
-            
+        }
+        else{
             if(idStory.length + 1 > maxSelectedItems && idStory.length > 0 && maxSelectedItems > 0){
-                alteredList.find(x=>x.id == idStory[idStory.length - 1])!.selected = false;
-                
-                // console.warn(`intervention found, deleting: ${alteredList.find(x=>x.id == idStory[idStory.length - 1])?.id}; posting: ${foundItem?.id}`)
+                const itemToRemove = alteredList.find(x => x.id === idStory[idStory.length - 1]);
+                if (itemToRemove) itemToRemove.selected = false;
                 idStory.pop();
-
             }
             idStory.unshift(foundItem?.id!)
             setIdStory([...idStory]);
             foundItem!.selected = true;
         }
-        // setSelectedItems([...alteredList]);
-        // console.warn(idStory)
-        // console.warn(alteredList)
         onSelection!(alteredList);
     }
 
@@ -494,27 +486,26 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
                 preparedList = list.filter(x=>!x.name?.toLowerCase().search(prompt) )
             }
             // console.warn(preparedList)
-        }else{
+        }
+        else{
             preparedList = list;
         }
         setVisibleList(preparedList);
     }
-    const [timeoutSet, setTimeoutSet] = useState(false);
-    const [firstTimeFillFulfilled, setFirstTimeFillFulfilled] = useState(false);
-    useEffect(()=>{
-        if(!timeoutSet && !firstTimeFillFulfilled){
 
-            if(visibleList.length == 0) {
-                setTimeout(()=>{Search(""); setTimeoutSet(false);}, 500)
-                setTimeoutSet(true)
+    useEffect(()=>{
+        const prompt = searchPrompt.toLowerCase().trim();
+        if (prompt) {
+            let preparedList = list.filter(x => !x.id?.search(prompt));
+            if (preparedList.length === 0) {
+                preparedList = list.filter(x => !x.name?.toLowerCase().search(prompt));
             }
-            if(visibleList.length > 0) {
-                // console.warn("Fulfilled")
-                setFirstTimeFillFulfilled(true);
-            }
-            }
-            
-        })
+            setVisibleList(preparedList);
+        } 
+        else {
+            setVisibleList(list);
+        }
+    }, [list, searchPrompt]);
 
     return(<div className={`flex flex-col gap-3 px-4 py-6 bg-bg-secondary text-text-primary ${className}`}>
         {title && <h2 className="text-2xl">{title}</h2>}
