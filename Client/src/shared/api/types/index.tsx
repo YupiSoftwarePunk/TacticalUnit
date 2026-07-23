@@ -145,10 +145,10 @@ interface IGivedPermission{
     id? : string,
     permissionType : PermissionType,
     permission : IPermission,
-    entity : any,
+    entity : Record<string, unknown>,
     inherit : boolean
-
 }
+
 interface IPermission{
     permissionType : PermissionType,
     name : string,
