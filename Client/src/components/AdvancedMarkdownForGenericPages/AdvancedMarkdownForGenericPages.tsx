@@ -297,11 +297,14 @@ export const PermissionRollDownList = ({setPermissionsMethod, editable, editMode
         <div className={`relative flex min-h-0 transition-all ${permissionsExtended? "" : "h-0  overflow-clip pointer-events-none"}`} > {/* onClick={attemptToEdit}  */}
             <div  className={`flex flex-1  font-text-bold min-h-0 p-2 gap-2 flex-col mt-2 z-1 top-full  max-h-60 bg-bg-primary border border-border-secondary right-0 left-0 transition-all ${permissionsExtended? "" :"h-0 pointer-events-none"}`} style={{minHeight: `${permissionsExtended? "" :"0px"}`}}>
                 {!editable && givedPermissionList && 
-                    givedPermissionList!.map((item)=>(
-                    <div key={item.permission.name} className="flex">
-                        <p className="hover:bg-bg-secondary gap-3 flex flex-1">{item.permission.name}</p>
-                    </div>
-                ))
+                    givedPermissionList.map((item, index) => {
+                        const permName = item?.permission?.name || "[ Без названия ]";
+                        return (
+                            <div key={item?.id || index} className="flex">
+                                <p className="hover:bg-bg-secondary gap-3 flex flex-1">{permName}</p>
+                            </div>
+                        );
+                    })
                 }
                 {!givedPermissionList && <p>[ Список отсутствует ]</p>}
                 {editable && allPermissionsList && givedPermissionList &&

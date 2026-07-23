@@ -84,9 +84,31 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
             return;
         }
 
-        SubdivisionService.getById(numericSubdivisionId)
-            .then((subdivisionData) => {
-                setSubdivision(subdivisionData);
+        Promise.all([
+            SubdivisionService.getById(numericSubdivisionId),
+            SubdivisionService.getPermissions(numericSubdivisionId)
+        ])
+            .then(([subdivisionData, permissionsData]) => {
+                const rawPermissions: unknown[] = Array.isArray(permissionsData) 
+                    ? permissionsData 
+                    : (permissionsData ? [permissionsData] : []);
+
+                const formattedPermissions: IGivedPermission[] = rawPermissions.map((p) => {
+                    const item = p as Record<string, unknown>;
+                    if (item && typeof item === 'object' && 'permission' in item) {
+                        return item as unknown as IGivedPermission;
+                    }
+                    return {
+                        id: item?.id,
+                        inherit: false,
+                        permission: item as unknown as IPermission
+                    } as IGivedPermission;
+                });
+
+                setSubdivision({
+                    ...subdivisionData,
+                    givedPermissions: formattedPermissions
+                });
 
                 if (subdivisionData.head?.name) {
                     setSubdivisionPrompt(subdivisionData.head.name);
@@ -204,7 +226,7 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                             }}
                             list={headList}
                         />
-                        <PermissionRollDownList editable={canEdit}></PermissionRollDownList>
+                        <PermissionRollDownList editable={canEdit} givedPermissionList={subdivision.givedPermissions} />
                     </BaseContainer>
                     <div className="flex opacity-50">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={subdivision.discordRoleId}></CopyField>

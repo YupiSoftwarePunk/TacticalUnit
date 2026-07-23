@@ -51,18 +51,11 @@ export default function ReportsPage() {
     }, []);
 
     useEffect(() => {
-        // Чтобы избежать react-hooks/set-state-in-effect, стейт загрузки по умолчанию 
-        // инициализирован как true. Если нужно сбросить перед вызовом, это делается прямо здесь,
-        // но линтер ругается на вызов функции изменения состояния до асинхронных операций.
-        // Оставляем true по умолчанию, а здесь сразу запускаем Promise.
-        
         Promise.all([
             SubdivisionService.getAll(),
             PostService.getAll()
         ])
             .then(([subsRes, postsRes]) => {
-                // Избавляемся от (subsRes as any)?.value. 
-                // Предполагаем, что сервис возвращает либо массив, либо объект с полем value
                 const subsData = Array.isArray(subsRes) 
                     ? subsRes 
                     : (subsRes as { value?: ISubdivision[] })?.value || [];
@@ -97,7 +90,6 @@ export default function ReportsPage() {
         setError(null);
         setImageSrc(null);
 
-        // Record<string, string | number> вместо Record<string, any>
         const payload: Record<string, string | number> = {
             Metric: metric,
             Coverage: coverage,
@@ -357,7 +349,7 @@ export default function ReportsPage() {
                                     fill
                                     sizes="(max-width: 768px) 100vw, 1400px"
                                     className="object-contain"
-                                    unoptimized // Используйте, если это внешний динамический URL (например, blob или абсолютный URL бэкенда)
+                                    unoptimized
                                 />
                             </div>
                         )}

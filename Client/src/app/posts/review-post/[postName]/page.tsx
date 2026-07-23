@@ -85,10 +85,29 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
 
         Promise.all([
             PostService.getById(numericPostId),
-            PostService.getAssigned(numericPostId)
+            PostService.getAssigned(numericPostId),
+            PostService.getPermissions(numericPostId)
         ])
-        .then(([postData, membersData]) => {
-            setPost(postData);
+        .then(([postData, membersData, permissionsData]) => {
+            const rawPermissions = Array.isArray(permissionsData) 
+                ? permissionsData 
+                : (permissionsData ? [permissionsData] : []);
+
+            const formattedPermissions: IGivedPermission[] = rawPermissions.map((p) => {
+                if (p && typeof p === 'object' && 'permission' in p) {
+                    return p as IGivedPermission;
+                }
+                return {
+                    id: p?.id,
+                    inherit: false,
+                    permission: p
+                } as IGivedPermission;
+            });
+
+            setPost({
+                ...postData,
+                givedPermissions: formattedPermissions
+            });
             
             if (Array.isArray(membersData)) {
                 setMembers(membersData);
@@ -190,7 +209,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             tooltip="Подразделение к которому относится должность" 
                             textWhenEmpty="[ Подразделение не указана ]"
                         />
-                        <PermissionRollDownList editable={canEdit} />
+                        <PermissionRollDownList editable={canEdit} givedPermissionList={post.givedPermissions}/>
                     </BaseContainer>
                     <div className="flex opacity-50">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={post.discordRoleId || ""} />
