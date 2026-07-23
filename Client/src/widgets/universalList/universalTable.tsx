@@ -1,13 +1,14 @@
 "use client";
 import React, { useState, useMemo } from "react";
 
-export interface ColumnConfig<T = Record<string, unknown>> {
+export interface ColumnConfig {
     key: string;
     label: string;
     sortable?: boolean;
     filterable?: boolean;
     className?: string;
-    render?: (value: unknown, item: T) => React.ReactNode;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render?: (value: any, item: any) => React.ReactNode;
 }
 
 interface SortConfig {
