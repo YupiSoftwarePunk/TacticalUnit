@@ -256,3 +256,12 @@ interface IProfileAttribute{ // For background and kit choosing
     name: string,
     id: string
 }
+
+interface IDOc {
+    id: number,
+    title: string,
+    uploadedTime: Date,
+    isHidden: boolean,
+    authorId: string,
+    file: File
+}

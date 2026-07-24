@@ -1,10 +1,10 @@
-// /api/v1/doc
-// GET
-// Получить список всех существующих документов.
-// POST
-// Создать новый документ.
-// /api/v1/doc/{id-документа}
-// GET
-// Получить информацию о документе.
-// DELETE
-// Удалить документ.
+import { apiClient } from "../api";
+
+
+export const DocService = {
+    getAll: () => apiClient<IDoc[]>("/doc"),
+    createNew: (options: RequestInit) => apiClient<IDoc[]>("/doc", options),
+
+    getById: (docId: number) => apiClient<IDoc>(`/doc/${docId}`),
+    delete: (docId: number) => apiClient<void>(`/doc/${docId}`)
+};
