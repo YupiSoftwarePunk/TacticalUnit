@@ -12,19 +12,25 @@ export const RewardService = {
     getAll: () => apiClient<IReward[]>("/reward"),
 
     getById: (id: string) => apiClient<IReward>(`/reward/${id}`),
-    patchById: (id: string, options : RequestInit) => apiClient<IReward>(`/reward/${id}`, options),
+    patchById: (id: string, options?: RequestInit) => apiClient<{ message: string }>(`/reward/${id}`, {
+        method: "PATCH",
+        ...options
+    }),
 
-    getDiscordRoleOf: (id: string) => apiClient<IReward>(`/reward/${id}/discord-role`),
-    postDiscordRoleOf: (id: string, options : RequestInit) => apiClient<IReward>(`/reward/${id}/discord-role`, options),
+    getActual: () => apiClient<IReward[]>("/reward/actual"),
+
+    getDiscordRoleOf: (id: string) => apiClient<string>(`/reward/${id}/discord-role`),
+    postDiscordRoleOf: (id: string, options?: RequestInit) => apiClient<{ message: string }>(`/reward/${id}/discord-role`, {
+        method: "POST",
+        ...options
+    }),
 
     getAssigned: (id: string) => apiClient<IAssignedReward[]>(`/reward/${id}/assign`),
-    assignToUnit: (id: string, data: { discordId: string }) => apiClient<IAssignedReward>(`/reward/${id}/assign`, {
-        method: "POST",
-        body: JSON.stringify({ discordId: String(data.discordId) })
-    }),
+    assignToUnit: (id: string, unitId: string, docId?: number) => {
+        const query = docId ? `?doc=${docId}` : "";
+        return apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}${query}`, {
+            method: "POST",
+        });
+    },
     getUnitAssignment: (id: string, unitId: string) => apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}`),
-
-    // get /api/v1/reward/actual  именно это отображать на витрине, и есть чекбокс чтобы отображались все
-
-    // /api/v1/reward/{id-награды}/assign?doc={id-документа} 
 };
