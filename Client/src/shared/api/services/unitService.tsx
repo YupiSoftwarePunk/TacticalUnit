@@ -3,7 +3,7 @@ import { apiClient } from "../api";
 
 export const UnitService = {
     add: (options: RequestInit) => apiClient<IUnit[]>("/unit", { method: "POST", ...options }),
-    getAll: () => apiClient<IUnit[]>("/unit"),
+    getAll: () => apiClient<IUnitCompressed[]>("/unit"),
     getActualUnits: () => apiClient<IUnit[]>("/unit/actual"),
 
     getByDiscordId: (id: number | string) => apiClient<IUnit>(`/unit/${id}`),

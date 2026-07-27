@@ -141,6 +141,43 @@ interface IUnit {
     unitStatuses : IUnitState[]
 }
 
+// вот такой он на беке
+// interface IUnit {
+//     discordId : string,
+//     nickname : string,
+//     steamId? : string,
+//     favoriteKitId : number;
+//     backgroundPictureId : number;
+//     rankUpCounter : number,
+//     joined : Date,
+//     color : string,
+//     rank : IRank,
+//     rankId : number,
+//     ownDocs : IDoc[],
+//     assignedDocs : IDoc[],
+//     posts : IPost[],
+//     postsIds : number[],
+//     assignedRewardsIds : number[],
+//     activities : IActivity[],
+//     unitStatuses : IUnitState[],
+//     gender?: number
+// }
+
+interface IUnitCompressed {
+    discordId : string,
+    nickname : string,
+    steamId? : string,
+    favoriteKitId : number;
+    backgroundPictureId : number;
+    rankUpCounter : number,
+    joined : string,
+    rankId : number,
+    postsIds : number[],
+    assignedRewardsIds : number[],
+    gender?: number
+}
+
+
 interface IGivedPermission{
     id? : string,
     permissionType : PermissionType,

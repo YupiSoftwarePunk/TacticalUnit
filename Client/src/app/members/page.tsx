@@ -19,20 +19,22 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
 ];
 
-interface IUnitWithActivity extends IUnit {
+export interface IUnitCompressed {
+    discordId: string;
+    nickname: string;
+    steamId?: string;
+    favoriteKitId?: number;
+    backgroundPictureId?: number;
+    rankUpCounter?: string | number;
+    joined?: string;
+    rankId?: number;
+    postsIds?: number[];
+    assignedRewardsIds?: number[];
+    gender?: number;
     activity_week?: number;
-    activityWeek?: number;
     activity_month?: number;
-    activityMonth?: number;
     activity_year?: number;
-    activityYear?: number;
     activity_total?: number;
-    activityTotal?: number;
-    favoriteKit?: {
-        id: string;
-        name: string;
-    };
-    kit?: string;
 }
 
 interface IMemberRow {
@@ -62,16 +64,28 @@ export default function MembersPage() {
         const fetchMembers = async () => {
             try {
                 const sRanks = await RankService.getAll();
-                ranks = [...sRanks];
+                ranks = Array.isArray(sRanks) ? sRanks : [];
 
                 const sPosts = await PostService.getAll();
-                posts = [...sPosts];
+                posts = Array.isArray(sPosts) ? sPosts : [];
 
                 const units = await UnitService.getAll();
-                if (!units || !Array.isArray(units)) return;
+                if (!units || !Array.isArray(units)) {
+                    setMembers([]);
+                    setLoaded(true);
+                    return;
+                }
 
-                const preparedMemberArray: IMemberRow[] = units.map((element: IUnitWithActivity) => {
-                    const memberRoles: string[] = element.posts?.map((p: IPost) => p.name).filter(Boolean) || [];
+                const preparedMemberArray: IMemberRow[] = units.map((element: IUnitCompressed) => {
+                    const setRank = ranks.find(x => x.id?.toString() === element.rankId?.toString());
+
+                    const unitPostIds = element.postsIds || [];
+                    const firstPostId = unitPostIds[0];
+                    const setPost = posts.find(x => x.id?.toString() === firstPostId?.toString());
+
+                    const memberRoles: string[] = unitPostIds
+                        .map(id => posts.find(p => p.id?.toString() === id.toString())?.name)
+                        .filter((name): name is string => Boolean(name));
 
                     let formattedJoinDate = "—";
                     if (element.joined) {
@@ -81,23 +95,24 @@ export default function MembersPage() {
                             const month = String(date.getMonth() + 1).padStart(2, "0");
                             const year = date.getFullYear();
                             formattedJoinDate = `${day}.${month}.${year}`;
+                        } 
+                        else {
+                            formattedJoinDate = element.joined;
                         }
                     }
-                    const setRank = ranks.find(x => x.id?.toString() == element.rankId?.toString());
-                    const setPost = posts.find(x => x.id == element.postsIds?.[0]);
 
                     return {
                         rank: setRank ? setRank.name : "Без звания",
-                        nickname: element.nickname,
+                        nickname: element.nickname || "Без ника",
                         top_role: setPost ? setPost.name : "Без должности",
                         roles: memberRoles,
-                        activity_week: element.activity_week ?? element.activityWeek ?? 0,
-                        activity_month: element.activity_month ?? element.activityMonth ?? 0,
-                        activity_year: element.activity_year ?? element.activityYear ?? 0,
-                        activity_total: element.activity_total ?? element.activityTotal ?? 0,
-                        kit: element.favoriteKit?.name || element.kit || "Не выбран",
+                        activity_week: element.activity_week ?? 0,
+                        activity_month: element.activity_month ?? 0,
+                        activity_year: element.activity_year ?? 0,
+                        activity_total: element.activity_total ?? 0,
+                        kit: element.favoriteKitId ? `Кит #${element.favoriteKitId}` : "Не выбран",
                         steamId: element.steamId ? String(element.steamId) : "—",
-                        discordId: String(element.discordId),
+                        discordId: element.discordId ? String(element.discordId) : "—",
                         joinDate: formattedJoinDate
                     };
                 });
@@ -125,8 +140,8 @@ export default function MembersPage() {
         alert("Скопировано: " + text);
     };
 
-    if (error) return <ErrorScreen error={error}></ErrorScreen>;
-    if (!loaded) return <LoadingScreen></LoadingScreen>;
+    if (error) return <ErrorScreen error={error} />;
+    if (!loaded) return <LoadingScreen />;
 
     return (
         <div className="flex flex-col h-full w-full overflow-x-hidden">
@@ -134,7 +149,7 @@ export default function MembersPage() {
             <main className="min-h-screen bg-bg-primary pt-20 md:pt-24 pb-12 px-4 sm:px-8 w-full">
                 <div className="max-w-[1400px] mx-auto w-full">
                     <header className="mb-6 md:mb-12">
-                        <h1 className="text-3xl sm:text-5xl font-header text-text-primary uppercase tracking-normal mb-2 break-words">
+                        <h1 className="text-3xl sm:text-5xl font-header text-text-primary uppercase tracking-normal mb-2 wrap-break-word">
                             Личный состав
                         </h1>
                         <p className="text-text-secondary font-text-regular text-sm sm:text-lg">
