@@ -18,16 +18,16 @@ export interface IImageUploadResponse {
 
 export const ImageService = {
     uploadReward: (id: number | string, options: RequestInit) => 
-        apiClient<IImageUploadResponse>(`/images/rewards/${id}`, options),
+        apiClient<IImageUploadResponse>(`/images/rewards/${id}`, { method: "POST", ...options }),
 
     uploadRank: (id: number | string, options: RequestInit) => 
-        apiClient<IImageUploadResponse>(`/images/ranks/${id}`, options),
+        apiClient<IImageUploadResponse>(`/images/ranks/${id}`, { method: "POST", ...options }),
 
     uploadBackground: (id: number | string, options: RequestInit) => 
-        apiClient<IImageUploadResponse>(`/images/backgrounds/${id}`, options),
+        apiClient<IImageUploadResponse>(`/images/backgrounds/${id}`, { method: "POST", ...options }),
 
     uploadKit: (id: number | string, options: RequestInit) => 
-        apiClient<IImageUploadResponse>(`/images/kits/${id}`, options),
+        apiClient<IImageUploadResponse>(`/images/kits/${id}`, { method: "POST", ...options }),
 
     getEntityImageUrl: (type: ImageType, id: number | string) => {
         const folder = IMAGE_FOLDERS[type];
