@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { RewardService } from "@/shared/api/services/RewardService";
-import { ImageService } from "@/shared/api/services/imageService";
 import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 
 export default function AwardsPage() {
     const [awards, setAwards] = useState<IReward[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [onlyActual, setOnlyActual] = useState<boolean>(true);
 
     const [hasAdminPermission] = useState(true); 
     const [hasAwardPermission] = useState(true);
@@ -19,20 +20,26 @@ export default function AwardsPage() {
         const fetchAwards = async () => {
             try {
                 setIsLoading(true);
-                const data = await RewardService.getAll();
+                setError(null);
+
+                const data = onlyActual 
+                    ? await RewardService.getActual() 
+                    : await RewardService.getAll();
+                    
                 setAwards(data);
             } 
             catch (err) {
                 console.error(err);
-                const errorMessage = err instanceof Error ? err.message : "Ошибка при назначении награды";
+                const errorMessage = err instanceof Error ? err.message : "Ошибка при загрузке наград";
                 setError(errorMessage);
             } 
             finally {
                 setIsLoading(false);
             }
         };
+
         fetchAwards();
-    }, []);
+    }, [onlyActual]);
 
     return (
         <div className="flex flex-col h-full">
@@ -47,17 +54,35 @@ export default function AwardsPage() {
                             <span className="block w-20 h-1 bg-accent mt-2"></span>
                         </div>
 
-                        {hasAdminPermission && (
-                            <Link 
-                                href="/awards/create-award" 
-                                className="relative group inline-block"
-                            >
-                                <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
-                                <div className="relative border border-border-secondary bg-bg-accent px-6 py-3 text-sm font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
-                                    + Ввести новую награду
+                        <div className="flex flex-wrap items-center gap-4 md:gap-6">
+                            <label className="flex items-center gap-3 cursor-pointer select-none group">
+                                <div className="relative flex-shrink-0">
+                                    <input 
+                                        type="checkbox" 
+                                        className="sr-only"
+                                        checked={onlyActual}
+                                        onChange={(e) => setOnlyActual(e.target.checked)}
+                                    />
+                                    <div className={`w-10 h-6 border-2 border-text-primary transition-colors ${onlyActual ? 'bg-accent border-accent' : 'bg-transparent'}`}></div>
+                                    <div className={`absolute top-1 w-3 h-3 bg-text-primary transition-transform duration-300 ${onlyActual ? 'translate-x-5 bg-black' : 'translate-x-1'}`}></div>
                                 </div>
-                            </Link>
-                        )}
+                                <span className="text-[10px] md:text-xs font-text-bold uppercase tracking-widest text-text-primary group-hover:text-accent transition-colors selection:bg-transparent">
+                                    Только актуальные
+                                </span>
+                            </label>
+
+                            {hasAdminPermission && (
+                                <Link 
+                                    href="/awards/create-award" 
+                                    className="relative group inline-block"
+                                >
+                                    <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
+                                    <div className="relative border border-border-secondary bg-bg-accent px-6 py-3 text-sm font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black">
+                                        + Ввести новую награду
+                                    </div>
+                                </Link>
+                            )}
+                        </div>
                     </div>
 
                     {isLoading && (
@@ -108,9 +133,10 @@ export default function AwardsPage() {
                             ))}
                         </div>
                     )}
+                    
                     {!isLoading && !error && awards.length === 0 && (
                         <div className="text-center text-text-primary/60 text-lg py-10">
-                            Награды еще не созданы.
+                            {onlyActual ? "Актуальные награды не найдены." : "Награды еще не созданы."}
                         </div>
                     )}
                 </main>
