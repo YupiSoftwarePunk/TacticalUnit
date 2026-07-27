@@ -73,6 +73,13 @@ interface IDoc{
     author : IUnit,
     units : IUnit[]
 }
+
+interface IUploadDoc {
+    name : string,
+    unitIds: Set<number>,
+    file: File
+}
+
 interface IReward{
     id? : string,
     conditions : string,
