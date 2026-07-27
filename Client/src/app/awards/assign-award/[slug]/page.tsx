@@ -85,7 +85,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
 
             await Promise.all(
                 Array.from(selectedUnits).map(discordId => 
-                    RewardService.assignToUnit(rewardId.toString(), { discordId })
+                    RewardService.assignToUnit(rewardId.toString(), discordId)
                 )
             );
 
