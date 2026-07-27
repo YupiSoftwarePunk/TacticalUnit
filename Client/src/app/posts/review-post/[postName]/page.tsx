@@ -93,7 +93,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                 ? permissionsData 
                 : (permissionsData ? [permissionsData] : []);
 
-            const formattedPermissions: IGivedPermission[] = rawPermissions.map((p) => {
+            const formattedPermissions: IGivedPermission[] = rawPermissions.map((p: any, index: number) => {
                 if (p && typeof p === 'object' && 'permission' in p) {
                     return p as IGivedPermission;
                 }

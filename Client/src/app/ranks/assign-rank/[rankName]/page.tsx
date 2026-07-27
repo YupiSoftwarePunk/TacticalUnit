@@ -76,9 +76,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
             }
 
             const assignPromises = Array.from(selectedUnits).map((discordId) =>
-                RankService.assignToUnit(numericRankId, discordId, {
-                    method: "POST",
-                })
+                RankService.assignToUnit(numericRankId, discordId)
             );
 
             await Promise.all(assignPromises);

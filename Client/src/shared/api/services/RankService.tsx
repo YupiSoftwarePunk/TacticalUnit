@@ -15,7 +15,7 @@ export const RankService = {
     postDiscordRoleOf: (id: number | string, options: RequestInit) => apiClient<IRank>(`/rank/${id}/discord-role`, { method: "POST", ...options }),
 
     getAssigned: (id: number | string) => apiClient<IRank[]>(`/rank/${id}/assign`),
-    assignToUnit: (id: number | string, unitId: string, docId: number) => {
+    assignToUnit: (id: number | string, unitId: string, docId?: number) => {
         const query = docId ? `?doc=${docId}` : "";
         return apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}${query}`, {
             method: "POST",
