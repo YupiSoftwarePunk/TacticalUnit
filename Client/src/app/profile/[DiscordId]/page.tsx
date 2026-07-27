@@ -20,14 +20,18 @@ export default function Profile({ params }: { params: Promise<{ DiscordId: strin
     const [error, setError] = useState<string | undefined>();
     
     function loadData() {
-        UnitService.getByDiscordId(DiscordId as unknown as number).then(
+        UnitService.getByDiscordId(DiscordId).then(
             (data) => {
+                if (!data) return;
                 setLoaded(true);
                 data.discordId = DiscordId;
                 setUnitData(structuredClone(data));
                 applyPermissions(getProfileMenuOptions(DiscordId), DiscordId).then(x => { setAvailableOptions(x); })
             }
-        ).catch((er) => { setError(`Не удалось загрузить данные | ${er}`); })
+        ).catch((er) => { 
+            setLoaded(true);
+            setError(`Не удалось загрузить данные | ${er}`); 
+        })
     }
 
     useEffect(() => {

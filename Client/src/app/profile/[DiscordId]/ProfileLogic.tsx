@@ -147,11 +147,14 @@ export function getStoryMenuOptions(disId : string){
 
 
 export async function applyPermissions(menuOptions : IActionMenuOption[], disId : string = "-1") : Promise<IActionMenuOption[]>{
-        const preparedOptions : IActionMenuOption[] = [];
-        await UnitService.getPermissionsIds(disId).then((r)=>{
+    const preparedOptions : IActionMenuOption[] = [];
+
+    try {
+        await UnitService.getPermissions(disId).then((r)=>{
             const permissions : string[] = r
             const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null;
             permissions.push("any");
+            
             if (user.discord_id == disId){
                 permissions.push("self");
             }
@@ -165,5 +168,10 @@ export async function applyPermissions(menuOptions : IActionMenuOption[], disId 
                 })
             });
         })
-        return (preparedOptions);
     }
+    catch (error) {
+        console.error("Ошибка при получении прав доступа:", error);
+    }
+
+    return preparedOptions;
+}

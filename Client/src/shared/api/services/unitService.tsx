@@ -19,7 +19,7 @@ export const UnitService = {
         apiClient<Date>(`/unit/${id}/activity`, { method: "PUT", ...options }),  // fix activity
 
     getPermissions: (UnitDiscordId: number | string) => 
-        apiClient<IPermission[]>(`/unit/${UnitDiscordId}/permissions`), // получить все разрешения бойца.
+        apiClient<string[]>(`/unit/${UnitDiscordId}/permissions`), // получить все разрешения бойца.
 
     getDismissedUnits: () => apiClient<IUnit[]>(`/unit/dismissed`), 
     getRetiredUnits: () => apiClient<IUnit[]>(`/unit/retirement`), 
@@ -30,7 +30,7 @@ export const UnitService = {
     getAvailableBg: (id : string) => apiClient<Map<string, string>>(`/unit/backgrounds`), 
     setUnitBg: (id : string, options : RequestInit) => 
         apiClient<Map<string, string>>(`/unit/backgrounds`, { method: "POST", ...options }),
-    
+
     getAvailableKit: (id : string) => apiClient<Map<string, string>>(`/unit/kits`), 
     setUnitKit: (id : string, options : RequestInit) => 
         apiClient<Map<string, string>>(`/unit/kits`, { method: "POST", ...options }),

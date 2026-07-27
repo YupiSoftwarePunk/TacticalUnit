@@ -76,15 +76,26 @@ export const UnitInfoPanel = ({ Unit }: IUnitInfoPanel) => {
 
     useEffect(() => {
         if (Unit != undefined) {
-            RankService.getById(Unit.rankId).then(r => { setRank(r); })
-            Unit.postsIds.forEach(id => {
-                PostService.getById(id).then(p => { 
-                    setPosts(prev => {
-                        if (prev.find(x => x.id === p.id)) return prev;
-                        return [...prev, p];
-                    }); 
-                })
-            });
+            if (Unit.rankId) {
+                RankService.getById(Unit.rankId)
+                    .then(r => { setRank(r); })
+                    .catch(e => console.error("Ошибка загрузки звания:", e));
+            }
+
+            if (Array.isArray(Unit.postsIds)) {
+                Unit.postsIds.forEach(id => {
+                    if (id) {
+                        PostService.getById(id)
+                            .then(p => { 
+                                setPosts(prev => {
+                                    if (prev.find(x => x.id === p.id)) return prev;
+                                    return [...prev, p];
+                                }); 
+                            })
+                            .catch(e => console.error(`Ошибка загрузки должности ${id}:`, e));
+                    }
+                });
+            }
         }
     }, [Unit])
 
@@ -144,7 +155,11 @@ export const RewardDisplay = ({ rewardId }: IRewardDisplay) => {
     const [reward, setReward] = useState<IReward>();
 
     useEffect(() => {
-        RewardService.getById(rewardId).then((r) => { setReward(r) })
+        if (rewardId) {
+            RewardService.getById(rewardId)
+                .then((r) => { setReward(r) })
+                .catch(e => console.error("Ошибка загрузки награды:", e));
+        }
     }, [rewardId])
 
     return (
