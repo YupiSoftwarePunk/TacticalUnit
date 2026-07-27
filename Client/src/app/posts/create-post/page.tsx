@@ -8,45 +8,7 @@ import { validateColor } from "@/typescript/colorValidator";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-
-const mockG : IGivedPermission[] = [
-    {
-        id : "0",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен1",
-            permissionType : 1,
-            description : "",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    },
-    {
-        id : "1",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен2",
-            permissionType : 1,
-            description : "какая-то крутая разрешение",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    },
-    {
-        id : "2",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен3",
-            permissionType : 1,
-            description : "какая-то НЕ ОЧЕНЬ разрешение",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    }
-]
+import { UnitService } from "@/shared/api/services/unitService";
 
 export default function CreatePostPage() {
     const [rankName, setRankName] = useState<string>("");
@@ -63,32 +25,8 @@ export default function CreatePostPage() {
 
     const router = useRouter();
 
-    const [permissions, setPermissions] = useState<IGivedPermission[]>([
-        {
-            id : "1",
-            permissionType : 1,
-            permission : {
-                name: "Разрешен2",
-                permissionType : 1,
-                description : "какая-то крутая разрешение",
-                givedPermissions: []
-            },
-            inherit : false,
-            entity: {}
-        },
-        {
-            id : "2",
-            permissionType : 1,
-            permission : {
-                name: "Разрешен3",
-                permissionType : 1,
-                description : "какая-то НЕ ОЧЕНЬ разрешение",
-                givedPermissions: []
-            },
-            inherit : false,
-            entity: {}
-        }
-    ])
+    const [allPermissions, setAllPermissions] = useState<IGivedPermission[]>([]);
+    const [permissions, setPermissions] = useState<IGivedPermission[]>([]);
 
     function UpdateSearch(prompt : string, list : IListedInputItem[] = headList){
         let prepList : IListedInputItem[] = []
@@ -143,7 +81,46 @@ export default function CreatePostPage() {
             });
             setAvailableHeadPosts([...preparedPosts]);
             UpdateSearch("", preparedPosts);
+        });
+
+        let unitDiscordId: string | null = null;
+        const userRaw = localStorage.getItem("user");
+
+        if (userRaw) {
+            try {
+                const userObj = JSON.parse(userRaw);
+                unitDiscordId = userObj.discord_id || null;
+            } 
+            catch (err) {
+                console.error("Ошибка парсинга объекта user из localStorage:", err);
+            }
+        }
+
+        if (!unitDiscordId) {
+            console.error("Discord ID не найден в localStorage");
+            return;
+        }
+
+        UnitService.getPermissions(unitDiscordId)
+        .then((data: string[]) => {
+            const formattedPermissions: IGivedPermission[] = data.map((permName, index) => ({
+                id: index.toString(),
+                permissionType: 1,
+                permission: {
+                    name: permName,
+                    permissionType: 1,
+                    description: "",
+                    givedPermissions: []
+                },
+                inherit: false,
+                entity: {}
+            }));
+
+            setAllPermissions(formattedPermissions);
         })
+        .catch((err) => {
+            console.error("Ошибка при загрузке разрешений:", err);
+        });
     },[])
 
     return (
@@ -171,7 +148,7 @@ export default function CreatePostPage() {
                     </BaseContainer>
 
                     <BaseContainer className="w-full">
-                        <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
+                        <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={allPermissions} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
                     </BaseContainer>
                     
                 </div>

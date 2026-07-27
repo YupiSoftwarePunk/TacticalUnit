@@ -8,46 +8,7 @@ import { ImageService } from "@/shared/api/services/imageService";
 import { useEffect, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { validateColor } from "@/typescript/colorValidator";
-
-// необходимо вызвать ендпоинт с получением настоящих разрешений
-const mockG : IGivedPermission[] = [
-    {
-        id : "0",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен1",
-            permissionType : 1,
-            description : "",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    },
-    {
-        id : "1",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен2",
-            permissionType : 1,
-            description : "какая-то крутая разрешение",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    },
-    {
-        id : "2",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен3",
-            permissionType : 1,
-            description : "какая-то НЕ ОЧЕНЬ разрешение",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    }
-]
+import { UnitService } from "@/shared/api/services/unitService";
 
 export default function CreateRankPage(){
     const router = useRouter();
@@ -61,32 +22,8 @@ export default function CreateRankPage(){
     const [color, setColor] = useState<string>("#ffffff");
     const [availableHeadRanks, setAvailableHeadRanks] = useState<IListedInputItem[]>([]);
 
-    const [permissions, setPermissions] = useState<IGivedPermission[]>([
-        {
-            id : '1',
-            permissionType : 1,
-            permission : {
-                name: "Разрешен2",
-                permissionType : 1,
-                description : "какая-то крутая разрешение",
-                givedPermissions: []
-            },
-            inherit : false,
-            entity: {}
-        },
-        {
-            id : "2",
-            permissionType : 1,
-            permission : {
-                name: "Разрешен3",
-                permissionType : 1,
-                description : "какая-то НЕ ОЧЕНЬ разрешение",
-                givedPermissions: []
-            },
-            inherit : false,
-            entity: {}
-        }
-    ])
+    const [allPermissions, setAllPermissions] = useState<IGivedPermission[]>([]);
+    const [permissions, setPermissions] = useState<IGivedPermission[]>([]);
 
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -206,7 +143,46 @@ export default function CreateRankPage(){
             });
             setAvailableHeadRanks([...preparedRanks]);
             setHeadList(preparedRanks);
+        });
+
+        let unitDiscordId: string | null = null;
+        const userRaw = localStorage.getItem("user");
+
+        if (userRaw) {
+            try {
+                const userObj = JSON.parse(userRaw);
+                unitDiscordId = userObj.discord_id || null;
+            } 
+            catch (err) {
+                console.error("Ошибка парсинга объекта user из localStorage:", err);
+            }
+        }
+
+        if (!unitDiscordId) {
+            console.error("Discord ID не найден в localStorage");
+            return;
+        }
+
+        UnitService.getPermissions(unitDiscordId)
+        .then((data: string[]) => {
+            const formattedPermissions: IGivedPermission[] = data.map((permName, index) => ({
+                id: index.toString(),
+                permissionType: 1,
+                permission: {
+                    name: permName,
+                    permissionType: 1,
+                    description: "",
+                    givedPermissions: []
+                },
+                inherit: false,
+                entity: {}
+            }));
+
+            setAllPermissions(formattedPermissions);
         })
+        .catch((err) => {
+            console.error("Ошибка при загрузке разрешений:", err);
+        });
     },[])
 
     return (
@@ -299,7 +275,7 @@ export default function CreateRankPage(){
                         <BaseContainer>
                             <PermissionRollDownList 
                                 givedPermissionList={permissions} 
-                                allPermissionsList={mockG} 
+                                allPermissionsList={allPermissions} 
                                 onChange={(list) => { setPermissions(list); console.warn(list) }} 
                                 editable={true} 
                                 editMode={true}

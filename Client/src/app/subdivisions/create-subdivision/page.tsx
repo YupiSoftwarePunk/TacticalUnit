@@ -5,46 +5,7 @@ import { MainHeader } from "@/components/Header/MainHeader";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-
-const mockG : IGivedPermission[] = [
-    {
-        id : "0",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен1",
-            permissionType : 1,
-            description : "",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    },
-    {
-        id : "1",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен2",
-            permissionType : 1,
-            description : "какая-то крутая разрешение",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    },
-    {
-        id : "2",
-        permissionType : 1,
-        permission : {
-            name: "Разрешен3",
-            permissionType : 1,
-            description : "какая-то НЕ ОЧЕНЬ разрешение",
-            givedPermissions: []
-        },
-        inherit : false,
-        entity: {}
-    }
-]
+import { UnitService } from "@/shared/api/services/unitService";
 
 
 export default function CreateSubdivPage(){
@@ -60,36 +21,10 @@ export default function CreateSubdivPage(){
 
     const [color, setColor] = useState<string>("#ffffff");
 
-
     const [availableHeadSubdivisions, setAvailableHeadSubdivisions] = useState<IListedInputItem[]>([]);
 
-
-    const [permissions, setPermissions] = useState<IGivedPermission[]>([
-        {
-            id : "1",
-            permissionType : 1,
-            permission : {
-                name: "Разрешен2",
-                permissionType : 1,
-                description : "какая-то крутая разрешение",
-                givedPermissions: []
-            },
-            inherit : false,
-            entity: {}
-        },
-        {
-            id : "2",
-            permissionType : 1,
-            permission : {
-                name: "Разрешен3",
-                permissionType : 1,
-                description : "какая-то НЕ ОЧЕНЬ разрешение",
-                givedPermissions: []
-            },
-            inherit : false,
-            entity: {}
-        }
-    ])
+    const [allPermissions, setAllPermissions] = useState<IGivedPermission[]>([]);
+    const [permissions, setPermissions] = useState<IGivedPermission[]>([]);
 
     function UpdateSearch(prompt : string){
         let prepList : IListedInputItem[] = []
@@ -131,7 +66,46 @@ export default function CreateSubdivPage(){
                 });
                 setAvailableHeadSubdivisions([...preparedRanks]);
                 UpdateSearch("");
+            });
+
+            let unitDiscordId: string | null = null;
+            const userRaw = localStorage.getItem("user");
+
+            if (userRaw) {
+                try {
+                    const userObj = JSON.parse(userRaw);
+                    unitDiscordId = userObj.discord_id || null;
+                } 
+                catch (err) {
+                    console.error("Ошибка парсинга объекта user из localStorage:", err);
+                }
+            }
+
+            if (!unitDiscordId) {
+                console.error("Discord ID не найден в localStorage");
+                return;
+            }
+
+            UnitService.getPermissions(unitDiscordId)
+            .then((data: string[]) => {
+                const formattedPermissions: IGivedPermission[] = data.map((permName, index) => ({
+                    id: index.toString(),
+                    permissionType: 1,
+                    permission: {
+                        name: permName,
+                        permissionType: 1,
+                        description: "",
+                        givedPermissions: []
+                    },
+                    inherit: false,
+                    entity: {}
+                }));
+
+                setAllPermissions(formattedPermissions);
             })
+            .catch((err) => {
+                console.error("Ошибка при загрузке разрешений:", err);
+            });
         },[])
     return(<div className="flex flex-col min-h-screen">
         <MainHeader></MainHeader>
@@ -149,7 +123,7 @@ export default function CreateSubdivPage(){
                 <ListedInputField list={headList} value={headPrompt} onChoice={(el)=>{setHeadPrompt(el.name);  setHeadId(el.id); UpdateSearch(headPrompt? headPrompt : "")}} onChange={(e)=>{setHeadPrompt(e.target.value); UpdateSearch(e.target.value)}} editable={true} editMode={true}></ListedInputField>
             </BaseContainer>
             <BaseContainer>
-                <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={mockG} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
+                <PermissionRollDownList givedPermissionList={permissions} allPermissionsList={allPermissions} onChange={(list)=>{setPermissions(list); console.warn(list)}} editable={true} editMode={true}></PermissionRollDownList>
             </BaseContainer>
         </CreationForm>
     </div>)
