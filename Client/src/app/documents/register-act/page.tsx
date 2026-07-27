@@ -10,6 +10,31 @@ import { useSearchParams } from "next/navigation";
 import { RewardService } from "@/shared/api/services/RewardService";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
+import { IUnitCompressed } from "@/app/members/page";
+
+
+const ACT_TYPES_INFO = new Map<string, { title: string; description: string }>([
+    ["rewards", { 
+        title: "Акт награждения", 
+        description: "Выбранным бойцам будут вручены выбранные награды." 
+    }],
+    ["posts", { 
+        title: "Акт назначения на должность(-и)", 
+        description: "Выбранные бойцы будут назначены на выбранные должности. Опционально, они могут быть сняты с предыдущих должностей, за исключением тех, что отсутствуют в списке доступных к выбору. К выбору доступны все должности, не являющиеся для Вас вышестоящими. К выбору доступны все бойцы из актуального состава клана. Попытка снять с бойца все должности будет проигнорирована." 
+    }],
+    ["ranks", { 
+        title: "Акт присвоения звания", 
+        description: "Выбранным бойцам будет присвоено выбранное звание вне зависимости от их предыдущего звания. К выбору доступны все существующие в клане звания. К выбору доступны все бойцы из актуального состава клана." 
+    }],
+    ["rank-altering", { 
+        title: "Акт повышения/понижения в звании", 
+        description: "Выбранные бойцы будут повышены или понижены на количество указанных ступеней. «1» ступень будет означать «очередное» повышение, а «2» и больше – внеочередное. К выбору доступны все бойцы из актуального состава клана. Попытка понижения ниже минимального звания будет проигнорирована. Попытка повышения выше максимального существующего звания или максимально доступного по должности будет проигнорирована. Последнее ограничение может быть проигнорировано включением соответствующей опции." 
+    }],
+    ["sanctions", { 
+        title: "Акт выдачи благодарностей/выговоров", 
+        description: "Выбранным бойцам будет прибавлен выбранный статус. При установлении нового статуса будет арифметически учитываться текущий активный статус. То есть благодарность повышает, а выговор снижает текущий статус на 1 ступень. Строгий выговор понижает на 2 ступени." 
+    }]
+]);
 
 function UploadDocumentContent() {
     const searchParameters = useSearchParams()
@@ -21,19 +46,27 @@ function UploadDocumentContent() {
     const [description, setDescription] = useState("")
     
     useEffect(()=>{
-        actTypesInfo.set("rewards", {title : "Акт награждения", description : "Выбранным бойцам будут вручены выбранные награды."})
-        actTypesInfo.set("posts", {title : "Акт назначения на должность(-и)", description : "Выбранные бойцы будут назначены на выбранные должности. Опционально, они могут быть сняты с предыдущих должностей, за исключением тех, что отсутствуют в списке доступных к выбору. К выбору доступны все должности, не являющиеся для Вас вышестоящими. К выбору доступны все бойцы из актуального состава клана. Попытка снять с бойца все должности будет проигнорирована."})
-        actTypesInfo.set("ranks", {title : "Акт присвоения звания", description : "Выбранным бойцам будет присвоено выбранное звание вне зависимости от их предыдущего звания. К выбору доступны все существующие в клане звания. К выбору доступны все бойцы из актуального состава клана."})
-        actTypesInfo.set("rank-altering", {title : "Акт повышения/понижения в звании", description : "Выбранные бойцы будут повышены или понижены на количество указанных ступеней. «1» ступень будет означать «очередное» повышение, а «2» и больше – внеочередное. К выбору доступны все бойцы из актуального состава клана. Попытка понижения ниже минимального звания будет проигнорирована. Попытка повышения выше максимального существующего звания или максимально доступного по должности будет проигнорирована. Последнее ограничение может быть проигнорировано включением соответствующей опции."})
-        actTypesInfo.set("sanctions", {title : "Акт выдачи благодарностей/выговоров", description : "Выбранным бойцам будет прибавлен выбранный статус. При установлении нового статуса будет арифметически учитываться текущий активный статус. То есть благодарность повышает, а выговор снижает текущий статус на 1 ступень. Строгий выговор понижает на 2 ступени."})
-        setTitle(actTypesInfo.get(actType!)!.title)
-        setDescription(actTypesInfo.get(actType!)!.description)
-    },[]);
+        if (!actType) return;
+
+        const info = ACT_TYPES_INFO.get(actType);
+        if (info) {
+            setTitle(info.title);
+            setDescription(info.description);
+        }
+    }, [actType]);
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    interface IFormattedUnit {
+    discordId: string;
+    nickname: string;
+    rank: string;
+    posts: string;
+    }
+
     const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-    const [units, setUnits] = useState<IUnit[]>([]);
+    const [units, setUnits] = useState<IFormattedUnit[]>([]);
+
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
     const [typeOfDocument, setTypeOfDocument] = useState<"selection" | "new" | "existing" | "empty">("selection");
     const [documentsAtDisposal, setDocumentsAtDisposal] = useState<IListedInputItem[]>([]);
@@ -197,7 +230,7 @@ function UploadDocumentContent() {
             sortable: false,
             filterable: false,
             className: "w-12",
-            render: (_, item: IUnit) => (
+            render: (_, item: IFormattedUnit) => (
                 <button
                     onClick={() => toggleUnitSelection(item.discordId)}
                     className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
@@ -213,27 +246,42 @@ function UploadDocumentContent() {
             key: "rank", 
             label: "Текущее звание", 
             sortable: true, 
-            filterable: true,
-            render: (rank: IRank) => rank?.name || "Без звания"
+            filterable: true
         },
         { 
             key: "posts", 
             label: "Должность", 
             sortable: false, 
-            filterable: true,
-            render: (posts: IPost[]) => posts?.map(p => p.name).join(", ") || "Нет должности"
+            filterable: true
         },
     ];
 
-    const handleExport = (data: IUnit[]) => {
+    const handleExport = (data: IFormattedUnit[]) => {
         console.log("Экспорт данных:", data);
     };
 
-    useEffect(()=>{
-        UnitService.getAll().then((list)=>{
-            setUnits(list);
-        })
-    },[])
+    useEffect(() => {
+        Promise.all([
+            UnitService.getAll(),
+            RankService.getAll(),
+            PostService.getAll()
+        ]).then(([unitsData, ranksData, postsData]) => {
+            const formattedUnits: IFormattedUnit[] = unitsData.map((unit: IUnitCompressed) => {
+                const rObj = ranksData.find(r => r.id?.toString() === unit.rankId?.toString());
+                const uPosts = (unit.postsIds || [])
+                    .map(pId => postsData.find(p => p.id?.toString() === pId?.toString())?.name)
+                    .filter((name): name is string => Boolean(name));
+
+                return {
+                    discordId: String(unit.discordId),
+                    nickname: unit.nickname || "Без ника",
+                    rank: rObj ? rObj.name : "Без звания",
+                    posts: uPosts.length > 0 ? uPosts.join(", ") : "Нет должности"
+                };
+            });
+            setUnits(formattedUnits);
+        });
+    }, []);
     const toggleUnitSelection = (discordId: string) => {
         const newSelected = new Set(selectedUnits);
         if (newSelected.has(discordId)) {
