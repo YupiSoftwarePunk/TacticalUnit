@@ -6,28 +6,14 @@ import { MainHeader } from "@/components/Header/MainHeader";
 import { FileText, Download, ArrowLeft, Calendar } from "lucide-react";
 import InfoContainer from "@/components/ToolTip/InfoContainer";
 import { LoadingScreen, ErrorScreen } from "@/components/StatusScreens/Screens";
-
-interface IDocumentEvent {
-    title: string;
-    color?: string;
-    history: IContainedInfo[];
-}
-
-interface DocumentDetail {
-    id: string;
-    name: string;
-    fileName: string;
-    fileSize?: string;
-    fileUrl: string;
-    events: IDocumentEvent[];
-}
+import { DocService } from "@/shared/api/services/docsService";
 
 export default function DocumentPage() {
     const params = useParams();
     const router = useRouter();
     const id = params?.id as string;
 
-    const [document, setDocument] = useState<DocumentDetail | null>(null);
+    const [document, setDocument] = useState<IDoc | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -38,58 +24,12 @@ export default function DocumentPage() {
             setIsLoading(true);
             setError(null);
             try {
-                const mockData: DocumentDetail = {
-                    id: id,
-                    name: "Устав личного состава и правила несения внутренней службы",
-                    fileName: "document.pdf",
-                    fileSize: "2.4 MB",
-                    fileUrl: `/api/documents/download/${id}`,
-                    events: [
-                        {
-                            title: "Жизненный цикл документа",
-                            color: "#F5B902",
-                            history: [
-                                {
-                                    id: "EVT-90812",
-                                    content: "Документ утвержден Генеральным Штабом",
-                                    color: "#10B981",
-                                    dates: "15.07.2026"
-                                },
-                                {
-                                    id: "EVT-89401",
-                                    content: "Прохождение ревью юридическим отделом",
-                                    color: "#F5B902",
-                                    dates: "12.07.2026"
-                                },
-                                {
-                                    id: "EVT-88120",
-                                    content: "Черновик создан в системе",
-                                    color: "#9F7801", 
-                                    dates: "10.07.2026"
-                                }
-                            ]
-                        },
-                        {
-                            title: "Скачивания и доступы",
-                            color: "#9F7801",
-                            history: [
-                                {
-                                    id: "USR-041",
-                                    content: "Пользователь Denis скачал последнюю версию",
-                                    color: "#3B82F6",
-                                    dates: "17.07.2026"
-                                },
-                                {
-                                    id: "SYS-001",
-                                    content: "Автоматическая архивация старой версии v1",
-                                    color: "#6B7280",
-                                    dates: "10.07.2026"
-                                }
-                            ]
-                        }
-                    ]
-                };
-                setDocument(mockData);
+                
+                DocService.getById(id).then(recDoc => {
+                    setDocument(recDoc);
+                })
+                
+                // setDocument(mockData);
             } 
             catch (err) {
                 console.error("Ошибка при получении документа:", err);
@@ -106,8 +46,8 @@ export default function DocumentPage() {
     const handleDownload = () => {
         if (!document) return;
         const link = window.document.createElement("a");
-        link.href = document.fileUrl;
-        link.setAttribute("download", document.fileName);
+        // link.href = document.fileUrl;
+        // link.setAttribute("download", document.fileName);
         window.document.body.appendChild(link);
         link.click();
         window.document.body.removeChild(link);
@@ -136,7 +76,7 @@ export default function DocumentPage() {
                                 Название документа
                             </span>
                             <h1 className="text-lg md:text-xl font-text-bold text-text-primary leading-tight break-words">
-                                {document.name}
+                                {document.title}
                             </h1>
                             <span className="w-12 h-0.5 bg-accent mt-2"></span>
                         </div>
@@ -146,13 +86,13 @@ export default function DocumentPage() {
                                 <FileText className="w-10 h-10 text-accent" />
                             </div>
                             <p className="text-xs font-text-bold text-text-primary break-all px-2">
-                                {document.fileName}
+                                {/* {document.fileName} */} путь файла?
                             </p>
-                            {document.fileSize && (
+                            {/* {document.fileSize && (
                                 <p className="text-[11px] text-text-secondary/60 mt-1 font-text italic">
                                     Размер: {document.fileSize}
                                 </p>
-                            )}
+                            )} */}
                         </div>
 
                         <button
