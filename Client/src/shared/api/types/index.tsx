@@ -67,11 +67,12 @@ interface IDocType{
 }
 interface IDoc{
     id? : string,
-    name : string,
-    filePath : string,
-    docType? : IDocType,
-    author : IUnit,
-    units : IUnit[]
+    title : string,
+    uploadTime : Date,
+    isHidden : boolean,
+    authorId : string, 
+    events : any[],
+    state : any[]
 }
 
 interface IUploadDoc {
