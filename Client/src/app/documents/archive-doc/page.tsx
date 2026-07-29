@@ -5,29 +5,40 @@ import Link from "next/link";
 import { MainHeader } from "@/components/Header/MainHeader";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import { Search, Calendar, User } from "lucide-react";
+import { DocService } from "@/shared/api/services/docsService"; 
 
 interface IDocumentData {
     id: string;
-    name: string;
-    authorNickname: string;
-    authorDiscordId: string;
-    uploadDate: string;
+    title?: string;
+    name?: string;         
+    authorNickname?: string;
+    authorDiscordId?: string;
+    createdAt?: string;
+    uploadDate?: string;
 }
 
-const mockDocs: IDocumentData[] = [
-    { id: "doc-1", name: "Инструкция по использованию кружки", authorNickname: "Администратор (Я)", authorDiscordId: "1257757034821193865", uploadDate: "2026-07-01" },
-    { id: "doc-2", name: "Регламент обслуживания общевойсковой столовой", authorNickname: "Vanguard_6", authorDiscordId: "0987654321", uploadDate: "2026-06-15" },
-    { id: "doc-3", name: "План выпекания булочек с корицей на ближайшие сборы", authorNickname: "Alex_Chem", authorDiscordId: "1122334455", uploadDate: "2026-07-10" },
-];
-
 export default function DocumentArchivePage() {
-    const [documents] = useState<IDocumentData[]>(mockDocs);
-    const [isLoading] = useState<boolean>(false);
+    const [documents, setDocuments] = useState<IDocumentData[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [authorFilter, setAuthorFilter] = useState<string>("");
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
+
+    useEffect(() => {
+        setIsLoading(true);
+        DocService.getAll()
+            .then((data) => {
+                setDocuments(data as unknown as IDocumentData[]);
+            })
+            .catch((err) => {
+                console.error("Ошибка при загрузке документов:", err);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, []);
 
     const columnsLayout: ColumnConfig[] = useMemo(() => [
         {
@@ -35,35 +46,49 @@ export default function DocumentArchivePage() {
             label: "Название документа",
             header: "Название документа",
             accessor: "name",
-            render: (value: string, row: IDocumentData) => (
-                <Link 
-                    href={`/documents/${row.id}`}
-                    className="text-text-primary font-text-bold hover:text-accent border-b border-transparent hover:border-accent transition-colors block text-wrap py-1">
-                    {value}
-                </Link>
-            )
+            render: (value: string, row: IDocumentData) => {
+                const docTitle = value || row.title || "Без названия";
+                return (
+                    /* ССЫЛКА НА ДОКУМЕНТ */
+                    <Link 
+                        href={`/documents/docs/${row.id}`}
+                        className="text-text-primary font-text-bold hover:text-accent border-b border-transparent hover:border-accent transition-colors block text-wrap py-1"
+                    >
+                        {docTitle}
+                    </Link>
+                );
+            }
         },
         {
             key: "authorNickname",
             label: "Никнейм автора",
             header: "Никнейм автора",
             accessor: "authorNickname",
-            render: (value: string, row: IDocumentData) => (
-                <Link 
-                    href={`/profile/${row.authorDiscordId}`}
-                    className="text-accent font-text-bold hover:text-text-primary-accent transition-colors">
-                    {value}
-                </Link>
-            )
+            render: (value: string, row: IDocumentData) => {
+                const authorName = value || row.authorNickname || "Неизвестен";
+                const authorId = row.authorDiscordId || row.id; 
+
+                return (
+                    /* ССЫЛКА НА ПРОФИЛЬ БОЙЦА*/
+                    <Link 
+                        href={`/profile/${authorId}`}
+                        className="text-accent font-text-bold hover:text-text-primary-accent transition-colors"
+                    >
+                        {authorName}
+                    </Link>
+                );
+            }
         },
         {
             key: "uploadDate",
             label: "Дата загрузки",
             header: "Дата загрузки",
             accessor: "uploadDate",
-            render: (value: string) => {
-                if (!value) return <span className="font-text text-text-secondary/40">[ Не указана ]</span>;
-                const date = new Date(value);
+            render: (value: string, row: IDocumentData) => {
+                const dateRaw = value || row.createdAt || row.uploadDate;
+                if (!dateRaw) return <span className="font-text text-text-secondary/40">[ Не указана ]</span>;
+                
+                const date = new Date(dateRaw);
                 return (
                     <span className="font-text text-text-secondary">
                         {date.toLocaleDateString("ru-RU", {
@@ -79,10 +104,16 @@ export default function DocumentArchivePage() {
 
     const filteredDocuments = useMemo(() => {
         return documents.filter((doc) => {
-            const matchesSearch = doc.name.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesAuthor = doc.authorNickname.toLowerCase().includes(authorFilter.toLowerCase());
+            const docName = (doc.name || doc.title || "").toLowerCase();
+            const author = (doc.authorNickname || "").toLowerCase();
+            const rawDate = doc.uploadDate || doc.createdAt;
+
+            const matchesSearch = docName.includes(searchQuery.toLowerCase());
+            const matchesAuthor = author.includes(authorFilter.toLowerCase());
             
-            const docDate = new Date(doc.uploadDate).getTime();
+            if (!rawDate) return matchesSearch && matchesAuthor;
+
+            const docDate = new Date(rawDate).getTime();
             const matchesStartDate = startDate ? docDate >= new Date(startDate).getTime() : true;
             const matchesEndDate = endDate ? docDate <= new Date(endDate).getTime() : true;
 
