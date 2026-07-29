@@ -1,15 +1,90 @@
 'use client';
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { MainHeader } from "@/components/Header/MainHeader";
-import { Upload, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Upload, FileText, CheckCircle2, AlertTriangle, Check } from "lucide-react";
 import { DocService } from "@/shared/api/services/docsService";
+import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
+import { UnitService } from "@/shared/api/services/unitService";
+import { RankService } from "@/shared/api/services/RankService";
+import { PostService } from "@/shared/api/services/postService";
 
 export default function UploadDocumentPage() {
     const [documentName, setDocumentName] = useState<string>("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+    const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
+
+    interface IFormattedUnit {
+    discordId: string;
+    nickname: string;
+    rank: string;
+    posts: string;
+    }
+    const [units, setUnits] = useState<IFormattedUnit[]>([]);
+
+    useEffect(() => {
+            Promise.all([
+                UnitService.getAll(),
+                RankService.getAll(),
+                PostService.getAll()
+            ]).then(([unitsData, ranksData, postsData]) => {
+                const formattedUnits: IFormattedUnit[] = unitsData.map((unit: IUnitCompressed) => {
+                    const rObj = ranksData.find(r => r.id?.toString() === unit.rankId?.toString());
+                    const uPosts = (unit.postsIds || [])
+                        .map(pId => postsData.find(p => p.id?.toString() === pId?.toString())?.name)
+                        .filter((name): name is string => Boolean(name));
+    
+                    return {
+                        discordId: String(unit.discordId),
+                        nickname: unit.nickname || "Без ника",
+                        rank: rObj ? rObj.name : "Без звания",
+                        posts: uPosts.length > 0 ? uPosts.join(", ") : "Нет должности"
+                    };
+                });
+                setUnits(formattedUnits);
+            });
+        }, []);
+
+
+    const tableColumns: ColumnConfig[] = [
+        {
+            key: "selection",
+            label: "Выбор",
+            sortable: false,
+            filterable: false,
+            className: "w-12",
+            render: (_, item: IFormattedUnit) => (
+                <button
+                    onClick={() => toggleUnitSelection(item.discordId)}
+                    className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
+                >
+                    {selectedUnits.has(item.discordId) && (
+                        <Check className="w-4 h-4" />
+                    )}
+                </button>
+            )
+        },
+        { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
+        { 
+            key: "rank", 
+            label: "Текущее звание", 
+            sortable: true, 
+            filterable: true
+        },
+        { 
+            key: "posts", 
+            label: "Должность", 
+            sortable: false, 
+            filterable: true
+        },
+    ];
+    const handleExport = (data: IFormattedUnit[]) => {
+        console.log("Экспорт данных:", data);
+    };
+    
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -51,22 +126,18 @@ export default function UploadDocumentPage() {
         setStatus(null);
         
         const formData = new FormData();
-        let ids : string[] = [];
-        formData.append("file", await selectedFile.text());
-        formData.append("title", documentName.trim());
-        formData.append("unitIds", JSON.stringify(ids));
+        formData.append("File", selectedFile);
+        formData.append("Title", documentName.trim());
+        selectedUnits.forEach(element => {
+            formData.append("UnitIds", element);
+        });
+        
         // console.warn(formData)
         // console.warn(documentName)
         // console.warn(await selectedFile.text())
-
-        let doc = {
-            file : await selectedFile.text(),
-            title : documentName.trim(),
-            unitIds : [1, 2]
-        }
         try {
             // обращение к ендпоинту
-            DocService.createNew({body: JSON.stringify(doc)}).then(()=>{
+            DocService.createNew({body: formData}).then(()=>{
 
                 setStatus({ type: 'success', message: 'Документ успешно загружен в базу данных' });
             }).catch(
@@ -100,7 +171,9 @@ export default function UploadDocumentPage() {
                 </div>
 
                 <form onSubmit={handleSaveDocument} className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
-                    <div className="lg:col-span-1 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-5 transition-colors duration-300 h-full justify-between">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8  col-span-3">
+
+                    <div className="col-span-3 lg:col-span-1 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-5 transition-colors duration-300 h-full justify-between">
                         <div className="flex flex-col gap-5">
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-xs font-text-bold uppercase tracking-widest text-text-secondary">
@@ -146,7 +219,7 @@ export default function UploadDocumentPage() {
                         </div>
                     </div>
 
-                    <div className="lg:col-span-2 h-full">
+                    <div className="col-span-3 lg:col-span-2 h-full">
                         <div
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
@@ -199,10 +272,45 @@ export default function UploadDocumentPage() {
                                     </div>
                                 </div>
                             )}
+                            
                         </div>
+                        
                     </div>
+                    </div>
+
+                    <div className="mt-16 flex flex-col col-span-3">
+                                <div className="flex justify-between items-end mb-6">
+                                    <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
+                                        Выберите бойцов для присвоения документа
+                                    </h2>
+                                    <span className="text-sm font-text text-text-secondary">
+                                        Выбрано: {selectedUnits.size}
+                                    </span>
+                                </div>
+
+                                <div className="border border-black/10 dark:border-white/5 overflow-hidden mb-6">
+                                    <UniversalTable 
+                                        data={units}
+                                        columns={tableColumns}
+                                        onExport={handleExport}
+                                        defaultSort={{ key: "rank", direction: "desc" }}
+                                    />
+                                </div>
+
+                                {/* <AssignFooter 
+                                    onCancel={handleCancel}
+                                    onAssign={handleAssign}
+                                    selectedCount={selectedUnits.size}
+                                    isSaving={isSaving}
+                                    buttonText="Присвоить"
+                                /> */}
+                        </div>
                 </form>
             </main>
         </div>
     );
+}
+
+function toggleUnitSelection(discordId: string): void {
+    throw new Error("Function not implemented.");
 }
