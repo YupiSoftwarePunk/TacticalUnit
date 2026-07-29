@@ -59,7 +59,7 @@ export default function UploadDocumentPage() {
             render: (_, item: IFormattedUnit) => (
                 <button
                     onClick={() => toggleUnitSelection(item.discordId)}
-                    className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
+                    className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-text-primary-accent transition-colors"
                 >
                     {selectedUnits.has(item.discordId) && (
                         <Check className="w-4 h-4" />
@@ -83,6 +83,16 @@ export default function UploadDocumentPage() {
     ];
     const handleExport = (data: IFormattedUnit[]) => {
         console.log("Экспорт данных:", data);
+    };
+    const toggleUnitSelection = (discordId: string) => {
+        const newSelected = new Set(selectedUnits);
+        if (newSelected.has(discordId)) {
+            newSelected.delete(discordId);
+        } 
+        else {
+            newSelected.add(discordId);
+        }
+        setSelectedUnits(newSelected);
     };
     
     
@@ -309,8 +319,4 @@ export default function UploadDocumentPage() {
             </main>
         </div>
     );
-}
-
-function toggleUnitSelection(discordId: string): void {
-    throw new Error("Function not implemented.");
 }
