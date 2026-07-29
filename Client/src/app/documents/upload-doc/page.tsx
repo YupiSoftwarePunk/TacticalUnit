@@ -59,7 +59,7 @@ export default function UploadDocumentPage() {
             render: (_, item: IFormattedUnit) => (
                 <button
                     onClick={() => toggleUnitSelection(item.discordId)}
-                    className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-black transition-colors"
+                    className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-text-primary-accent transition-colors"
                 >
                     {selectedUnits.has(item.discordId) && (
                         <Check className="w-4 h-4" />
