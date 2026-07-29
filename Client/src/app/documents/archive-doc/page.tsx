@@ -7,18 +7,17 @@ import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalT
 import { Search, Calendar, User } from "lucide-react";
 import { DocService } from "@/shared/api/services/docsService"; 
 
-interface IDocumentData {
-    id: string;
-    title?: string;
-    name?: string;         
+export interface IDoc {
+    id: number;
+    title: string;
+    uploadedTime: string;
+    isHidden: boolean;
+    authorId: string | number;
     authorNickname?: string;
-    authorDiscordId?: string;
-    createdAt?: string;
-    uploadDate?: string;
 }
 
 export default function DocumentArchivePage() {
-    const [documents, setDocuments] = useState<IDocumentData[]>([]);
+    const [documents, setDocuments] = useState<IDoc[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [searchQuery, setSearchQuery] = useState<string>("");
@@ -30,7 +29,8 @@ export default function DocumentArchivePage() {
         setIsLoading(true);
         DocService.getAll()
             .then((data) => {
-                setDocuments(data as unknown as IDocumentData[]);
+                const visibleDocs = (data as unknown as IDoc[]).filter((doc) => !doc.isHidden);
+                setDocuments(visibleDocs);
             })
             .catch((err) => {
                 console.error("Ошибка при загрузке документов:", err);
@@ -42,53 +42,48 @@ export default function DocumentArchivePage() {
 
     const columnsLayout: ColumnConfig[] = useMemo(() => [
         {
-            key: "name",
+            key: "title",
             label: "Название документа",
             header: "Название документа",
-            accessor: "name",
-            render: (value: string, row: IDocumentData) => {
-                const docTitle = value || row.title || "Без названия";
+            accessor: "title",
+            render: (value: string, row: IDoc) => {
                 return (
-                    /* ССЫЛКА НА ДОКУМЕНТ */
                     <Link 
                         href={`/documents/docs/${row.id}`}
                         className="text-text-primary font-text-bold hover:text-accent border-b border-transparent hover:border-accent transition-colors block text-wrap py-1"
                     >
-                        {docTitle}
+                        {row.title || "Без названия"}
                     </Link>
                 );
             }
         },
         {
-            key: "authorNickname",
+            key: "authorId",
             label: "Никнейм автора",
             header: "Никнейм автора",
-            accessor: "authorNickname",
-            render: (value: string, row: IDocumentData) => {
-                const authorName = value || row.authorNickname || "Неизвестен";
-                const authorId = row.authorDiscordId || row.id; 
+            accessor: "authorId",
+            render: (_: unknown, row: IDoc) => {
+                const displayName = row.authorNickname;
 
                 return (
-                    /* ССЫЛКА НА ПРОФИЛЬ БОЙЦА*/
                     <Link 
-                        href={`/profile/${authorId}`}
+                        href={`/profile/${row.authorId}`}
                         className="text-accent font-text-bold hover:text-text-primary-accent transition-colors"
                     >
-                        {authorName}
+                        {displayName}
                     </Link>
                 );
             }
         },
         {
-            key: "uploadDate",
+            key: "uploadedTime",
             label: "Дата загрузки",
             header: "Дата загрузки",
-            accessor: "uploadDate",
-            render: (value: string, row: IDocumentData) => {
-                const dateRaw = value || row.createdAt || row.uploadDate;
-                if (!dateRaw) return <span className="font-text text-text-secondary/40">[ Не указана ]</span>;
+            accessor: "uploadedTime",
+            render: (value: string) => {
+                if (!value) return <span className="font-text text-text-secondary/40">[ Не указана ]</span>;
                 
-                const date = new Date(dateRaw);
+                const date = new Date(value);
                 return (
                     <span className="font-text text-text-secondary">
                         {date.toLocaleDateString("ru-RU", {
@@ -104,18 +99,18 @@ export default function DocumentArchivePage() {
 
     const filteredDocuments = useMemo(() => {
         return documents.filter((doc) => {
-            const docName = (doc.name || doc.title || "").toLowerCase();
-            const author = (doc.authorNickname || "").toLowerCase();
-            const rawDate = doc.uploadDate || doc.createdAt;
+            const matchesSearch = doc.title?.toLowerCase().includes(searchQuery.toLowerCase());
 
-            const matchesSearch = docName.includes(searchQuery.toLowerCase());
-            const matchesAuthor = author.includes(authorFilter.toLowerCase());
+            const authorStr = (doc.authorNickname || String(doc.authorId)).toLowerCase();
+            const matchesAuthor = authorStr.includes(authorFilter.toLowerCase());
             
-            if (!rawDate) return matchesSearch && matchesAuthor;
+            if (!doc.uploadedTime) return matchesSearch && matchesAuthor;
 
-            const docDate = new Date(rawDate).getTime();
+            const docDate = new Date(doc.uploadedTime).getTime();
             const matchesStartDate = startDate ? docDate >= new Date(startDate).getTime() : true;
-            const matchesEndDate = endDate ? docDate <= new Date(endDate).getTime() : true;
+
+            const endDateTime = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
+            const matchesEndDate = endDateTime ? docDate <= endDateTime : true;
 
             return matchesSearch && matchesAuthor && matchesStartDate && matchesEndDate;
         });
@@ -155,7 +150,7 @@ export default function DocumentArchivePage() {
                             type="text"
                             value={authorFilter}
                             onChange={(e) => setAuthorFilter(e.target.value)}
-                            placeholder="Никнейм бойца..."
+                            placeholder="Никнейм или ID бойца..."
                             className="w-full bg-bg-primary border border-border-secondary/30 p-2 text-sm text-text-primary focus:border-accent outline-none rounded-none h-9.5 transition-colors font-text placeholder:text-text-secondary/40"
                         />
                     </div>
