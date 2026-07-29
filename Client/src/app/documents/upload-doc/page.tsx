@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { Upload, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
+import { DocService } from "@/shared/api/services/docsService";
 
 export default function UploadDocumentPage() {
     const [documentName, setDocumentName] = useState<string>("");
@@ -48,14 +49,31 @@ export default function UploadDocumentPage() {
 
         setIsLoading(true);
         setStatus(null);
-
+        
         const formData = new FormData();
-        formData.append("file", selectedFile);
-        formData.append("name", documentName.trim());
+        let ids : string[] = [];
+        formData.append("file", await selectedFile.text());
+        formData.append("title", documentName.trim());
+        formData.append("unitIds", JSON.stringify(ids));
+        // console.warn(formData)
+        // console.warn(documentName)
+        // console.warn(await selectedFile.text())
 
+        let doc = {
+            file : await selectedFile.text(),
+            title : documentName.trim(),
+            unitIds : [1, 2]
+        }
         try {
             // обращение к ендпоинту
-            setStatus({ type: 'success', message: 'Документ успешно загружен в базу данных' });
+            DocService.createNew({body: JSON.stringify(doc)}).then(()=>{
+
+                setStatus({ type: 'success', message: 'Документ успешно загружен в базу данных' });
+            }).catch(
+                ()=>{
+                    setStatus({ type: 'error', message: 'Произошла ошибка при загрузке документа' });
+                }
+            )
             setDocumentName("");
             setSelectedFile(null);
             if (fileInputRef.current) fileInputRef.current.value = "";
