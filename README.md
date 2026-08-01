@@ -15,7 +15,7 @@
 
 Мы используем современный и производительный стек для обеспечения быстрого UI и удобной типизации:
 
-  * **Framework:** [Next.js](https://nextjs.org/) (App Router) — для SSR и оптимизации.
+  * **Framework:** [Next.js](https://nextjs.org/) — для SSR и оптимизации.
   * **Language:** [TypeScript](https://www.typescriptlang.org/) — строгая типизация для минимизации ошибок.
   * **Styling:** [Tailwind CSS 4](https://tailwindcss.com/) — современный подход к верстке через утилитарные классы.
   * **Architecture:** [Feature-Sliced Design (FSD)](https://feature-sliced.design/) — для масштабируемости и чистоты кода.
@@ -37,7 +37,7 @@
     ```
 2.  **Установите зависимости:**
     ```bash
-    npm install
+    npm i
     ```
 3.  **Запустите сервер для разработки:**
     ```bash
