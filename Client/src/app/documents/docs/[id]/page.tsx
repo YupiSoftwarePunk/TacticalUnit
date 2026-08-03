@@ -7,6 +7,8 @@ import { FileText, Download, ArrowLeft, Calendar } from "lucide-react";
 import InfoContainer from "@/components/ToolTip/InfoContainer";
 import { LoadingScreen, ErrorScreen } from "@/components/StatusScreens/Screens";
 import { DocService } from "@/shared/api/services/docsService";
+import { getBaseMediaURL } from "@/shared/api/api";
+import path from "path";
 
 export default function DocumentPage() {
     const params = useParams();
@@ -48,9 +50,13 @@ export default function DocumentPage() {
 
     const handleDownload = () => {
         if (!document) return;
+
+
+        
+
         const link = window.document.createElement("a");
-        // link.href = document.fileUrl;
-        // link.setAttribute("download", document.fileName);
+        link.href = `${getBaseMediaURL()}/docs/${document.id}.doc`;
+        link.setAttribute("download", document.title);
         window.document.body.appendChild(link);
         link.click();
         window.document.body.removeChild(link);
