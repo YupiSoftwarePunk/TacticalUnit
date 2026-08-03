@@ -7,10 +7,25 @@ import { UnitService } from "@/shared/api/services/unitService";
 import { RankService } from "@/shared/api/services/RankService";
 import { PostService } from "@/shared/api/services/postService";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
+import Link from "next/link";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
-    { key: "nickname", label: "Никнейм", sortable: false, filterable: true, className: "text-accent font-bold" },
+    { 
+        key: "nickname", 
+        label: "Никнейм", 
+        sortable: false, 
+        filterable: true, 
+        className: "text-accent font-bold",
+        render: (value: string, item: IMemberRow) => (
+            <Link 
+                href={`/profile/${item.discordId}`}
+                className="hover:underline hover:text-accent-light transition-colors"
+            >
+                {value}
+            </Link>
+        )
+    },
     { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
     { key: "activity_week", label: "Активность за неделю", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
