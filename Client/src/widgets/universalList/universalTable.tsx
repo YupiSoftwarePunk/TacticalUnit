@@ -67,34 +67,56 @@ const UniversalTable = <T extends Record<string, any>>({
         });
     }, [sortedData, activeFilters]);
 
-    const requestSort = (key: string) => {
-        let direction: "asc" | "desc" = "desc";
-        if (sortConfig.key === key && sortConfig.direction === "desc") {
-            direction = "asc";
-        }
-        setSortConfig({ key, direction });
+    const handleSortKeyChange = (key: string) => {
+        setSortConfig(prev => ({ ...prev, key }));
     };
+
+    const handleSortDirectionToggle = (isAscending: boolean) => {
+        setSortConfig(prev => ({
+            ...prev,
+            direction: isAscending ? "asc" : "desc"
+        }));
+    };
+
+    const isAscending = sortConfig.direction === "asc";
 
     return (
         <div className={`w-full bg-bg-primary text-text-primary font-text ${className}`}>
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-end gap-4 mb-4 border-b border-bg-secondary pb-4">
-                <div className="flex flex-col xs:flex-row justify-between sm:justify-start items-stretch xs:items-center gap-4 sm:gap-6 w-full sm:w-auto">
+                <div className="flex flex-col xs:flex-row flex-wrap justify-between sm:justify-start items-stretch xs:items-center gap-4 sm:gap-6 w-full sm:w-auto">
                     <button 
                         onClick={() => setIsFilterOpen(!isFilterOpen)}
                         className="text-text-secondary hover:text-accent border-b border-dotted border-text-secondary transition-all uppercase text-sm tracking-widest text-center xs:text-left py-1">
                         Фильтры
                     </button>
+                    
                     <div className="flex gap-2 items-center justify-between xs:justify-start min-w-0 border border-bg-secondary/40 rounded px-2 py-1 xs:border-none xs:p-0">
                         <span className="text-text-secondary text-xs sm:text-sm uppercase tracking-widest shrink-0">Сортировка:</span>
                         <select 
                             value={sortConfig.key}
-                            onChange={(e) => requestSort(e.target.value)}
+                            onChange={(e) => handleSortKeyChange(e.target.value)}
                             className="bg-transparent border-none text-text-primary focus:bg-bg-accent focus:ring-0 cursor-pointer text-xs sm:text-sm flex-1 min-w-0 truncate w-full">
                             {columns.filter(c => c.sortable).map(col => (
                                 <option key={col.key} value={col.key} className="bg-bg-secondary focus:bg-bg-accent">{col.label}</option>
                             ))}
                         </select>
                     </div>
+
+                    <label className="flex items-center gap-3 cursor-pointer group shrink-0">
+                        <div className="relative flex-shrink-0">
+                            <input 
+                                type="checkbox" 
+                                className="sr-only"
+                                checked={isAscending}
+                                onChange={(e) => handleSortDirectionToggle(e.target.checked)}
+                            />
+                            <div className={`w-10 h-6 border-2 border-text-primary transition-colors ${isAscending ? 'bg-accent border-accent' : 'bg-transparent'}`}></div>
+                            <div className={`absolute top-1 w-3 h-3 bg-text-primary transition-transform duration-300 ${isAscending ? 'translate-x-5 bg-black' : 'translate-x-1'}`}></div>
+                        </div>
+                        <span className="text-[10px] md:text-xs font-text uppercase tracking-widest text-text-primary group-hover:text-accent transition-colors selection:bg-transparent">
+                            По увеличению
+                        </span>
+                    </label>
                 </div>
                 
                 <div className="w-full sm:w-auto">
