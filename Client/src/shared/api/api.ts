@@ -1,4 +1,9 @@
 const API_BASE_URL = "http://localhost:5000/api/v1"; 
+const API_BASE_URL_FOR_MEDIA = "http://localhost:5000"; 
+
+export function getBaseMediaURL(){
+    return API_BASE_URL_FOR_MEDIA;
+}
 
 export const apiClient = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
     const method = (options.method || "GET").toUpperCase();

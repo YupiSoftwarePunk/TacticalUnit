@@ -68,11 +68,11 @@ interface IDocType{
 interface IDoc{
     id? : string,
     title : string,
-    uploadTime : Date,
     isHidden : boolean,
     authorId : string, 
     events : any[],
-    state : any[]
+    state : any[],
+    uploadedTime : string
 }
 
 interface IUploadDoc {

@@ -7,6 +7,8 @@ import { FileText, Download, ArrowLeft, Calendar } from "lucide-react";
 import InfoContainer from "@/components/ToolTip/InfoContainer";
 import { LoadingScreen, ErrorScreen } from "@/components/StatusScreens/Screens";
 import { DocService } from "@/shared/api/services/docsService";
+import { getBaseMediaURL } from "@/shared/api/api";
+import path from "path";
 
 export default function DocumentPage() {
     const params = useParams();
@@ -26,7 +28,10 @@ export default function DocumentPage() {
             try {
                 
                 DocService.getById(id).then(recDoc => {
+                    let date = recDoc.uploadedTime.split("T")[0].split("-")
+                    recDoc.uploadedTime = `${date.reverse()}`.replaceAll(",", ".");
                     setDocument(recDoc);
+                    // console.warn(recDoc.uploadedTime)
                 })
                 
                 // setDocument(mockData);
@@ -45,9 +50,13 @@ export default function DocumentPage() {
 
     const handleDownload = () => {
         if (!document) return;
+
+
+        
+
         const link = window.document.createElement("a");
-        // link.href = document.fileUrl;
-        // link.setAttribute("download", document.fileName);
+        link.href = `${getBaseMediaURL()}/docs/${document.id}.doc`;
+        link.setAttribute("download", document.title);
         window.document.body.appendChild(link);
         link.click();
         window.document.body.removeChild(link);
@@ -72,22 +81,23 @@ export default function DocumentPage() {
                     <div className="lg:col-span-1 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-6 transition-colors duration-300">
                         
                         <div className="flex flex-col gap-1.5">
-                            <span className="text-[10px] font-text-bold uppercase tracking-widest text-text-secondary/60">
-                                Название документа
+                            <span className="text-base md:text-lg font-text-bold text-text-primary uppercase tracking-wider">
+                                Документ
                             </span>
-                            <h1 className="text-lg md:text-xl font-text-bold text-text-primary leading-tight break-words">
-                                {document.title}
-                            </h1>
+                            
                             <span className="w-12 h-0.5 bg-accent mt-2"></span>
                         </div>
 
-                        <div className="w-full border-2 border-dashed border-border-secondary/30 bg-bg-primary/30 flex flex-col items-center justify-center p-6 text-center select-none">
+                        <div className="w-full gap-3 border-2 border-dashed border-border-secondary/30 bg-bg-primary/30 flex flex-col items-center justify-center p-6 text-center select-none">
                             <div className="p-4 bg-bg-secondary border border-border-secondary/20 shadow-sm mb-3">
                                 <FileText className="w-10 h-10 text-accent" />
+                                
                             </div>
-                            <p className="text-xs font-text-bold text-text-primary break-all px-2">
-                                {/* {document.fileName} */} путь файла?
-                            </p>
+                            <h1 className="text-lg md:text-xl font-text-bold text-text-primary leading-tight text-wrap break-all">
+                                {document.title}
+                            </h1>
+                            <p className="text-text-secondary">Дата загрузки: {document.uploadedTime}</p>
+                            
                             {/* {document.fileSize && (
                                 <p className="text-[11px] text-text-secondary/60 mt-1 font-text italic">
                                     Размер: {document.fileSize}
