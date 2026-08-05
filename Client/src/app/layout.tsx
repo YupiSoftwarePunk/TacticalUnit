@@ -44,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       ${headerFont.variable}
     `}>
       <head>
+        <title>POLK</title>
         <script
           dangerouslySetInnerHTML={{
             __html: `
