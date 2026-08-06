@@ -287,7 +287,7 @@ export default function LandingPage() {
       <section className="max-w-3xl mx-auto px-6 py-24 dark:border-white/5">
         <h2 className="text-xs font-text-bold uppercase tracking-[0.3em] text-text-primary-accent mb-6 text-[25px] font-black">О подразделении</h2>
         <p className="text-xl md:text-2xl font-text text-text-secondary font-light leading-relaxed">
-          Мы фокусируемся на глубокой симуляции боевых действий. Дисциплина — это не ограничение, а инструмент победы. В [РХБЗ] каждый боец знает свой сектор, свою задачу и своего товарища.
+          Мы фокусируемся на глубокой симуляции боевых действий. Дисциплина — это не ограничение, а инструмент победы. В POLK каждый боец знает свой сектор, свою задачу и своего товарища.
         </p>
       </section>
 
