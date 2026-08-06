@@ -34,24 +34,6 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
 ];
 
-export interface IUnitCompressed {
-    discordId: string;
-    nickname: string;
-    steamId?: string;
-    favoriteKit: IfavoriteKit;
-    backgroundPictureId?: number;
-    rankUpCounter?: string | number;
-    joined?: string;
-    rankId?: number;
-    postsIds?: number[];
-    assignedRewardsIds?: number[];
-    gender?: number;
-    activity_week?: number;
-    activity_month?: number;
-    activity_year?: number;
-    activity_total?: number;
-}
-
 interface IMemberRow {
     rank: string;
     nickname: string;

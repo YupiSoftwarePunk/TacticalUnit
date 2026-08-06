@@ -172,17 +172,21 @@ interface IUnit {
 // }
 
 interface IUnitCompressed {
-    discordId : string,
-    nickname : string,
-    steamId? : string,
-    favoriteKit : IfavoriteKit,
-    backgroundPictureId : number,
-    rankUpCounter : number,
-    joined : string,
-    rankId : number,
-    postsIds : number[],
-    assignedRewardsIds : number[],
-    gender?: number
+    discordId: string;
+    nickname: string;
+    steamId?: string;
+    favoriteKit: IfavoriteKit;
+    backgroundPictureId?: number;
+    rankUpCounter?: string | number;
+    joined?: string;
+    rankId?: number;
+    postsIds?: number[];
+    assignedRewardsIds?: number[];
+    gender?: number;
+    activity_week?: number;
+    activity_month?: number;
+    activity_year?: number;
+    activity_total?: number;
 }
 
 interface IfavoriteKit {
