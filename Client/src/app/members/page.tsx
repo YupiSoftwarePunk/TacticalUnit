@@ -23,7 +23,7 @@ export interface IUnitCompressed {
     discordId: string;
     nickname: string;
     steamId?: string;
-    favoriteKitId?: number;
+    favoriteKit: IfavoriteKit;
     backgroundPictureId?: number;
     rankUpCounter?: string | number;
     joined?: string;
@@ -110,13 +110,12 @@ export default function MembersPage() {
                         activity_month: element.activity_month ?? 0,
                         activity_year: element.activity_year ?? 0,
                         activity_total: element.activity_total ?? 0,
-                        kit: element.favoriteKitId ? `Кит #${element.favoriteKitId}` : "Не выбран",
+                        kit: element.favoriteKit ? `Кит ${element.favoriteKit.name}` : "Не выбран",
                         steamId: element.steamId ? String(element.steamId) : "—",
                         discordId: element.discordId ? String(element.discordId) : "—",
                         joinDate: formattedJoinDate
                     };
                 });
-
                 setMembers(preparedMemberArray);
                 setLoaded(true);
             } 
@@ -125,7 +124,6 @@ export default function MembersPage() {
                 setError(err as string);
             }
         };
-
         fetchMembers();
     }, []);
 

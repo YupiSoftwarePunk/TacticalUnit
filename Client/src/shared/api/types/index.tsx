@@ -175,14 +175,19 @@ interface IUnitCompressed {
     discordId : string,
     nickname : string,
     steamId? : string,
-    favoriteKitId : number;
-    backgroundPictureId : number;
+    favoriteKit : IfavoriteKit,
+    backgroundPictureId : number,
     rankUpCounter : number,
     joined : string,
     rankId : number,
     postsIds : number[],
     assignedRewardsIds : number[],
     gender?: number
+}
+
+interface IfavoriteKit {
+    id: number,
+    name: string
 }
 
 
