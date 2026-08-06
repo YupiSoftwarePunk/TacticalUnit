@@ -110,7 +110,7 @@ export default function MembersPage() {
                         activity_month: element.activity_month ?? 0,
                         activity_year: element.activity_year ?? 0,
                         activity_total: element.activity_total ?? 0,
-                        kit: element.favoriteKit ? `Кит ${element.favoriteKit.name}` : "Не выбран",
+                        kit: element.favoriteKit ? `${element.favoriteKit.name}` : "Не выбран",
                         steamId: element.steamId ? String(element.steamId) : "—",
                         discordId: element.discordId ? String(element.discordId) : "—",
                         joinDate: formattedJoinDate
