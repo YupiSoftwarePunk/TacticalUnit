@@ -345,34 +345,34 @@ interface IAccordingUnitsTable{
 }
 
 export const AccordingUnitsTable = ({TableName, rightsToGrant, UrlToGrantPage, GIVEN_DATA, GIVEN_COLUMNS_LAYOUT} : IAccordingUnitsTable) =>{
-    return(<div className="mt-16">
-                        <div className="flex justify-between items-end mb-6">
-                        <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
-                            {TableName? TableName: "[ Название не дано ]"}
-                        </h2>
-                        
-                        {rightsToGrant && (
-                            <Link 
-                            href={`${UrlToGrantPage}`}
-                            className="text-accent font-text uppercase text-sm border-b-2 border-accent hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1"
-                            >
-                            Назначить
-                            </Link>
-                        )}
-                        </div>
+    return(
+        <div className="mt-16">
+            <div className="flex justify-between items-end mb-6">
+            <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
+                {TableName? TableName: "[ Название не дано ]"}
+            </h2>
+            
+            {rightsToGrant && (
+                <Link 
+                href={`${UrlToGrantPage}`}
+                className="text-accent font-text uppercase text-sm border-b-2 border-accent hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1">
+                Назначить
+                </Link>
+            )}
+            </div>
 
-                        <div className="border border-black/10 dark:border-white/5 overflow-hidden">
-                        {!GIVEN_DATA && "[ Не даны данные для таблицы ] "}
-                        {!GIVEN_COLUMNS_LAYOUT && "[ Не дана разметка таблицы ]"}
-                        {GIVEN_DATA && GIVEN_COLUMNS_LAYOUT &&
-                        <UniversalTable 
-                            data={GIVEN_DATA} 
-                            columns={GIVEN_COLUMNS_LAYOUT} 
-                            onExport={(data) => console.log("Exporting:", data)}
-                        />
-                        }
-                        </div>
-                    </div>)
+            <div className="border border-black/10 dark:border-white/5 overflow-hidden">
+                {!GIVEN_DATA && "[ Не даны данные для таблицы ] "}
+                {!GIVEN_COLUMNS_LAYOUT && "[ Не дана разметка таблицы ]"}
+                {GIVEN_DATA && GIVEN_COLUMNS_LAYOUT &&
+                <UniversalTable 
+                    data={GIVEN_DATA} 
+                    columns={GIVEN_COLUMNS_LAYOUT} 
+                    onExport={(data) => console.log("Exporting:", data)}
+                />
+                }
+            </div>
+        </div>)
 }
 
 

@@ -35,7 +35,7 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
 ];
 
-interface IMemberRow {
+export interface IMemberRow {
     rank: string;
     nickname: string;
     top_role: string;
