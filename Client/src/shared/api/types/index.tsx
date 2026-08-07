@@ -45,19 +45,19 @@ interface IRank{
 }
 
 interface IPost{
-    id? : string,
+    id? : string | number,
     description : string,
-    subdivisionId? : string,
+    subdivisionId? : string | number,
     appendSubdivisionName : boolean,
-    headId? : string,
-    head? : IPost,
-    maxRankId : string,
-    units? : IUnit[],
+    headId? : string | number,
+    maxRankId : string | number,
     color : string,
     name : string,
-    givedPermissions : IGivedPermission[],
-    discordRoleId? : string
+    fullName: string;
+    index: number;
+    permissionsId : IPermission[],
 }
+
 interface IDocType{
     id? : string,
     name : string,
@@ -149,28 +149,6 @@ interface IUnit {
     unitStatuses : IUnitState[]
 }
 
-// вот такой он на беке
-// interface IUnit {
-//     discordId : string,
-//     nickname : string,
-//     steamId? : string,
-//     favoriteKitId : number;
-//     backgroundPictureId : number;
-//     rankUpCounter : number,
-//     joined : Date,
-//     color : string,
-//     rank : IRank,
-//     rankId : number,
-//     ownDocs : IDoc[],
-//     assignedDocs : IDoc[],
-//     posts : IPost[],
-//     postsIds : number[],
-//     assignedRewardsIds : number[],
-//     activities : IActivity[],
-//     unitStatuses : IUnitState[],
-//     gender?: number
-// }
-
 interface IUnitCompressed {
     discordId: string;
     nickname: string;
@@ -183,10 +161,12 @@ interface IUnitCompressed {
     postsIds?: number[];
     assignedRewardsIds?: number[];
     gender?: number;
-    activity_week?: number;
-    activity_month?: number;
-    activity_year?: number;
-    activity_total?: number;
+    rankIndex?: number;
+    postIndex?: number;
+    weekActivityCount?: number;
+    monthActivityCount?: number;
+    yearActivityCount?: number;
+    totalActivityCount?: number;
 }
 
 interface IfavoriteKit {
@@ -207,7 +187,7 @@ interface IPermission{
     permissionType : PermissionType,
     name : string,
     description : string,
-    givedPermissions : IGivedPermission[]
+    givedPermissions? : IGivedPermission[]
 }
 
 interface IDiscordLoginUrlResponse {
@@ -270,25 +250,6 @@ interface ISubdivision {
     color: string;
     name: string;
 }
-
-interface IPost {
-    id?: string;
-    description: string;
-    subdivisionId?: string;
-    subdivision?: ISubdivision;
-    appendSubdivisionName: boolean;
-    headId?: string;
-    units?: IUnit[];
-    color: string;
-    name: string;
-}
-
-// interface IRank {
-//     name: string;
-//     color: string;
-// }
-
-
 
 interface StructureNode {
     id: string;

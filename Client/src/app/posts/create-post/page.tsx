@@ -76,7 +76,7 @@ export default function CreatePostPage() {
             postList.forEach(post => {
                 preparedPosts.push({
                     name: post.name,
-                    id: post.id
+                    id: post.id?.toString()
                 })
             });
             setAvailableHeadPosts([...preparedPosts]);

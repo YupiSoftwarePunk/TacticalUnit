@@ -40,7 +40,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         units: [],
         color: "#b4b4b4",
         name: "Загрузка названия должности...",
-        givedPermissions: [],
+        permissionsId: [],
         discordRoleId: ""
     });
 
@@ -106,7 +106,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
 
             setPost({
                 ...postData,
-                givedPermissions: formattedPermissions
+                permissionsId: formattedPermissions
             });
             
             if (Array.isArray(membersData)) {
@@ -210,7 +210,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             tooltip="Подразделение к которому относится должность" 
                             textWhenEmpty="[ Подразделение не указана ]"
                         />
-                        <PermissionRollDownList editable={canEdit} givedPermissionList={post.givedPermissions}/>
+                        <PermissionRollDownList editable={canEdit} givedPermissionList={post.permissionsId}/>
                     </BaseContainer>
                     <div className="flex opacity-50">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={post.discordRoleId || ""} />
