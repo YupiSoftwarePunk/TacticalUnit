@@ -10,8 +10,33 @@ import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+export interface IMemberRow {
+    rank: string;
+    rankIndex: number;
+    nickname: string;
+    top_role: string;
+    postIndex: number;
+    roles: string[];
+    activity_week: number;
+    activity_month: number;
+    activity_year: number;
+    activity_total: number;
+    kit: string;
+    steamId: string;
+    discordId: string;
+    joinDate: string;
+}
+
 const COLUMNS_CONFIG: ColumnConfig[] = [
-    { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
+    { 
+        key: "rankIndex", 
+        sortKey: "rankIndex",
+        label: "Звание", 
+        sortable: true, 
+        filterable: true, 
+        className: "text-text-secondary font-light",
+        render: (_: any, item: IMemberRow) => item.rank
+    },
     { 
         key: "nickname", 
         label: "Никнейм", 
@@ -27,28 +52,21 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
             </Link>
         )
     },
-    { key: "top_role", label: "Наивысшая должность", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
+    { 
+        key: "postIndex", 
+        sortKey: "postIndex",
+        label: "Наивысшая должность", 
+        sortable: true, 
+        filterable: false, 
+        className: "text-text-secondary text-sm",
+        render: (_: any, item: IMemberRow) => item.top_role
+    },
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
     { key: "activity_week", label: "Активность за неделю", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_month", label: "Активность за месяц", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_year", label: "Активность за год", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
     { key: "activity_total", label: "Активность за всё время", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
 ];
-
-export interface IMemberRow {
-    rank: string;
-    nickname: string;
-    top_role: string;
-    roles: string[];
-    activity_week: number;
-    activity_month: number;
-    activity_year: number;
-    activity_total: number;
-    kit: string;
-    steamId: string;
-    discordId: string;
-    joinDate: string;
-}
 
 export default function MembersPage() {
     const [members, setMembers] = useState<IMemberRow[]>([]);
@@ -103,8 +121,10 @@ export default function MembersPage() {
 
                     return {
                         rank: setRank ? setRank.name : "Без звания",
+                        rankIndex: element.rankIndex ?? 0,
                         nickname: element.nickname || "Без ника",
                         top_role: setPost ? setPost.name : "Без должности",
+                        postIndex: element.postIndex ?? setPost?.index ?? 0,
                         roles: memberRoles,
                         activity_week: element.weekActivityCount ?? 0,
                         activity_month: element.monthActivityCount ?? 0,
@@ -167,7 +187,7 @@ export default function MembersPage() {
                             data={members} 
                             columns={COLUMNS_CONFIG} 
                             onExport={handleExport}
-                            defaultSort={{ key: "rank", direction: "desc" }}
+                            defaultSort={{ key: "rankIndex", direction: "desc" }}
                             renderActions={(item: IMemberRow) => (
                                 <div className="flex flex-row md:flex-row gap-2 w-full justify-end">
                                     <button 
