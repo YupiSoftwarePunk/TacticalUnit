@@ -8,6 +8,7 @@ import { RankService } from "@/shared/api/services/RankService";
 import { PostService } from "@/shared/api/services/postService";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
     { key: "rank", label: "Звание", sortable: true, filterable: true, className: "text-text-secondary font-light" },
@@ -53,6 +54,8 @@ export default function MembersPage() {
     const [members, setMembers] = useState<IMemberRow[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>();
+
+    const router = useRouter();
 
     useEffect(() => {
         let ranks: IRank[] = [];
@@ -125,8 +128,15 @@ export default function MembersPage() {
     }, []);
 
     const handleExport = (dataToExport: IMemberRow[]) => {
-        console.log("Экспорт данных:", dataToExport);
-        alert("Модальное окно выбора полей для экспорта");
+        if (!dataToExport || dataToExport.length === 0) {
+            alert("Нет данных для экспорта");
+            return;
+        }
+
+        sessionStorage.setItem("export_table_data", JSON.stringify(dataToExport));
+        sessionStorage.setItem("export_table_columns", JSON.stringify(COLUMNS_CONFIG));
+
+        router.push("./export/page.tsx");
     };
 
     const copyToClipboard = (text: string) => {
