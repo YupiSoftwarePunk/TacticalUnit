@@ -1,19 +1,108 @@
-enum PermissionType{
-    ConfirmActivity = 1,
-    VacationAccess = 2,
-    GiveReprimandGratitude = 3,
-    ForceVacation = 4,
-    ChangeRanks = 5,
-    ChangePosts = 6,
-    AssignRewards = 7,
-    ManageStructure = 8,
-    ManageRewards = 9,
-    ManageDocTypes = 10,
-    Administrator = 11,
-    ModerateNicknames = 12,
-    SteamIdView = 13,
-    AutoReprimandImmune = 14
+enum PermissionType {
+    Administrator = 1,
+    ConstantBeggOf = 2,
+    RegisterNewUnits = 3,
+    DismissUnits = 4,
+    AssignRetirement = 5,
+    FixActivity = 6,
+    VacationAccess = 7,
+    AccessRetirement = 8,
+    AssignStatuses = 9,
+    ForceVacation = 10,
+    AssignRanks = 11,
+    AssignPosts = 12,
+    AssignRewards = 13,
+    ManageRanks = 14,
+    ManageStructure = 15,
+    ManageRewards = 16,
+    ModerateNicknames = 17,
+    SeeHiddenDocs = 18,
+    UploadDocs = 19
 }
+
+interface IPermissionDetails {
+    name: string;
+    description: string;
+}
+
+const PermissionTypeDetails: Record<PermissionType, IPermissionDetails> = {
+    [PermissionType.Administrator]: {
+        name: "Администратор",
+        description: "Все разрешения в одном и обход ограничений по работе с вышестоящими должностями"
+    },
+    [PermissionType.ConstantBeggOf]: {
+        name: "Освобождение от сборов",
+        description: "Боец не получает автоматические выговора и благодарности за обязательные сборы"
+    },
+    [PermissionType.RegisterNewUnits]: {
+        name: "Регистрация новых бойцов",
+        description: "Разрешение принимать новичков в клан"
+    },
+    [PermissionType.DismissUnits]: {
+        name: "Увольнение бойцов",
+        description: "Разрешение увольнять бойцов клана"
+    },
+    [PermissionType.AssignRetirement]: {
+        name: "Отправление отставку",
+        description: "Разрешение отправлять бойцов клана в отставку"
+    },
+    [PermissionType.FixActivity]: {
+        name: "Подтверждение активности",
+        description: "Разрешение подтверждать фиксации своей и чужой активности"
+    },
+    [PermissionType.VacationAccess]: {
+        name: "Выход в отпуск",
+        description: "Разрешение на выход в отпуск"
+    },
+    [PermissionType.AccessRetirement]: {
+        name: "Выход в отставку",
+        description: "Разрешение на выход в отставку"
+    },
+    [PermissionType.AssignStatuses]: {
+        name: "Выдача статусов",
+        description: "Разрешение выдавать бойцам выговора, благодарности и строгие выговоры"
+    },
+    [PermissionType.ForceVacation]: {
+        name: "Отправка в отпуск",
+        description: "Разрешение отправлять бойцов в отпуск"
+    },
+    [PermissionType.AssignRanks]: {
+        name: "Присваивание званий",
+        description: "Разрешение изменять звания у бойцов"
+    },
+    [PermissionType.AssignPosts]: {
+        name: "Назначение на должности",
+        description: "Разрешение назначать нижестоящих бойцов на должности"
+    },
+    [PermissionType.AssignRewards]: {
+        name: "Награждение бойцов",
+        description: "Разрешение награждать бойцов"
+    },
+    [PermissionType.ManageRanks]: {
+        name: "Редактирование званий",
+        description: "Разрешение создавать, удалять и редактировать звания"
+    },
+    [PermissionType.ManageStructure]: {
+        name: "Редактирование структуры",
+        description: "Разрешение создавать, удалять и редактировать нижестоящие должности и подразделения"
+    },
+    [PermissionType.ManageRewards]: {
+        name: "Редактирование наград",
+        description: "Разрешение создавать, удалять и редактировать награды"
+    },
+    [PermissionType.ModerateNicknames]: {
+        name: "Изменять никнеймы",
+        description: "Разрешение изменять чужие никнеймы"
+    },
+    [PermissionType.SeeHiddenDocs]: {
+        name: "Видеть скрытые документы",
+        description: "Разрешение видеть скрытые документы"
+    },
+    [PermissionType.UploadDocs]: {
+        name: "Загружать документы",
+        description: "Разрешение загружать новые документы"
+    }
+};
 
 interface ISubdivision{
     id? : string,
@@ -55,7 +144,8 @@ interface IPost{
     name : string,
     fullName: string;
     index: number;
-    permissionsId : IPermission[],
+    permissions : IPermission[];
+    allPermissions : IPermission[];
 }
 
 interface IDocType{
@@ -154,7 +244,7 @@ interface IUnitCompressed {
     nickname: string;
     steamId?: string;
     favoriteKit: IfavoriteKit;
-    backgroundPictureId?: number;
+    backgroundPicture: IBackgroundPicture;
     rankUpCounter?: string | number;
     joined?: string;
     rankId?: number;
@@ -167,6 +257,11 @@ interface IUnitCompressed {
     monthActivityCount?: number;
     yearActivityCount?: number;
     totalActivityCount?: number;
+}
+
+interface IBackgroundPicture {
+    id: number;
+    name: string;
 }
 
 interface IfavoriteKit {
