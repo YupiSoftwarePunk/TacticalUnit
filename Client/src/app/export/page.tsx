@@ -227,11 +227,11 @@ export default function ExportPage() {
                         </h2>
 
                         <div className="overflow-x-auto w-full border border-border-secondary bg-bg-primary p-4 max-h-[450px]">
-                            <table className="w-full text-left border-collapse">
+                            <table className="w-full text-center border-collapse">
                                 <thead>
                                     <tr className="border-b border-border-primary">
                                         {columns.map((col) => (
-                                            <th key={col.key} className="p-2 text-xs uppercase font-text-bold text-text-secondary whitespace-nowrap">
+                                            <th key={col.key} className="p-2 text-xs uppercase font-text-bold text-text-secondary whitespace-nowrap text-center">
                                                 {col.label}
                                             </th>
                                         ))}
@@ -241,7 +241,7 @@ export default function ExportPage() {
                                     {data.slice(0, 5).map((row, idx) => (
                                         <tr key={idx} className="border-b border-border-secondary/30 last:border-0">
                                             {columns.map((col) => (
-                                                <td key={col.key} className="p-2 text-xs font-text-regular text-text-primary whitespace-nowrap">
+                                                <td key={col.key} className="p-2 text-xs font-text-regular text-text-primary whitespace-nowrap text-center">
                                                     {String(row[col.key] ?? "—")}
                                                 </td>
                                             ))}

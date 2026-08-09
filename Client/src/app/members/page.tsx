@@ -29,7 +29,7 @@ export interface IMemberRow {
 
 const COLUMNS_CONFIG: ColumnConfig[] = [
     { 
-        key: "rankIndex", 
+        key: "rank", 
         sortKey: "rankIndex",
         label: "Звание", 
         sortable: true, 
@@ -53,7 +53,7 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
         )
     },
     { 
-        key: "postIndex", 
+        key: "top_role", 
         sortKey: "postIndex",
         label: "Наивысшая должность", 
         sortable: true, 
