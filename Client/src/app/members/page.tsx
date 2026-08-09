@@ -156,7 +156,7 @@ export default function MembersPage() {
         sessionStorage.setItem("export_table_data", JSON.stringify(dataToExport));
         sessionStorage.setItem("export_table_columns", JSON.stringify(COLUMNS_CONFIG));
 
-        router.push("./export/page.tsx");
+        router.push("./export");
     };
 
     const copyToClipboard = (text: string) => {

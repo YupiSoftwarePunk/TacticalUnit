@@ -122,7 +122,7 @@ export default function DocumentArchivePage() {
             <main className="max-w-350 w-full mx-auto pt-20 md:pt-28 px-4 md:px-6 shrink-0 flex flex-col gap-6">
                 <div>
                     <h1 className="text-2xl md:text-4xl font-header text-text-primary uppercase tracking-wider">
-                        Архив документов РХБЗ
+                        Архив документов POLK
                     </h1>
                     <span className="block w-12 h-0.5 bg-accent mt-1.5"></span>
                 </div>
@@ -179,7 +179,7 @@ export default function DocumentArchivePage() {
                 <div className="border border-black/10 dark:border-white/5 overflow-hidden bg-bg-secondary p-1">
                     {isLoading ? (
                         <div className="text-center text-text-secondary font-text uppercase tracking-widest py-20 w-full animate-pulse text-xs">
-                            Запрос к архиву РХБЗ...
+                            Запрос к архиву...
                         </div>
                     ) : filteredDocuments.length > 0 ? (
                         <UniversalTable 
