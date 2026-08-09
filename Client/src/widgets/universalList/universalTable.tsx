@@ -31,7 +31,7 @@ const UniversalTable = <T extends Record<string, any>>({
     data, 
     columns, 
     onExport, 
-    defaultSort = { key: "rank", direction: "desc" },
+    defaultSort = { key: "rankIndex", direction: "desc" },
     renderActions,
     className = ""
 } : UniversalTableProps<T>) => {
@@ -47,9 +47,12 @@ const UniversalTable = <T extends Record<string, any>>({
         const sortableItems = [...data];
 
         if (sortConfig.key) {
+            const currentColumn = columns.find(c => c.key === sortConfig.key || c.sortKey === sortConfig.key);
+            const targetSortKey = currentColumn?.sortKey || sortConfig.key;
+
             sortableItems.sort((a, b) => {
-                const valA = a[sortConfig.key];
-                const valB = b[sortConfig.key];
+                const valA = a[targetSortKey];
+                const valB = b[targetSortKey];
                 if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
                 if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
                 return 0;
@@ -97,9 +100,14 @@ const UniversalTable = <T extends Record<string, any>>({
                             value={sortConfig.key}
                             onChange={(e) => handleSortKeyChange(e.target.value)}
                             className="bg-transparent border-none text-text-primary focus:bg-bg-accent focus:ring-0 cursor-pointer text-xs sm:text-sm flex-1 min-w-0 truncate w-full">
-                            {columns.filter(c => c.sortable).map(col => (
-                                <option key={col.key} value={col.key} className="bg-bg-secondary focus:bg-bg-accent">{col.label}</option>
-                            ))}
+                            {columns.filter(c => c.sortable).map(col => {
+                                const optionValue = col.sortKey || col.key;
+                                return (
+                                    <option key={col.key} value={optionValue} className="bg-bg-secondary focus:bg-bg-accent">
+                                        {col.label}
+                                    </option>
+                                );
+                            })}
                         </select>
                     </div>
 

@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export interface IMemberRow {
+    id: string;
     rank: string;
     rankIndex: number;
     nickname: string;
@@ -35,7 +36,7 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
         sortable: true, 
         filterable: true, 
         className: "text-text-secondary font-light",
-        render: (_: any, item: IMemberRow) => item.rank
+        render: (value: string) => value
     },
     { 
         key: "nickname", 
@@ -59,7 +60,7 @@ const COLUMNS_CONFIG: ColumnConfig[] = [
         sortable: true, 
         filterable: false, 
         className: "text-text-secondary text-sm",
-        render: (_: any, item: IMemberRow) => item.top_role
+        render: (value: string) => value
     },
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true, className: "text-text-secondary text-sm" },
     { key: "activity_week", label: "Активность за неделю", sortable: true, filterable: false, className: "text-text-secondary text-sm" },
@@ -120,6 +121,7 @@ export default function MembersPage() {
                     }
 
                     return {
+                        id: String(element.discordId || element.steamId || element.nickname),
                         rank: setRank ? setRank.name : "Без звания",
                         rankIndex: element.rankIndex ?? 0,
                         nickname: element.nickname || "Без ника",
@@ -153,8 +155,11 @@ export default function MembersPage() {
             return;
         }
 
-        sessionStorage.setItem("export_table_data", JSON.stringify(dataToExport));
-        sessionStorage.setItem("export_table_columns", JSON.stringify(COLUMNS_CONFIG));
+        const exportColumns = COLUMNS_CONFIG.filter(col => !col.key.startsWith("activity_"));
+        const cleanedData = dataToExport.map(({ activity_week, activity_month, activity_year, activity_total, ...rest }) => rest);
+
+        sessionStorage.setItem("export_table_data", JSON.stringify(cleanedData));
+        sessionStorage.setItem("export_table_columns", JSON.stringify(exportColumns));
 
         router.push("./export");
     };
