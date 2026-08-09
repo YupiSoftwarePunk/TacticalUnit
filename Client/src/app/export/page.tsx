@@ -38,14 +38,24 @@ export default function ExportPage() {
 
     const fetchFontAsBase64 = async (url: string): Promise<string> => {
         const response = await fetch(url);
+        if (!response.ok) 
+            throw new Error(`Ошибка загрузки шрифта: ${response.statusText}`);
         const blob = await response.blob();
+        
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64data = reader.result as string;
-                resolve(base64data.split(",")[1]);
+
+                if (base64data) {
+                    resolve(base64data.split(",")[1]);
+                } 
+                else {
+                    reject(new Error("Не удалось преобразовать шрифт в base64"));
+                }
             };
             reader.onerror = reject;
+            reader.readAsDataURL(blob);
         });
     };
 
@@ -93,34 +103,48 @@ export default function ExportPage() {
     };
 
     const handlePdfExport = async () => {
-        const doc = new jsPDF({ orientation: "landscape" });
-        const visibleColumns = columns.filter((col) => col.key);
-
         try {
-            const fontBase64 = await fetchFontAsBase64(
-                "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf"
+            const doc = new jsPDF({ orientation: "landscape" });
+            const visibleColumns = columns.filter((col) => col.key);
+            let fontName = "helvetica";
+
+            try {
+                const fontBase64 = await fetchFontAsBase64(
+                    "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf"
+                );
+                doc.addFileToVFS("Roboto-Regular.ttf", fontBase64);
+                doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+                doc.addFont("Roboto-Regular.ttf", "Roboto", "bold"); 
+                doc.setFont("Roboto");
+                fontName = "Roboto";
+            } 
+            catch (e) {
+                console.warn("Не удалось загрузить кастомный шрифт для PDF, используется стандартный:", e);
+            }
+
+            const headers = visibleColumns.map((col) => col.label);
+            const rows = data.map((row) =>
+                visibleColumns.map((col) => String(row[col.key] ?? ""))
             );
-            doc.addFileToVFS("Roboto-Regular.ttf", fontBase64);
-            doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-            doc.setFont("Roboto");
-        } catch (e) {
-            console.warn("Не удалось загрузить кастомный шрифт для PDF:", e);
+
+            autoTable(doc, {
+                head: [headers],
+                body: rows,
+                styles: { font: fontName, fontSize: 8 },
+                headStyles: { 
+                    fillColor: [40, 40, 40], 
+                    textColor: [255, 255, 255],
+                    font: fontName,
+                    fontStyle: "normal"
+                },
+                margin: { top: 15 },
+            });
+            doc.save(`${fileName || "export"}.pdf`);
+        } 
+        catch (error) {
+            console.error("Ошибка при экспорте в PDF:", error);
+            alert("Произошла ошибка при формировании PDF файла.");
         }
-
-        const headers = visibleColumns.map((col) => col.label);
-        const rows = data.map((row) =>
-            visibleColumns.map((col) => String(row[col.key] ?? ""))
-        );
-
-        autoTable(doc, {
-            head: [headers],
-            body: rows,
-            styles: { font: "Roboto", fontSize: 8 },
-            headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255] },
-            margin: { top: 15 },
-        });
-
-        doc.save(`${fileName || "export"}.pdf`);
     };
 
     const handleDownload = () => {
