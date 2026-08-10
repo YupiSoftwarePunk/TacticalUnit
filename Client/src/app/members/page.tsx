@@ -8,7 +8,6 @@ import { RankService } from "@/shared/api/services/RankService";
 import { PostService } from "@/shared/api/services/postService";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export interface IMemberRow {
     id: string;
@@ -73,8 +72,6 @@ export default function MembersPage() {
     const [members, setMembers] = useState<IMemberRow[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>();
-
-    const router = useRouter();
 
     useEffect(() => {
         let ranks: IRank[] = [];
@@ -149,21 +146,6 @@ export default function MembersPage() {
         fetchMembers();
     }, []);
 
-    const handleExport = (dataToExport: IMemberRow[]) => {
-        if (!dataToExport || dataToExport.length === 0) {
-            alert("Нет данных для экспорта");
-            return;
-        }
-
-        const exportColumns = COLUMNS_CONFIG.filter(col => !col.key.startsWith("activity_"));
-        const cleanedData = dataToExport.map(({ activity_week, activity_month, activity_year, activity_total, ...rest }) => rest);
-
-        sessionStorage.setItem("export_table_data", JSON.stringify(cleanedData));
-        sessionStorage.setItem("export_table_columns", JSON.stringify(exportColumns));
-
-        router.push("./export");
-    };
-
     const copyToClipboard = (text: string) => {
         if (!text || text === "—") return;
         navigator.clipboard.writeText(text);
@@ -191,7 +173,6 @@ export default function MembersPage() {
                         <UniversalTable 
                             data={members} 
                             columns={COLUMNS_CONFIG} 
-                            onExport={handleExport}
                             defaultSort={{ key: "rankIndex", direction: "desc" }}
                             renderActions={(item: IMemberRow) => (
                                 <div className="flex flex-row md:flex-row gap-2 w-full justify-end">

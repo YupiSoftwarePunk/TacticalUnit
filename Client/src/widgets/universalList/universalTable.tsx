@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 export interface ColumnConfig {
     key: string;
@@ -20,7 +21,6 @@ interface SortConfig {
 interface UniversalTableProps<T> {
     data: T[];
     columns: ColumnConfig[];
-    onExport: (data: T[]) => void;
     defaultSort?: SortConfig;
     renderActions?: (item: T) => React.ReactNode;
     className?: string;
@@ -30,11 +30,12 @@ interface UniversalTableProps<T> {
 const UniversalTable = <T extends Record<string, any>>({ 
     data, 
     columns, 
-    onExport, 
     defaultSort = { key: "rankIndex", direction: "desc" },
     renderActions,
     className = ""
 } : UniversalTableProps<T>) => {
+    const router = useRouter();
+
     const visibleColumns = useMemo(() => {
         return columns.filter(col => !col.key.startsWith("activity"));
     }, [columns]);
@@ -59,7 +60,7 @@ const UniversalTable = <T extends Record<string, any>>({
             });
         }
         return sortableItems;
-    }, [data, sortConfig]);
+    }, [data, sortConfig, columns]);
 
     const filteredData = useMemo(() => {
         return sortedData.filter(item => {
@@ -80,6 +81,29 @@ const UniversalTable = <T extends Record<string, any>>({
             ...prev,
             direction: isAscending ? "asc" : "desc"
         }));
+    };
+
+    const handleExport = () => {
+        if (!filteredData || filteredData.length === 0) {
+            alert("Нет данных для экспорта");
+            return;
+        }
+
+        const exportColumns = columns.filter(col => !col.key.startsWith("activity"));
+        const cleanedData = filteredData.map(item => {
+            const cleanedItem = { ...item };
+            Object.keys(cleanedItem).forEach(key => {
+                if (key.startsWith("activity")) {
+                    delete cleanedItem[key];
+                }
+            });
+            return cleanedItem;
+        });
+
+        sessionStorage.setItem("export_table_data", JSON.stringify(cleanedData));
+        sessionStorage.setItem("export_table_columns", JSON.stringify(exportColumns));
+
+        router.push("http://localhost:3000/export");
     };
 
     const isAscending = sortConfig.direction === "asc";
@@ -130,7 +154,7 @@ const UniversalTable = <T extends Record<string, any>>({
                 
                 <div className="w-full sm:w-auto">
                     <button 
-                        onClick={() => onExport(filteredData)}
+                        onClick={handleExport}
                         className="w-full sm:w-auto bg-transparent text-accent border-b-2 border-accent hover:text-white hover:border-white transition-all py-2 sm:py-1 uppercase font-black text-center text-sm md:text-lg tracking-wider">
                         Экспортировать
                     </button>
