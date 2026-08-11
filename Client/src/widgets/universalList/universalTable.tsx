@@ -51,13 +51,25 @@ const UniversalTable = <T extends Record<string, any>>({
             const currentColumn = columns.find(c => c.key === sortConfig.key || c.sortKey === sortConfig.key);
             const targetSortKey = currentColumn?.sortKey || sortConfig.key;
 
-            sortableItems.sort((a, b) => {
+            const target = targetSortKey.toLowerCase();
+            if (target.includes("index")) {
+                sortableItems.sort((a, b) => {
                 const valA = a[targetSortKey];
                 const valB = b[targetSortKey];
                 if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
                 if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
                 return 0;
-            });
+                }).toReversed();
+            }
+            else {
+                sortableItems.sort((a, b) => {
+                const valA = a[targetSortKey];
+                const valB = b[targetSortKey];
+                if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+                if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+                return 0;
+                });
+            }
         }
         return sortableItems;
     }, [data, sortConfig, columns]);
@@ -147,7 +159,7 @@ const UniversalTable = <T extends Record<string, any>>({
                             <div className={`absolute top-1 w-3 h-3 bg-text-primary transition-transform duration-300 ${isAscending ? 'translate-x-5 bg-black' : 'translate-x-1'}`}></div>
                         </div>
                         <span className="text-[10px] md:text-xs font-text uppercase tracking-widest text-text-primary group-hover:text-accent transition-colors selection:bg-transparent">
-                            По увеличению
+                            Сортировать по возрастанию
                         </span>
                     </label>
                 </div>
