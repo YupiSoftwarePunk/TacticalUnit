@@ -6,8 +6,16 @@ import { MainHeader } from "@/components/Header/MainHeader";
 import { StructureService } from "@/shared/api/services/structureService";
 import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 
+interface IPostStructureItem extends IPost {
+    units?: Array<{ nickname: string }>;
+    subdivision?: {
+        name?: string;
+        color?: string;
+    };
+}
+
 class ApiStructureTransformer {
-    public static buildTree(posts: IPost[]): StructureNode | null {
+    public static buildTree(posts: IPostStructureItem[]): StructureNode | null {
         if (!posts || posts.length === 0) return null;
         const nodeMap: Record<string, StructureNode> = {};
 
@@ -193,14 +201,14 @@ export default function ClanStructurePage() {
     const [showVacant, setShowVacant] = useState(false);
     const [zoom, setZoom] = useState<number>(1);
 
-    const [rawPosts, setRawPosts] = useState<IPost[]>([]);
+    const [rawPosts, setRawPosts] = useState<IPostStructureItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         StructureService.get()
             .then((res: JSON) => {
-                const postsData = Array.isArray(res) ? res : [];
+                const postsData = Array.isArray(res) ? (res as IPostStructureItem[]) : [];
                 setRawPosts(postsData);
                 setError(null);
             })
