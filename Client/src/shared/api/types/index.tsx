@@ -144,8 +144,8 @@ interface IPost{
     name : string,
     fullName: string;
     index: number;
-    permissions : IPermission[];
-    allPermissions : IPermission[];
+    permissions : IPermission[];      // для изменения разрешений
+    allPermissions : IPermission[];   // для просмотра разрешений 
 }
 
 interface IDocType{
@@ -279,7 +279,7 @@ interface IGivedPermission{
 }
 
 interface IPermission{
-    permissionType : PermissionType,
+    id : number,
     name : string,
     description : string,
     givedPermissions? : IGivedPermission[]

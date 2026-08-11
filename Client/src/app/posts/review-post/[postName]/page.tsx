@@ -28,20 +28,22 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const [isLoading, setIsLoading] = useState(true); 
     const [error, setError] = useState<string | undefined>();
 
+    const [discordRoleId, setDiscordRoleId] = useState<string>("");
+    const [givedPermissions, setGivedPermissions] = useState<IGivedPermission[]>([]);
+
     const [post, setPost] = useState<IPost>({
         id: "0",
         description: "Загрузка описания...",
         subdivisionId: undefined,
-        subdivision: undefined,
         appendSubdivisionName: false,
         headId: undefined,
-        head: undefined,
         maxRankId: "-1",
-        units: [],
         color: "#b4b4b4",
         name: "Загрузка названия должности...",
-        permissionsId: [],
-        discordRoleId: ""
+        fullName: "",
+        index: 0,
+        permissions: [],
+        allPermissions: []
     });
 
     const [members, setMembers] = useState<IAssignedReward[]>([]);
@@ -64,7 +66,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         PostService.getAll().then((postList) => {
             const preparedPosts: IListedInputItem[] = postList.map(p => ({
                 name: p.name,
-                id: p.id
+                id: p.id?.toString()
             }));
             setAvailableHeadPosts(preparedPosts);
         });
@@ -74,7 +76,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         SubdivisionService.getAll().then((subdivList) => {
             const preparedSubdivs: IListedInputItem[] = subdivList.map(subdiv => ({
                 name: subdiv.name,
-                id: subdiv.id
+                id: subdiv.id?.toString()
             }));
             setAvailableSubdivisions(preparedSubdivs);
         });
@@ -89,25 +91,20 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
             PostService.getPermissions(numericPostId)
         ])
         .then(([postData, membersData, permissionsData]) => {
-            const rawPermissions = Array.isArray(permissionsData) 
+            const rawPermissions: IPermission[] = Array.isArray(permissionsData) 
                 ? permissionsData 
                 : (permissionsData ? [permissionsData] : []);
 
-            const formattedPermissions: IGivedPermission[] = rawPermissions.map((p: any, index: number) => {
-                if (p && typeof p === 'object' && 'permission' in p) {
-                    return p as IGivedPermission;
-                }
-                return {
-                    id: p?.id,
-                    inherit: false,
-                    permission: p
-                } as IGivedPermission;
-            });
+            const formattedPermissions: IGivedPermission[] = rawPermissions.map((p, index) => ({
+                id: p.id?.toString() ?? index.toString(),
+                permissionType: 1,
+                permission: p,
+                inherit: false,
+                entity: {}
+            }));
 
-            setPost({
-                ...postData,
-                permissionsId: formattedPermissions
-            });
+            setGivedPermissions(formattedPermissions);
+            setPost(postData);
             
             if (Array.isArray(membersData)) {
                 setMembers(membersData);
@@ -116,8 +113,17 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                 setMembers((membersData as { value: IAssignedReward[] }).value);
             }
 
-            setPostPrompt(postData.head?.name || "");
-            setSubdivisionPrompt(postData.subdivision?.name || "");
+            if (postData.headId) {
+                PostService.getById(postData.headId)
+                    .then(head => setPostPrompt(head.name))
+                    .catch(() => setPostPrompt(""));
+            }
+
+            if (postData.subdivisionId) {
+                SubdivisionService.getById(Number(postData.subdivisionId))
+                    .then(subdiv => setSubdivisionPrompt(subdiv.name))
+                    .catch(() => setSubdivisionPrompt(""));
+            }
         })
         .catch((er) => {
             setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);
@@ -210,10 +216,10 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             tooltip="Подразделение к которому относится должность" 
                             textWhenEmpty="[ Подразделение не указана ]"
                         />
-                        <PermissionRollDownList editable={canEdit} givedPermissionList={post.permissionsId}/>
+                        <PermissionRollDownList editable={canEdit} givedPermissionList={givedPermissions}/>
                     </BaseContainer>
                     <div className="flex opacity-50">
-                        <CopyField className="flex flex-1" title="Discord Id" copyInfo={post.discordRoleId || ""} />
+                        <CopyField className="flex flex-1" title="Discord Id" copyInfo={discordRoleId} />
                         <StyledButton title={"обновить роль"} />
                     </div>
                 </div>

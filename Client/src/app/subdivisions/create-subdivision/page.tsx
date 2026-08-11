@@ -93,7 +93,7 @@ export default function CreateSubdivPage(){
                     permissionType: 1,
                     permission: {
                         name: permName,
-                        permissionType: 1,
+                        id: 1,
                         description: "",
                         givedPermissions: []
                     },
