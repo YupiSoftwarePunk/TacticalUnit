@@ -119,7 +119,6 @@ export default function AwardDetailsPage({ slug }: { slug: string }) {
                 <UniversalTable 
                     data={MEMBERS_DATA} 
                     columns={COLUMNS_CONFIG} 
-                    onExport={(data) => console.log("Exporting:", data)}
                 />
                 </div>
             </div>

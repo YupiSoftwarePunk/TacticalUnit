@@ -10,7 +10,26 @@ import { useSearchParams } from "next/navigation";
 import { RewardService } from "@/shared/api/services/RewardService";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
-import { IUnitCompressed } from "@/app/members/page";
+
+interface IUnitCompressed {
+    discordId: string;
+    nickname: string;
+    steamId?: string;
+    favoriteKit: IfavoriteKit;
+    backgroundPicture: IBackgroundPicture;
+    rankUpCounter?: string | number;
+    joined?: string;
+    rankId?: number;
+    postsIds?: number[];
+    assignedRewardsIds?: number[];
+    gender?: number;
+    rankIndex?: number;
+    postIndex?: number;
+    weekActivityCount?: number;
+    monthActivityCount?: number;
+    yearActivityCount?: number;
+    totalActivityCount?: number;
+}
 
 
 const ACT_TYPES_INFO = new Map<string, { title: string; description: string }>([
@@ -137,7 +156,7 @@ function UploadDocumentContent() {
                         {
                             name : el.name,
                             description : el.description,
-                            id : el.id,
+                            id : `${el.id}`,
                             selected : false
                         }
                     )
@@ -152,7 +171,7 @@ function UploadDocumentContent() {
                     preparedList.push(
                         {
                             name : el.name,
-                            id : el.id,
+                            id : `${el.id}`,
                             selected : false
                         }
                     )
@@ -492,7 +511,6 @@ function UploadDocumentContent() {
                                 <UniversalTable 
                                     data={units}
                                     columns={tableColumns}
-                                    onExport={handleExport}
                                     defaultSort={{ key: "rank", direction: "desc" }}
                                 />
                             </div>

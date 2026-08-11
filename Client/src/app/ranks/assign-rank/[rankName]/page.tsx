@@ -180,7 +180,6 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
                             <UniversalTable 
                                 data={units}
                                 columns={tableColumns}
-                                onExport={handleExport}
                                 defaultSort={{ key: "rank", direction: "desc" }}
                             />
                         </div>

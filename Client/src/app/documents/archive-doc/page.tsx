@@ -185,7 +185,6 @@ export default function DocumentArchivePage() {
                         <UniversalTable 
                             data={filteredDocuments} 
                             columns={columnsLayout} 
-                            onExport={(data) => console.log("Exporting archive data:", data)}
                         />
                     ) : (
                         <div className="text-center text-text-secondary/50 font-text uppercase tracking-widest py-16 w-full text-xs">

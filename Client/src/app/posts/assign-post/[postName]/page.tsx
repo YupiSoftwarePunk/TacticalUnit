@@ -153,7 +153,6 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                             <UniversalTable 
                                 data={units}
                                 columns={tableColumns}
-                                onExport={handleExport}
                                 defaultSort={{ key: "nickname", direction: "asc" }}
                             />
                         </div>

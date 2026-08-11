@@ -368,7 +368,6 @@ export const AccordingUnitsTable = ({TableName, rightsToGrant, UrlToGrantPage, G
                 <UniversalTable 
                     data={GIVEN_DATA} 
                     columns={GIVEN_COLUMNS_LAYOUT} 
-                    onExport={(data) => console.log("Exporting:", data)}
                 />
                 }
             </div>

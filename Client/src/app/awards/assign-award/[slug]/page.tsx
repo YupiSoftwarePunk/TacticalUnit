@@ -180,7 +180,6 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                             <UniversalTable 
                                 data={units}
                                 columns={tableColumns}
-                                onExport={handleExport}
                                 defaultSort={{ key: "nickname", direction: "asc" }}
                             />
                         </div>

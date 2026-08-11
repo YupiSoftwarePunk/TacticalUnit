@@ -302,7 +302,6 @@ export default function UploadDocumentPage() {
                                     <UniversalTable 
                                         data={units}
                                         columns={tableColumns}
-                                        onExport={handleExport}
                                         defaultSort={{ key: "rank", direction: "desc" }}
                                     />
                                 </div>
