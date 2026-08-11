@@ -169,6 +169,7 @@ export default function CreateRankPage(){
                 id: index.toString(),
                 permissionType: 1,
                 permission: {
+                    id: index,
                     name: permName,
                     permissionType: 1,
                     description: "",

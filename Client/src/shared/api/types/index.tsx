@@ -130,7 +130,8 @@ interface IRank{
     name : string,
     rankChevronURL?: string,
     givedPermissions : IGivedPermission[],
-    discordRoleId?: string
+    discordRoleId?: string,
+    index?: number
 }
 
 interface IPost{
