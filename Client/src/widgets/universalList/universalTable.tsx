@@ -46,6 +46,7 @@ const UniversalTable = <T extends Record<string, any>>({
 
     const sortedData = useMemo(() => {
         const sortableItems = [...data];
+        let newsortableItems = sortableItems;
 
         if (sortConfig.key) {
             const currentColumn = columns.find(c => c.key === sortConfig.key || c.sortKey === sortConfig.key);
@@ -53,25 +54,25 @@ const UniversalTable = <T extends Record<string, any>>({
 
             const target = targetSortKey.toLowerCase();
             if (target.includes("index")) {
-                sortableItems.sort((a, b) => {
-                const valA = a[targetSortKey];
-                const valB = b[targetSortKey];
-                if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-                if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
-                return 0;
+                newsortableItems = sortableItems.sort((a, b) => {
+                    const valA = a[targetSortKey];
+                    const valB = b[targetSortKey];
+                    if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+                    if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+                    return 0;
                 }).toReversed();
             }
             else {
-                sortableItems.sort((a, b) => {
-                const valA = a[targetSortKey];
-                const valB = b[targetSortKey];
-                if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-                if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
-                return 0;
+                newsortableItems = sortableItems.sort((a, b) => {
+                    const valA = a[targetSortKey];
+                    const valB = b[targetSortKey];
+                    if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+                    if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+                    return 0;
                 });
             }
         }
-        return sortableItems;
+        return newsortableItems;
     }, [data, sortConfig, columns]);
 
     const filteredData = useMemo(() => {
