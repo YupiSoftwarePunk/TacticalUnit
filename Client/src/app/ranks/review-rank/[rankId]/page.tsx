@@ -6,6 +6,7 @@ import { StaticImage } from "@/components/ImagesComponent/StaticImage";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
 import { RankService } from "@/shared/api/services/RankService";
+import { PostService } from "@/shared/api/services/postService";
 import { ImageService } from "@/shared/api/services/imageService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
@@ -55,7 +56,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
         discordRoleId: "-1"
     });
 
-    const [members, setMembers] = useState<IMemberRow[]>([]);
+    const [members, setMembers] = useState<any[]>([]);
     const [rankPrompt, setRankPrompt] = useState<string>("");
 
     const [headList, setHeadList] = useState<IListedInputItem[]>([]);
@@ -88,9 +89,10 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
         Promise.all([
             RankService.getById(numericRankId),
             RankService.getAssigned(numericRankId),
-            RankService.getPermissions(numericRankId)
+            RankService.getPermissions(numericRankId),
+            PostService.getAll().catch(() => []),
         ])
-        .then(([rankData, membersData, permissionsData]) => {
+        .then(([rankData, membersData, permissionsData, postData]) => {
             const rawPermissions: unknown[] = Array.isArray(permissionsData) 
                 ? permissionsData 
                 : (permissionsData ? [permissionsData] : []);
@@ -113,27 +115,25 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
             });
             setRankPrompt(rankData.previous?.name || "");
 
-            const rawUnits = Array.isArray(membersData) 
+            const postsMap = new Map<string, string>(
+                Array.isArray(postData) ? postData.map((p: any) => [p.id?.toString(), p.name]) : []
+            );
+
+            const rawMembers = Array.isArray(membersData) 
                 ? membersData 
-                : (membersData as { value?: unknown[] })?.value || [];
+                : (membersData && typeof membersData === 'object' && 'value' in membersData && Array.isArray((membersData as { value: any[] }).value))
+                    ? (membersData as { value: any[] }).value
+                    : [];
 
-            const preparedMembers: IMemberRow[] = (rawUnits as Array<IUnit | IRankAssignment>).map((element) => {
-                const unit = element && typeof element === 'object' && 'unit' in element && element.unit
-                    ? (element.unit as IUnit) 
-                    : (element as IUnit);
+            const formattedMembers = rawMembers.map((member: any) => ({
+                ...member,
+                nickname: member.nickname || "—",
+                top_role: postsMap.get(member.postsIds[0]) || "—",
+                kit: member.favoriteKit?.name || member.kit || "Не выбран",
+                steamId: member.steamId ? String(member.steamId) : "—"
+            }));
 
-                const memberRoles = unit.posts?.map((p: IPost) => p.name).filter(Boolean) || [];
-
-                return {
-                    nickname: unit.nickname || "Без никнейма",
-                    top_role: memberRoles[0] || "Без должности",
-                    kit: unit.favoriteKitId || "Не выбран", 
-                    steamId: unit.steamId ? String(unit.steamId) : "—",
-                    discordId: String(unit.discordId)
-                };
-            });
-
-            setMembers(preparedMembers);
+            setMembers(formattedMembers);
         })
         .catch((er) => {
             setError(`Не удалось загрузить данные с сервера | ${er.message || er}`);

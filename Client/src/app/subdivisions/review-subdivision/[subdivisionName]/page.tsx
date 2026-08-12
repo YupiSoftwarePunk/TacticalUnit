@@ -235,12 +235,12 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                 </div>
             </div>
             
-            <AccordingUnitsTable 
+            {/* <AccordingUnitsTable 
                 TableName="Бойцы состоящие в этом подразделении" 
                 rightsToGrant={false} 
                 GIVEN_COLUMNS_LAYOUT={COLUMNS_CONFIG} 
                 GIVEN_DATA={members} 
-            />
+            /> */}
         </RRForm>
     );
 }
