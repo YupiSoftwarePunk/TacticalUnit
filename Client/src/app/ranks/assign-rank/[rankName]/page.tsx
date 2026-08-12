@@ -40,7 +40,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
                 ]);
 
                 setRank(rankData);
-                setUnits(unitsData);
+                // setUnits(unitsData);
                 setLoading(false);
             } 
             catch (err) {
@@ -82,7 +82,7 @@ export default function AssignRankPage({ params }: { params: Promise<{ rankName:
             await Promise.all(assignPromises);
 
             const updatedUnits = await UnitService.getAll();
-            setUnits(updatedUnits);
+            // setUnits(updatedUnits);
 
             setIsSaving(false);
             setSelectedUnits(new Set());

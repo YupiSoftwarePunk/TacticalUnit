@@ -37,7 +37,7 @@ export default function AssignPostPage({ params }: { params: Promise<{ postName:
                 ]);
 
                 setPost(postData);
-                setUnits(unitsData);
+                // setUnits(unitsData);
                 setLoading(false);
             } 
             catch (err) {

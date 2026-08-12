@@ -45,15 +45,15 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
                 ]);
                 setAward(rewardData);
 
-                const formattedUnits : IFormattedUnit[] = allUnits.map((unit: IUnit) => ({
-                    discordId: String(unit.discordId),
-                    nickname: unit.nickname,
-                    rank: unit.rank?.name || "Без звания",
-                    roles: unit.posts?.map(p => p.name) || [],
-                    steamId: unit.steamId
-                }));
+                // const formattedUnits : IFormattedUnit[] = allUnits.map((unit: IUnit) => ({
+                //     discordId: String(unit.discordId),
+                //     nickname: unit.nickname,
+                //     rank: unit.rank?.name || "Без звания",
+                //     roles: unit.posts?.map(p => p.name) || [],
+                //     steamId: unit.steamId
+                // }));
 
-                setUnits(formattedUnits);
+                // setUnits(formattedUnits);
                 setLoading(false);
             } 
             catch (err) {
