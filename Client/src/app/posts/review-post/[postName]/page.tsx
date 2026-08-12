@@ -4,6 +4,7 @@ import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, Descrip
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import { PostService } from "@/shared/api/services/postService";
+import { RankService } from "@/shared/api/services/RankService";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
 import { validateColor } from "@/typescript/colorValidator";
 import React, { useEffect, useState, useMemo } from "react";
@@ -88,9 +89,10 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         Promise.all([
             PostService.getById(numericPostId),
             PostService.getAssigned(numericPostId),
-            PostService.getPermissions(numericPostId)
+            PostService.getPermissions(numericPostId),
+            RankService.getAll().catch(() => []),
         ])
-        .then(([postData, membersData, permissionsData]) => {
+        .then(([postData, membersData, permissionsData, rankData]) => {
             const rawPermissions: IPermission[] = Array.isArray(permissionsData) 
                 ? permissionsData 
                 : (permissionsData ? [permissionsData] : []);
@@ -105,13 +107,26 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
 
             setGivedPermissions(formattedPermissions);
             setPost(postData);
-            
-            if (Array.isArray(membersData)) {
-                setMembers(membersData);
-            } 
-            else if (membersData && typeof membersData === 'object' && 'value' in membersData && Array.isArray((membersData as { value: IAssignedReward[] }).value)) {
-                setMembers((membersData as { value: IAssignedReward[] }).value);
-            }
+
+            const ranksMap = new Map<string, string>(
+                Array.isArray(rankData) ? rankData.map((r: any) => [r.id?.toString(), r.name]) : []
+            );
+
+            const rawMembers = Array.isArray(membersData) 
+                ? membersData 
+                : (membersData && typeof membersData === 'object' && 'value' in membersData && Array.isArray((membersData as { value: IAssignedReward[] }).value))
+                    ? (membersData as { value: IAssignedReward[] }).value
+                    : [];
+
+            const formattedMembers = rawMembers.map((member: any) => ({
+                ...member,
+                nickname: member.nickname || "—",
+                rank: ranksMap.get(member.rankId) || "—",
+                roles: member.roles || postData.name || "—",
+                kit: member.favoriteKit?.name || member.kit || "Не выбран"
+            }));
+
+            setMembers(formattedMembers);
 
             if (postData.headId) {
                 PostService.getById(postData.headId)
@@ -214,7 +229,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             }}
                             list={subdivisionList}
                             tooltip="Подразделение к которому относится должность" 
-                            textWhenEmpty="[ Подразделение не указана ]"
+                            textWhenEmpty="[ Подразделение не указано ]"
                         />
                         <PermissionRollDownList editable={canEdit} givedPermissionList={givedPermissions}/>
                     </BaseContainer>
