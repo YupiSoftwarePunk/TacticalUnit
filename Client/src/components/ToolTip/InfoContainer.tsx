@@ -70,14 +70,15 @@ const InfoContainer = ({
                         }
                     }} 
                     className={`
-                        absolute flex flex-col text-text-primary font-text-bold max-h-45 overflow-y-scroll gap-1 ${verticalPlacement == "bottom" ? "top-full" : "bottom-full"} z-100 bg-bg-primary px-4 py-2 border w-80 border-border-secondary transition-all ${catchEvents ? "pointer-events-auto" : "pointer-events-none"} ${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo) ? "opacity-100 pointer-events-auto" : "opacity-0") : ((mouseOverContent || mouseOverInfo) && focused ? "opacity-100" : "opacity-0")}
+                        absolute flex flex-col text-text-primary font-text-bold max-h-45 overflow-y-auto gap-1 ${verticalPlacement == "bottom" ? "top-full" : "bottom-full"} z-100 bg-bg-primary px-4 py-2 border w-80 max-w-[calc(100vw-2rem)] break-words border-border-secondary transition-all ${catchEvents ? "pointer-events-auto" : "pointer-events-none"} ${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo) ? "opacity-100 pointer-events-auto" : "opacity-0") : ((mouseOverContent || mouseOverInfo) && focused ? "opacity-100" : "opacity-0")}
                         ${tooltipAlignment == "left" ? "left-0" : ""}
                         ${tooltipAlignment == "right" ? "right-0" : ""}
+                        ${tooltipAlignment == "center" ? "left-1/2 -translate-x-1/2" : ""}
                     `}  
                     style={{
                         marginTop: `${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo) ? "0px" : "20px") : ((mouseOverContent || mouseOverInfo) && focused ? "0px" : "20px")}`
-                    }}
-                >
+                    }}>
+                    
                     {containedInfoList.map((item, index) => (
                         <div className="flex flex-col bg-bg-secondary hover:bg-bg-primary px-4 " key={item.id ?? index}>
                             <div className="flex overflow-visible size-full transition-all">

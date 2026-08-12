@@ -19,11 +19,12 @@ const Tooltip = ({children, style, tooltipText, className, innerClassName, class
             {tooltipText &&
             <div className={`
                 absolute text-text-primary font-text ${verticalPlacement == "bottom" ? "top-full" : "bottom-full"} z-100 bg-bg-primary px-4 py-2 border border-border-secondary transition-all pointer-events-none ${showTooltip? "":"opacity-0"}
-            ${tooltipAlignment == "left"? "left-0" : ""}
-            ${tooltipAlignment == "right"? "right-0" : ""}
-            ${tooltipAlignment == "center"? "self-center" : ""}
+                max-w-[calc(100vw-2rem)] w-max break-words whitespace-normal
+                ${tooltipAlignment == "left"? "left-0" : ""}
+                ${tooltipAlignment == "right"? "right-0" : ""}
+                ${tooltipAlignment == "center"? "left-1/2 -translate-x-1/2" : ""}
             `}  style={{marginTop: `${showTooltip && verticalPlacement == "bottom" ? "0px" : "20px" }`, marginBottom:  `${showTooltip && verticalPlacement == "top" ? "0px" : "20px" }`}}>
-                <p className={`text-text-primary-accent ${className_Tooltip}`} >{tooltipText}</p>
+                <p className={`text-text-primary-accent ${className_Tooltip} break-words`} >{tooltipText}</p>
             </div>
             }
         </div>

@@ -65,18 +65,18 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
     function getCalendar(year : number, month : number){
         const preparedMonth : activityCell[] = [];
-        //console.warn(getStartOfTheMonthOffset(year, month)-1);
-        for(let i = 0; i < getStartOfTheMonthOffset(year, month); i++){
-        const newCell: activityCell = {
-            id : i,
-            date : new Date(),
-            isCurrentMonth : false,
-            isChecked : false
-        };
-        preparedMonth.push(newCell);
-        }
-        for(let i = 0; i < new Date(year, month+1, 0).getDate(); i++){
 
+        for (let i = 0; i < getStartOfTheMonthOffset(year, month); i++){
+            const newCell: activityCell = {
+                id : i,
+                date : new Date(),
+                isCurrentMonth : false,
+                isChecked : false
+            };
+            preparedMonth.push(newCell);
+        }
+
+        for(let i = 0; i < new Date(year, month+1, 0).getDate(); i++){
             const newCell: activityCell = {
                 id : i + preparedMonth.length,
                 date : new Date(),
@@ -92,25 +92,22 @@ const StoryCalendar = ({DiscordId} : IStoryCalendar) => {
 
     return(
         <div className="flex flex-1 flex-col gap-10 font-text-bold justify-center ">
-                <h1 className={`flex w-full text-accent font-text-bold uppercase tracking-wider text-2xl justify-center transition-all`}>
-                    История бойца
-                </h1>
-                <div className="flex self-center w-full justify-center">
-                    <div className="flex self-center">
-
+            <h1 className={`flex w-full text-accent font-text-bold uppercase tracking-wider text-2xl justify-center transition-all`}>
+                История бойца
+            </h1>
+            <div className="flex self-center w-full justify-center">
+                <div className="flex self-center">
                     <div className={`grid overflow-visible grid-cols-3 max-[1300px]:grid-cols-2 max-[1000px]:grid-cols-1  self-center justify-start gap-2 mb-28 flex-wrap `}>
                         {getTotalMonths().map(d=>(
                             <StoryCalendarPanel key={d.toDateString()} year={d.getFullYear()} month={d.getMonth()} 
                             ActivityDaysList={activityDates} 
                             unitStates={unitStates.filter(x=> (isInThisMonth(x.startDate, d.getFullYear(), d.getMonth()) || isInThisMonth(x.endDate, d.getFullYear(), d.getMonth())) || (isDateBetween(d, x.startDate, x.endDate)) )} 
                             singleDayEvents={singleDayEvents.filter(x=>(isInThisMonth(x.dateTime, d.getFullYear(), d.getMonth())))}></StoryCalendarPanel>
-                        ))
-                        }
-                        
-                    </div>
+                        ))}
                     </div>
                 </div>
-                <button className="flex text-text-primary-accent text-2xl cursor-pointer hover:underline transition-all self-stretch justify-center hover:bg-bg-secondary">Загрузить больше</button>
+            </div>
+            <button className="flex text-text-primary-accent text-2xl cursor-pointer hover:underline transition-all self-stretch justify-center hover:bg-bg-secondary">Загрузить больше</button>
         </div>
     )
 }
