@@ -21,8 +21,8 @@ interface IFormattedUnit {
     steamId?: string;
 }
 
-export default function AssignAwardPage({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = React.use(params);
+export default function AssignAwardPage({ params }: { params: Promise<{ awardId: string }> }) {
+    const { awardId } = React.use(params);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [award, setAward] = useState<IReward | null>(null);
@@ -34,7 +34,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const rewardId = Number(slug);
+                const rewardId = Number(awardId);
                 if (isNaN(rewardId)) {
                     throw new Error("Некорректный ID награды");
                 }
@@ -64,7 +64,7 @@ export default function AssignAwardPage({ params }: { params: Promise<{ slug: st
             }
         };
         fetchData();
-    }, [slug]);
+    }, [awardId]);
 
     const toggleUnitSelection = (discordId: string) => {
         const newSelected = new Set(selectedUnits);

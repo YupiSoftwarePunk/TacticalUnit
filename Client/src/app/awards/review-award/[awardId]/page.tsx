@@ -4,6 +4,8 @@ import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, Descrip
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import Tooltip from "@/components/ToolTip/ToolTip";
+import { PostService } from "@/shared/api/services/postService";
+import { RankService } from "@/shared/api/services/RankService";
 import { RewardService } from "@/shared/api/services/RewardService";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
@@ -16,18 +18,11 @@ const COLUMNS_CONFIG = [
     { key: "rank", label: "Звание", sortable: true, filterable: true },
     { key: "nickname", label: "Никнейм", sortable: false, filterable: true },
     { key: "roles", label: "Должность", sortable: false, filterable: true },
+    { key: "kit", label: "Избранный кит", sortable: false, filterable: true },
 ];
 
-interface IAssignedMember {
-    discordId: string;
-    nickname: string;
-    rank: string;
-    roles: string[];
-    steamId: string;
-}
-
-export default function Page({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = React.use(params);
+export default function Page({ params }: { params: Promise<{ awardId: string }> }) {
+    const { awardId } = React.use(params);
     const [canEdit, setCanEdit] = useState(false);
     const [canGrant, setCanGrant] = useState(true);
 
@@ -39,34 +34,51 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         color: "#F100FF"
     });
 
-    const [assignedMembers, setAssignedMembers] = useState<IAssignedMember[]>([]);
+    const [assignedMembers, setAssignedMembers] = useState<any[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>();
 
     useEffect(() => {
         async function loadData() {
             try {
-                const rewardId = Number(slug);
+                const rewardId = Number(awardId);
                 if (isNaN(rewardId)) {
-                    throw new Error("Некорректный идентификатор награды (slug)");
+                    throw new Error("Некорректный идентификатор награды (awardId)");
                 }
 
-                const [rewardData, assignedData] = await Promise.all([
-                    RewardService.getById(slug),
-                    RewardService.getAssigned(slug)
+                const [rewardData, membersData, rankData, postData] = await Promise.all([
+                    RewardService.getById(awardId),
+                    RewardService.getAssigned(awardId),
+                    RankService.getAll().catch(() => []),
+                    PostService.getAll().catch(() => []),
                 ]);
+
                 setReward(rewardData);
 
-                const formattedMembers: IAssignedMember[] = assignedData.map((item: IAssignedReward) => ({
-                    discordId: item.unit?.discordId || "",
-                    nickname: item.unit?.nickname || "Без никнейма",
-                    rank: item.unit?.rank?.name || "Без звания",
-                    roles: item.unit?.posts?.map(post => post.name) || [],
-                    steamId: item.unit?.steamId || ""
+                const ranksMap = new Map<string, string>(
+                    Array.isArray(rankData) ? rankData.map((r: any) => [r.id?.toString(), r.name]) : []
+                );
+
+                const postsMap = new Map<string, string>(
+                    Array.isArray(postData) ? postData.map((p: any) => [p.id?.toString(), p.name]) : []
+                );
+
+                const rawMembers = Array.isArray(membersData) 
+                    ? membersData 
+                    : (membersData && typeof membersData === 'object' && 'value' in membersData && Array.isArray((membersData as { value: any[] }).value))
+                        ? (membersData as { value: any[] }).value
+                        : [];
+
+                const formattedMembers = rawMembers.map((member: any) => ({
+                    ...member,
+                    nickname: member.nickname || member.unit?.nickname || "—",
+                    rank: ranksMap.get(member.rankId?.toString() || member.unit?.rankId?.toString()) || member.rank || member.unit?.rank?.name || "—",
+                    roles: postsMap.get(member.postId?.toString() || member.unit?.postId?.toString()) || member.roles || member.unit?.posts?.map((p: any) => p.name).join(", ") || "—",
+                    kit: member.favoriteKit?.name || member.unit?.favoriteKit?.name || member.kit || member.unit?.kit || "Не выбран"
                 }));
+
                 setAssignedMembers(formattedMembers);
                 setLoaded(true);
-
             } 
             catch (er) {
                 console.error(er);
@@ -76,7 +88,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         }
 
         loadData();
-    }, [slug]);
+    }, [awardId]);
 
     if (error !== undefined) { return <ErrorScreen error={error}></ErrorScreen> }
     if (!loaded) { return <LoadingScreen></LoadingScreen> }
