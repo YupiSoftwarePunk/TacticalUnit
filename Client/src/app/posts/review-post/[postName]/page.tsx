@@ -41,7 +41,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         maxRankId: "-1",
         color: "#b4b4b4",
         name: "Загрузка названия должности...",
-        fullName: "",
+        fullname: "",
         index: 0,
         permissions: [],
         allPermissions: []

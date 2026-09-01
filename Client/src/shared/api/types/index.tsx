@@ -143,7 +143,7 @@ interface IPost{
     maxRankId : string | number,
     color : string,
     name : string,
-    fullName: string;
+    fullname: string;
     index: number;
     permissions : IPermission[];      // для изменения разрешений
     allPermissions : IPermission[];   // для просмотра разрешений 

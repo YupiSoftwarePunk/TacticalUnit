@@ -183,7 +183,7 @@ function UploadDocumentContent() {
                 pst.forEach(el => {
                     preparedList.push(
                         {
-                            name : el.name,
+                            name : el.fullname,
                             description : el.description,
                             id : `${el.id}`,
                             selected : false
@@ -214,7 +214,7 @@ function UploadDocumentContent() {
                 pst.forEach(el => {
                     preparedList.push(
                         {
-                            name : el.name,
+                            name : el.fullname,
                             description : el.description,
                             id : `${el.id}`,
                             selected : false
