@@ -498,7 +498,7 @@ export const SelectionList = ({title = "", className = "", onSelection, list = [
                     <p className="flex text-right self-end text-text-secondary">Выбрано: {`${idStory.length} из ${list.length}`}</p>
                 }
             </div>
-            <div className={`flex overflow-visible flex-col min-h-5 bg-bg-dark border border-border-primary ${maxListHeight? `max-h-[${maxListHeight}] overflow-scroll` : ""}`} style={{maxHeight: `${maxListHeight? `${maxListHeight}` : ""}`}}>
+            <div className={`flex  flex-col min-h-5 bg-bg-dark border border-border-primary ${maxListHeight? `max-h-[${maxListHeight}] overflow-scroll` : "overflow-visible"}`} style={{maxHeight: `${maxListHeight? `${maxListHeight}` : ""}`}}>
                 {visibleList.map((item)=>(
                     <button key={item.id} className={`text-lg text-left ${item.selected ? "hover:my-1" : ""} transition-all`} onClick={()=>{addItemIntoList(item)}}>
                         <ToolTip className={`${item.selected ? "mx-3 my-2 px-3 py-2 border-accent hover:border-accent-hover bg-bg-secondary" : "px-6 py-4 hover:py-5 border-transparent hover:border-border-secondary"} border transition-all`} tooltipText={item.description} tooltipAlignment="left"><p className="text-text-primary">{item.name}</p></ToolTip>

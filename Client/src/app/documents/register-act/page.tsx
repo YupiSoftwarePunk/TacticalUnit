@@ -52,15 +52,33 @@ const ACT_TYPES_INFO = new Map<string, { title: string; description: string }>([
     ["sanctions", { 
         title: "Акт выдачи благодарностей/выговоров", 
         description: "Выбранным бойцам будет прибавлен выбранный статус. При установлении нового статуса будет арифметически учитываться текущий активный статус. То есть благодарность повышает, а выговор снижает текущий статус на 1 ступень. Строгий выговор понижает на 2 ступени." 
-    }]
+    }],
+    ["returnal", { 
+        title: "Акт возвращения в состав", 
+        description: "Выбранным бойцам будет присвоено выбранное звание. Они будут назначены на выбранные должности. Статус отставки, при наличии, будет терминирован." 
+    }],
 ]);
 
 function UploadDocumentContent() {
     const searchParameters = useSearchParams()
-    const actType = searchParameters?.get('type') // Types possible: "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions"
+    const actType = searchParameters?.get('type') // Types possible: "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions" | "returnal"
 
     const actTypesInfo = new Map<string, {title : string, description : string}>();
     
+    const [today, setToday] = useState<Date>(new Date());
+    const [dateInAWeek, setDateInAWeek] = useState<Date>(new Date(today.getFullYear(), today.getMonth(), today.getDate()+7));
+    const [selectedDate, setSelectedDate] = useState<string>(
+                    `
+                        ${dateInAWeek.getFullYear()}-
+                        ${(dateInAWeek.getMonth() + 1).toString().length > 1? ((dateInAWeek.getMonth() + 1).toString()) : `0${((dateInAWeek.getMonth() + 1).toString())}`}-
+                        ${dateInAWeek.getDate().toString().length > 1? (dateInAWeek.getDate().toString()) : `0${(dateInAWeek.getDate().toString())}`}
+                    `.replaceAll(" ", "").replaceAll("\n", "")
+    );
+
+
+    const [selectedRankId, setSelectedRankId] = useState<string>();
+    const [RankPrompt, setRankPrompt] = useState<string>();
+
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     
@@ -95,6 +113,17 @@ function UploadDocumentContent() {
     const [removePreviousPosts, setRemovePreviousPosts] = useState(false);
 
     const [multiroleList, setMultiroleList] = useState<IListedInputItem[]>([]);
+    const [multiroleList2, setMultiroleList2] = useState<IListedInputItem[]>([]);
+    
+    const [foundRanks, setFoundRanks] = useState<IListedInputItem[]>([]);
+
+    function findRanks(prompt : string, list : IListedInputItem[]){
+        let ranks = [];
+        ranks = list.filter(x=>!x.name?.toLowerCase().search(prompt.toLowerCase()))
+        if (ranks.length == 0) ranks = list.filter(x=>!x.id?.toLowerCase().search(prompt.toLowerCase()))
+        setFoundRanks(ranks)
+    }
+
     const [rankTweaking, setRankTweaking] = useState<IListedInputItem[]>([
         {
             name: "Повышению",
@@ -177,6 +206,35 @@ function UploadDocumentContent() {
                     )
                 });
                 setMultiroleList(preparedList);
+            })
+        }
+        else if(actType == "returnal"){
+            PostService.getAll().then((pst)=>{
+                const preparedList : IListedInputItem[] = [];
+                pst.forEach(el => {
+                    preparedList.push(
+                        {
+                            name : el.name,
+                            description : el.description,
+                            id : `${el.id}`,
+                            selected : false
+                        }
+                    )
+                });
+                setMultiroleList(preparedList);
+            })
+            RankService.getAll().then((rnk)=>{
+                const preparedList : IListedInputItem[] = [];
+                rnk.forEach(el => {
+                    preparedList.push(
+                        {
+                            name : el.name,
+                            id : `${el.id}`,
+                            selected : false
+                        }
+                    )
+                });
+                setMultiroleList2(preparedList);
             })
         }
     }, [])
@@ -486,7 +544,13 @@ function UploadDocumentContent() {
                     <SelectionList className="min-h-10" title="Выберите должности из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>
                 </div>
                 }
-                {actType == "ranks" && <SelectionList className="min-h-10" title="Выберите звание из списка" onSelection={(items)=>{setMultiroleList([...items])}} maxSelectedItems={1} searchField list={multiroleList}></SelectionList>}
+                {actType == "ranks" && 
+                <BaseContainer className="flex-col">
+                    <p className="text-text-secondary">Выберите звание из списка</p>
+                    <ListedInputField value={RankPrompt} list={foundRanks} onChange={(e)=>{setRankPrompt(e.target.value); findRanks(e.target.value, multiroleList)}} onChoice={(i)=>{setSelectedRankId(i.id); setRankPrompt(i.name)}} editMode editable></ListedInputField>
+                </BaseContainer>
+                // <SelectionList className="min-h-10" title="Выберите звание из списка" onSelection={(items)=>{setMultiroleList([...items])}} maxSelectedItems={1} searchField list={multiroleList}></SelectionList>
+                }
                 {actType == "rank-altering" && 
                 <div className="flex flex-col">
                 <SelectionList className="min-h-10" title="Количество ступеней к" onSelection={(items)=>{setRankTweaking([...items])}} maxSelectedItems={1} radiobutton list={rankTweaking}></SelectionList>
@@ -496,7 +560,34 @@ function UploadDocumentContent() {
                 </BaseContainer>
                 </div>
                 }
-                {actType == "sanctions" && <SelectionList className="min-h-10" title="Выберите тип санкции" onSelection={(items)=>{setSanctions([...items])}} maxSelectedItems={1} radiobutton list={sanctions}></SelectionList>}
+                {actType == "sanctions" && 
+                <>
+                <BaseContainer className="flex flex-col">
+                    <>
+                    <label htmlFor="inputDate">Введите дату окончания статуса:</label>
+                    <input id="inputDate" type="date" value={selectedDate} onChange={(e)=>{
+                        setSelectedDate(e.target.value)
+                        console.warn(e.target.value)
+                    }} min={`
+                        ${today.getFullYear()}-
+                        ${(today.getMonth() + 1).toString().length > 1? ((today.getMonth() + 1).toString()) : `0${((today.getMonth() + 1).toString())}`}-
+                        ${today.getDate().toString().length > 1? (today.getDate().toString()) : `0${(today.getDate().toString())}`}
+                        `.replaceAll(" ", "").replaceAll("\n", "")}/> 
+                    </>
+                </BaseContainer> 
+                <SelectionList className="min-h-10" title="Выберите тип санкции" onSelection={(items)=>{setSanctions([...items])}} maxSelectedItems={1} radiobutton list={sanctions}></SelectionList>
+                </>
+                }
+                
+                {actType == "returnal" && 
+                <>
+                <BaseContainer className="flex-col">
+                    <p className="text-text-secondary">Выберите звание из списка</p>
+                    <ListedInputField value={RankPrompt} list={foundRanks} onChange={(e)=>{setRankPrompt(e.target.value); findRanks(e.target.value, multiroleList2)}} onChoice={(i)=>{setSelectedRankId(i.id); setRankPrompt(i.name)}} editMode editable></ListedInputField>
+                </BaseContainer>
+                    <SelectionList className="min-h-10" searchField maxListHeight="300px"  title="Выберите должности" onSelection={(items)=>{setMultiroleList([...items])}} list={multiroleList}></SelectionList>
+                </>
+                }
                 <div className="mt-16 flex flex-col col-span-3">
                             <div className="flex justify-between items-end mb-6">
                                 <h2 className="text-2xl font-header text-black dark:text-text-primary uppercase tracking-wider">
