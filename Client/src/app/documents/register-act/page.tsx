@@ -11,6 +11,7 @@ import { RewardService } from "@/shared/api/services/RewardService";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import axios from "axios";
+import Tooltip from "@/components/ToolTip/ToolTip";
 
 interface IUnitCompressed {
     discordId: string;
@@ -126,6 +127,7 @@ function UploadDocumentContent() {
     const [multiroleList2, setMultiroleList2] = useState<IListedInputItem[]>([]);
     
     const [foundRanks, setFoundRanks] = useState<IListedInputItem[]>([]);
+    
 
     function findRanks(prompt : string, list : IListedInputItem[]){
         let ranks = [];
@@ -147,6 +149,9 @@ function UploadDocumentContent() {
         }
     ]);
     const [amountOfSteps, setAmountOfSteps] = useState<number>(1);
+    const [ignorePostMaxRank, setIgnorePostMaxRank] = useState<boolean>(false);
+
+
     const [sanctions, setSanctions] = useState<IListedInputItem[]>([
         {
             name: "Благодарность",
@@ -154,16 +159,22 @@ function UploadDocumentContent() {
             selected: false
         },
         {
-            name: "Выговор",
+            name: "Без статуса",
             id: "1",
             selected: false
         },
         {
-            name: "Строгий выговор",
+            name: "Выговор",
             id: "2",
             selected: false
         },
+        {
+            name: "Строгий выговор",
+            id: "3",
+            selected: false
+        },
     ]);
+    const [overridePrevStatus, setOverridePrevStatus] = useState<boolean>(false);
     
     
     useEffect(()=>{
@@ -412,8 +423,9 @@ function UploadDocumentContent() {
 
 
     function sendAct(){
+        console.log("attempting...");
         if(actType == "rewards"){
-            if(multiroleList.find(x=>x.selected == true) != undefined){
+            if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
                 let chosenRewards = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
                 if (chosenRewards.length > 0){
 
@@ -433,7 +445,7 @@ function UploadDocumentContent() {
             }
         }
         else if(actType == "posts"){
-            if(multiroleList.find(x=>x.selected == true) != undefined){
+            if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
                 let chosenPosts = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
                 if (chosenPosts.length > 0){
 
@@ -454,7 +466,7 @@ function UploadDocumentContent() {
             }
         }
         else if(actType == "ranks"){
-            if(multiroleList.find(x=>x.selected == true) != undefined && selectedRankId){
+            if(multiroleList.find(x=>x.selected == true) != undefined && selectedRankId && [...selectedUnits].length > 0){
                 let chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
                 if (chosenRanks.length > 0){
 
@@ -474,7 +486,7 @@ function UploadDocumentContent() {
             }
         }
         else if(actType == "rank-altering"){
-            if(multiroleList.find(x=>x.selected == true) != undefined && selectedRankId){
+            if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
                 let chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
                 if (chosenRanks.length > 0){
 
@@ -482,7 +494,7 @@ function UploadDocumentContent() {
                         DocId: selectedDocumentId,
                         UnitIds: [...selectedUnits],
                         Steps: amountOfSteps,
-                        IgnorePostMaxRank: false,
+                        IgnorePostMaxRank: ignorePostMaxRank,
                         IsDowngrade: rankTweaking.find(x=>x.selected)?.id == "1"
                     }
                     RankService.AlterRanks(act).then((r)=>{
@@ -495,11 +507,58 @@ function UploadDocumentContent() {
                 alert("Некоторые поля не были заполнены!")
             }
         }
-        else if(actType == "sanctions"){}
-        else if(actType == "resignation"){}
+        else if(actType == "sanctions"){
+            
+            
+            if([...selectedUnits].length > 0){
+
+                    let chosenSanction = sanctions.find(x=>x.selected)
+                    if (chosenSanction == undefined){
+                        alert("Вы не выбрали тип статуса")
+                        return
+                    }
+                    let act : IStatusAssignAct = {
+                        DocId: selectedDocumentId,
+                        UnitIds: [...selectedUnits],
+                        StatusKey: chosenSanction?.id!,
+                        Overwrite: overridePrevStatus,
+                        End: `${selectedDate}`,
+                        Days: 777
+                    }
+                    UnitService.AssignStatus(act).then((r)=>{
+                        alert("Операция прошла успешно!")
+                    }).catch((e)=>{
+                        alert(`Возникла ошибка при обработке запроса: ${e}`)
+                    })
+            }else{
+                alert("Некоторые поля не были заполнены!")
+            }
+        }
+        else if(actType == "resignation"){
+            if([...selectedUnits].length > 0){
+
+                    let chosenUsers = sanctions.find(x=>x.selected)
+                    if (chosenUsers == undefined){
+                        alert("Вы не выбрали ни одного пользователя")
+                        return
+                    }
+                    let act : IBaseAct = {
+                        DocId: selectedDocumentId,
+                        UnitIds: [...selectedUnits]
+                    }
+                    UnitService.Resignation(act).then((r)=>{
+                        alert("Операция прошла успешно!")
+                    }).catch((e)=>{
+                        alert(`Возникла ошибка при обработке запроса: ${e}`)
+                    })
+                }
+        }
         else if(actType == "dismissal"){}
         else if(actType == "returnal"){}
+        else{
+            console.log("no matching types of act");
 
+        }
         // "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions" | "resignation" | "dismissal" | "returnal"
     }
 
@@ -693,6 +752,9 @@ function UploadDocumentContent() {
                 <BaseContainer className="flex-col">
                     <p>Кол-во ступеней:</p>
                     <MultiroleInputField value={amountOfSteps} onChange={(e)=>{setAmountOfSteps(Math.max(Number(e.target.value), 1))}} type="num" editable editMode></MultiroleInputField>  
+                    <CheckButton onClick={()=>{
+                                setIgnorePostMaxRank(!ignorePostMaxRank)
+                            } } title={"Игнорировать ограничение максимального звания по должности"} value={ignorePostMaxRank}></CheckButton>
                 </BaseContainer>
                 </div>
                 }
@@ -710,6 +772,13 @@ function UploadDocumentContent() {
                         ${today.getDate().toString().length > 1? (today.getDate().toString()) : `0${(today.getDate().toString())}`}
                         `.replaceAll(" ", "").replaceAll("\n", "")}/> 
                     </>
+
+                    <Tooltip className="w-full">
+
+                    <CheckButton className="w-full" onClick={()=>{
+                        setOverridePrevStatus(!overridePrevStatus)
+                    } } title={"Перезаписать статус"} value={overridePrevStatus}></CheckButton>
+                    </Tooltip>
                 </BaseContainer> 
                 <SelectionList className="min-h-10" title="Выберите тип санкции" onSelection={(items)=>{setSanctions([...items])}} maxSelectedItems={1} radiobutton list={sanctions}></SelectionList>
                 </>
@@ -751,7 +820,7 @@ function UploadDocumentContent() {
                             /> */}
                 </div>
             </main>
-            <button className="fixed z-10 bg-bg-accent font-bold hover:bg-accent hover:text-black text-xl  border border-border-secondary right-0 bottom-0 px-10 py-7 mr-10 mb-10 transition-all">
+            <button onClick={()=>{sendAct()}} className="fixed z-10 bg-bg-accent font-bold hover:bg-accent hover:text-black text-xl  border border-border-secondary right-0 bottom-0 px-10 py-7 mr-10 mb-10 transition-all">
                 <div className="flex gap-5 justify-center">
 
                 <Upload></Upload>

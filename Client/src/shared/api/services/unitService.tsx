@@ -1,4 +1,4 @@
-import { apiClient } from "../api";
+import { apiClient, getBaseURL, getJwtToken } from "../api";
 import axios from "axios";
 
 
@@ -40,4 +40,21 @@ export const UnitService = {
     checkCanRankUnit: (targetDiscordId: number | string) => 
         apiClient<boolean>(`/unit/can/rank/${targetDiscordId}`),
     getCanPosts: () => apiClient<IPost[]>("/unit/can/posts"),
+
+
+    AssignStatus: (act : IStatusAssignAct) => {
+        return axios.post(`${getBaseURL()}/unit/status`, act, {headers: {Authorization: `Bearer ${getJwtToken()}`}})
+    },
+    Resignation: (act : IBaseAct) => {
+        return axios.post(`${getBaseURL()}/unit/retirement`, act)
+    },
+    Dismissal: (act : IBaseAct) => {
+        return axios.post(`${getBaseURL()}/unit/dismissal`, act)
+    },
+    Returnal: (act : IBaseAct) => {
+        return axios.post(`${getBaseURL()}/unit/return`, act)
+    },
+
+
+
 };

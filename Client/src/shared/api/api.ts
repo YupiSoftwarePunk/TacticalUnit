@@ -7,13 +7,16 @@ export function getBaseMediaURL(){
 export function getBaseURL(){
     return API_BASE_URL;
 }
+export function getJwtToken(){
+    return localStorage.getItem("access_token");
+}
 
 export const apiClient = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
     const method = (options.method || "GET").toUpperCase();
 
     let token = null;
     if (typeof window !== "undefined") {
-        token = localStorage.getItem("access_token");
+        token = getJwtToken();
     }
 
     const headersInit: Record<string, string> = {};

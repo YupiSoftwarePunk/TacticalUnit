@@ -419,7 +419,7 @@ interface IStatusAssignAct{
 
     StatusKey : string,
     Overwrite : boolean,
-    End : Date
+    End : string
     Days : number
 }
 interface IReturnalAct{
