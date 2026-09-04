@@ -1,4 +1,5 @@
-import { apiClient } from "../api";
+import { apiClient, getBaseURL } from "../api";
+import axios from "axios";
 
 
 export const PostService = {
@@ -17,4 +18,9 @@ export const PostService = {
     assignToUnit: (id: number | string, options: RequestInit) => apiClient<IAssignedReward>(`/post/${id}/assign`, { method: "POST", ...options }),
     getUnitAssignment: (id: number | string, unitId: number | string) => apiClient<IAssignedReward>(`/post/${id}/assign/${unitId}`),
     deleteUnitAssignment: (id: number | string, unitId: number | string) => apiClient<IAssignedReward>(`/post/${id}/assign/${unitId}`, { method: "DELETE" }),
+
+
+    AssignPosts: (act : IPostAssignAct) => {
+        return axios.post(`${getBaseURL()}/post/assign`, act)
+    },
 };

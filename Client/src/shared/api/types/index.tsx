@@ -376,3 +376,56 @@ interface IDOc {
     authorId: string,
     file: File
 }
+
+
+
+
+
+
+interface IBaseAct{
+    DocId? : string,
+    UnitIds : string[]
+}
+interface IPostAssignAct{
+    DocId? : string,
+    UnitIds : string[],
+
+    PostIds : string[],
+    Overwrite : boolean
+}
+interface IRankAssignAct{
+    DocId? : string,
+    UnitIds : string[],
+
+    RankId : string
+}
+interface IRewardAssignAct{
+    DocId? : string,
+    UnitIds : string[],
+
+    RewardIds : string[],
+}
+interface IRankChangeAct{
+    DocId? : string,
+    UnitIds : string[]
+
+    Steps : number,
+    IgnorePostMaxRank : boolean,
+    IsDowngrade : boolean
+}
+interface IStatusAssignAct{
+    DocId? : string,
+    UnitIds : string[],
+
+    StatusKey : string,
+    Overwrite : boolean,
+    End : Date
+    Days : number
+}
+interface IReturnalAct{
+    DocId? : string,
+    UnitIds : string[]
+
+    RankId : string,
+    PostIds : string[]
+}

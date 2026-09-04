@@ -1,4 +1,5 @@
-import { apiClient } from "../api";
+import { apiClient, getBaseURL } from "../api";
+import axios from "axios";
 
 
 export const RankService = {
@@ -22,4 +23,11 @@ export const RankService = {
         });
     },
     getUnitAssignment: (id: number | string, unitId: number | string) => apiClient<IRank>(`/rank/${id}/assign/${unitId}`),
+
+    AssignRanks: (act : IRankAssignAct) => {
+        return axios.post(`${getBaseURL()}/rank/assign`, act)
+    },
+    AlterRanks: (act : IRankChangeAct) => {
+        return axios.post(`${getBaseURL()}/rank/change`, act)
+    },
 };

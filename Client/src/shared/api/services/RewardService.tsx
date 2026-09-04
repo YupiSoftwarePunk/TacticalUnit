@@ -1,4 +1,5 @@
-import { apiClient } from "../api";
+import { apiClient, getBaseURL } from "../api";
+import axios from "axios";
 
 
 export const RewardService = {
@@ -32,5 +33,10 @@ export const RewardService = {
             method: "POST",
         });
     },
+
+    AssignRewards: (act : IRewardAssignAct) => {
+        return axios.post(`${getBaseURL()}/reward/assign`, act)
+    },
+
     getUnitAssignment: (id: string, unitId: string) => apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}`),
 };

@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { RewardService } from "@/shared/api/services/RewardService";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
+import axios from "axios";
 
 interface IUnitCompressed {
     discordId: string;
@@ -53,6 +54,14 @@ const ACT_TYPES_INFO = new Map<string, { title: string; description: string }>([
         title: "Акт выдачи благодарностей/выговоров", 
         description: "Выбранным бойцам будет прибавлен выбранный статус. При установлении нового статуса будет арифметически учитываться текущий активный статус. То есть благодарность повышает, а выговор снижает текущий статус на 1 ступень. Строгий выговор понижает на 2 ступени." 
     }],
+    ["resignation", { 
+        title: "Акт оформления отставки", 
+        description: "Выбранные бойцы будут сняты со всех должностей и лишены званий. В профиле будет отображаться статус отставки." 
+    }],
+    ["dismissal", { 
+        title: "Акт увольнения", 
+        description: "Выбранные бойцы будут сняты со всех должностей и лишены званий." 
+    }],
     ["returnal", { 
         title: "Акт возвращения в состав", 
         description: "Выбранным бойцам будет присвоено выбранное звание. Они будут назначены на выбранные должности. Статус отставки, при наличии, будет терминирован." 
@@ -61,7 +70,7 @@ const ACT_TYPES_INFO = new Map<string, { title: string; description: string }>([
 
 function UploadDocumentContent() {
     const searchParameters = useSearchParams()
-    const actType = searchParameters?.get('type') // Types possible: "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions" | "returnal"
+    const actType = searchParameters?.get('type') // Types possible: "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions" | "resignation" | "dismissal" | "returnal"
 
     const actTypesInfo = new Map<string, {title : string, description : string}>();
     
@@ -104,6 +113,7 @@ function UploadDocumentContent() {
     const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [units, setUnits] = useState<IFormattedUnit[]>([]);
 
+    // const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
     const [typeOfDocument, setTypeOfDocument] = useState<"selection" | "new" | "existing" | "empty">("selection");
     const [documentsAtDisposal, setDocumentsAtDisposal] = useState<IListedInputItem[]>([]);
@@ -201,6 +211,36 @@ function UploadDocumentContent() {
                         {
                             name : el.name,
                             id : `${el.id}`,
+                            selected : false
+                        }
+                    )
+                });
+                setMultiroleList(preparedList);
+            })
+        }
+        else if(actType == "resignation"){
+            UnitService.getAll().then((u)=>{
+                const preparedList : IListedInputItem[] = [];
+                u.forEach(el => {
+                    preparedList.push(
+                        {
+                            name : el.nickname,
+                            id : `${el.discordId}`,
+                            selected : false
+                        }
+                    )
+                });
+                setMultiroleList(preparedList);
+            })
+        }
+        else if(actType == "dismissal"){
+            UnitService.getAll().then((u)=>{
+                const preparedList : IListedInputItem[] = [];
+                u.forEach(el => {
+                    preparedList.push(
+                        {
+                            name : el.nickname,
+                            id : `${el.discordId}`,
                             selected : false
                         }
                     )
@@ -369,6 +409,102 @@ function UploadDocumentContent() {
         }
         setSelectedUnits(newSelected);
     };
+
+
+    function sendAct(){
+        if(actType == "rewards"){
+            if(multiroleList.find(x=>x.selected == true) != undefined){
+                let chosenRewards = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
+                if (chosenRewards.length > 0){
+
+                    let act : IRewardAssignAct = {
+                        DocId: selectedDocumentId,
+                        UnitIds: [...selectedUnits],
+                        RewardIds: chosenRewards as string[]
+                    }
+                    RewardService.AssignRewards(act).then((r)=>{
+                        alert("Операция прошла успешно!")
+                    }).catch((e)=>{
+                        alert(`Возникла ошибка при обработке запроса: ${e}`)
+                    })
+                }
+            }else{
+                alert("Некоторые поля не были заполнены!")
+            }
+        }
+        else if(actType == "posts"){
+            if(multiroleList.find(x=>x.selected == true) != undefined){
+                let chosenPosts = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
+                if (chosenPosts.length > 0){
+
+                    let act : IPostAssignAct = {
+                        DocId: selectedDocumentId,
+                        UnitIds: [...selectedUnits],
+                        PostIds: chosenPosts as string[],
+                        Overwrite: removePreviousPosts
+                    }
+                    PostService.AssignPosts(act).then((r)=>{
+                        alert("Операция прошла успешно!")
+                    }).catch((e)=>{
+                        alert(`Возникла ошибка при обработке запроса: ${e}`)
+                    })
+                }
+            }else{
+                alert("Некоторые поля не были заполнены!")
+            }
+        }
+        else if(actType == "ranks"){
+            if(multiroleList.find(x=>x.selected == true) != undefined && selectedRankId){
+                let chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
+                if (chosenRanks.length > 0){
+
+                    let act : IRankAssignAct = {
+                        DocId: selectedDocumentId,
+                        UnitIds: [...selectedUnits],
+                        RankId: selectedRankId
+                    }
+                    RankService.AssignRanks(act).then((r)=>{
+                        alert("Операция прошла успешно!")
+                    }).catch((e)=>{
+                        alert(`Возникла ошибка при обработке запроса: ${e}`)
+                    })
+                }
+            }else{
+                alert("Некоторые поля не были заполнены!")
+            }
+        }
+        else if(actType == "rank-altering"){
+            if(multiroleList.find(x=>x.selected == true) != undefined && selectedRankId){
+                let chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
+                if (chosenRanks.length > 0){
+
+                    let act : IRankChangeAct = {
+                        DocId: selectedDocumentId,
+                        UnitIds: [...selectedUnits],
+                        Steps: amountOfSteps,
+                        IgnorePostMaxRank: false,
+                        IsDowngrade: rankTweaking.find(x=>x.selected)?.id == "1"
+                    }
+                    RankService.AlterRanks(act).then((r)=>{
+                        alert("Операция прошла успешно!")
+                    }).catch((e)=>{
+                        alert(`Возникла ошибка при обработке запроса: ${e}`)
+                    })
+                }
+            }else{
+                alert("Некоторые поля не были заполнены!")
+            }
+        }
+        else if(actType == "sanctions"){}
+        else if(actType == "resignation"){}
+        else if(actType == "dismissal"){}
+        else if(actType == "returnal"){}
+
+        // "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions" | "resignation" | "dismissal" | "returnal"
+    }
+
+
+
 
     return (
         <div className="w-full min-h-screen bg-bg-primary transition-colors duration-300 font-text pb-20 flex flex-col overflow-x-hidden text-text-primary">
@@ -615,6 +751,15 @@ function UploadDocumentContent() {
                             /> */}
                 </div>
             </main>
+            <button className="fixed z-10 bg-bg-accent font-bold hover:bg-accent hover:text-black text-xl  border border-border-secondary right-0 bottom-0 px-10 py-7 mr-10 mb-10 transition-all">
+                <div className="flex gap-5 justify-center">
+
+                <Upload></Upload>
+                Отправить акт
+
+                </div>
+            </button>
+
         </div>
     );
 }
