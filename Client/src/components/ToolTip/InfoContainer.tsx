@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface IContainedInfo {
     id?: string;
@@ -32,6 +32,11 @@ const InfoContainer = ({
     const [catchEvents, setCatchEvents] = useState(false);
     const [focused, setFocused] = useState(false);
 
+
+    useEffect(()=>{
+        setCatchEvents(mouseOverContent || mouseOverInfo);
+    })
+
     return (
         <div 
             className={`relative focus:border-4 ${className!} flex ${tooltipAlignment == 'center' ? "justify-center" : ""}`}  
@@ -41,10 +46,8 @@ const InfoContainer = ({
             }} 
             onMouseLeave={() => {
                 setMouseOverContent(false); 
-                if (!mouseOverInfo) {
-                    setFocused(false); 
-                    setCatchEvents(false);
-                }
+                setFocused(false); 
+                setCatchEvents(false);
             }}
         >
             <div 
@@ -64,23 +67,20 @@ const InfoContainer = ({
                     }} 
                     onMouseLeave={() => {
                         setMouseOverInfo(false); 
-                        if (!mouseOverContent) {
-                            setFocused(false); 
-                            setCatchEvents(false);
-                        }
                     }} 
                     className={`
-                        absolute flex flex-col text-text-primary font-text-bold max-h-45 overflow-y-auto gap-1 ${verticalPlacement == "bottom" ? "top-full" : "bottom-full"} z-100 bg-bg-primary px-4 py-2 border w-80 max-w-[calc(100vw-2rem)] break-words border-border-secondary transition-all ${catchEvents ? "pointer-events-auto" : "pointer-events-none"} ${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo) ? "opacity-100 pointer-events-auto" : "opacity-0") : ((mouseOverContent || mouseOverInfo) && focused ? "opacity-100" : "opacity-0")}
+                        absolute flex flex-col text-text-primary font-text-bold max-h-45 overflow-y-auto gap-1 origin-top ${verticalPlacement == "bottom" ? "top-full" : "bottom-full"} z-100 bg-bg-primary px-4 py-2 border w-80 max-w-[calc(100vw-2rem)] break-words border-border-secondary transition-all ${catchEvents ? "pointer-events-auto" : "pointer-events-none"} ${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo) ? "opacity-100 pointer-events-auto" : "opacity-0") : ((mouseOverContent || mouseOverInfo) && focused ? "opacity-100" : "opacity-0")}
                         ${tooltipAlignment == "left" ? "left-0" : ""}
                         ${tooltipAlignment == "right" ? "right-0" : ""}
                         ${tooltipAlignment == "center" ? "left-1/2 -translate-x-1/2" : ""}
                     `}  
                     style={{
-                        marginTop: `${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo) ? "0px" : "20px") : ((mouseOverContent || mouseOverInfo) && focused ? "0px" : "20px")}`
+                        // marginTop: `${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo) ? "0px" : "20px") : ((mouseOverContent || mouseOverInfo) && focused ? "0px" : "20px")}`
+                        scale: `${appearOn == "hover" ? ((mouseOverContent || mouseOverInfo) ? "100%" : "0%") : ((mouseOverContent || mouseOverInfo) && focused ? "100%" : "0%")}`
                     }}>
                     
                     {containedInfoList.map((item, index) => (
-                        <div className="flex flex-col bg-bg-secondary hover:bg-bg-primary px-4 " key={item.id ?? index}>
+                        <div className="flex flex-col bg-bg-secondary hover:bg-bg-primary px-4 " key={containedInfoList.indexOf(item)}>
                             <div className="flex overflow-visible size-full transition-all">
                                 {item.color && (
                                     <div className="rounded-full min-h-3 min-w-3 self-center mx-2" style={{ background: `${item.color}` }}></div>

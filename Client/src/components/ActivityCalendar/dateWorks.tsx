@@ -28,7 +28,7 @@ export function isDateBetweenDates(dateInQuestion : Date, lowerDate? : Date, big
 
 export function isDateBetween(dateInQuestion: Date, lowerDate: Date | undefined, biggerDate: Date | undefined, inclusive: boolean = true): boolean {
     const targetTime = dateInQuestion.getTime();
-    console.warn(`dates: ${dateInQuestion} | ${lowerDate} | ${biggerDate}`)
+    // console.warn(`dates: ${dateInQuestion} | ${lowerDate} | ${biggerDate}`)
     if (lowerDate && biggerDate){
         
         const minTime = Math.min(lowerDate.getTime(), biggerDate.getTime());

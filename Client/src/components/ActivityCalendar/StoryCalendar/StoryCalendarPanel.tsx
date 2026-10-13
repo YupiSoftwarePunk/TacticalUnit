@@ -124,7 +124,7 @@ const StoryCalendarPanel = ({year, month, ActivityDaysList = [], unitStates = []
                             
                             { activityMatrix != undefined && activityMatrix.map((item)=>(
                                 // ActivityDaysList.indexOf(item)
-                                <div key={activityMatrix.indexOf(item)} className="flex size-10 p-1"> 
+                                <div key={item.id} className="flex size-10 p-1"> 
                                     <ActivityCalendarCell borderColor={item.color} dateDisplay={`${item.date.getDate()}.${item.date.getMonth()+1}.${item.date.getFullYear()}`} isActive={item.isChecked} isCurrentMonth={item.isCurrentMonth} givenInfo={item.givenInfo}></ActivityCalendarCell>
                                 </div>
                             ))}
