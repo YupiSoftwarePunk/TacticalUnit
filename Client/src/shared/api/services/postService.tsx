@@ -21,6 +21,6 @@ export const PostService = {
 
 
     AssignPosts: (act : IPostAssignAct) => {
-        return axios.post(`${getBaseURL()}/post/assign`, act)
+        return apiClient(`/Post/assign`, {method:"POST", body:JSON.stringify(act)})
     },
 };

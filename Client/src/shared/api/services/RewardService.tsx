@@ -35,7 +35,7 @@ export const RewardService = {
     },
 
     AssignRewards: (act : IRewardAssignAct) => {
-        return apiClient<JSON>(`${getBaseURL()}/reward/assign`, {body:JSON.stringify(act)})
+        return apiClient<JSON>(`${getBaseURL()}/reward/assign`, {method:"POST", body:JSON.stringify(act)})
     },
 
     getUnitAssignment: (id: string, unitId: string) => apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}`),

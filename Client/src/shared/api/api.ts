@@ -38,7 +38,7 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
 
     const requiresAuth = method !== "GET" || endpoint.startsWith("/auth/me");
 
-    if (token && requiresAuth) {
+    if (token) {
         headersInit["Authorization"] = `Bearer ${token}`;
     }
 
