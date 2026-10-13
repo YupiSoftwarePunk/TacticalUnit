@@ -35,7 +35,7 @@ export const RewardService = {
     },
 
     AssignRewards: (act : IRewardAssignAct) => {
-        return axios.post(`${getBaseURL()}/reward/assign`, act)
+        return apiClient<JSON>(`${getBaseURL()}/reward/assign`, {body:JSON.stringify(act)})
     },
 
     getUnitAssignment: (id: string, unitId: string) => apiClient<IAssignedReward>(`/reward/${id}/assign/${unitId}`),
