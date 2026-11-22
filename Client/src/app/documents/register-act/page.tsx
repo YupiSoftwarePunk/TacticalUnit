@@ -78,6 +78,7 @@ function UploadDocumentContent() {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const submittingRef = useRef(false);
+    const [SignAsVrIO, setSignAsVrIO] = useState<boolean>(false);
     
     const [today, setToday] = useState<Date>(new Date());
     const [dateInAWeek, setDateInAWeek] = useState<Date>(new Date(today.getFullYear(), today.getMonth(), today.getDate()+7));
@@ -630,7 +631,7 @@ function UploadDocumentContent() {
                 <div className="flex flex-col">
                     <BaseContainer className="flex flex-col">
                         <CheckButton className="text-xl flex-1 text-text-primary" title="Снять с других должностей" value={removePreviousPosts} onClick={()=>{setRemovePreviousPosts(!removePreviousPosts)}}></CheckButton>
-
+                        <CheckButton className="text-xl flex-1 text-text-primary" title="Назначить как ВрИО" onClick={()=>{setSignAsVrIO(!SignAsVrIO)}} value={SignAsVrIO}></CheckButton>
 
                     </BaseContainer>
                     <SelectionList className="min-h-10" title="Выберите должности из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>
