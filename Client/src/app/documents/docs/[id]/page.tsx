@@ -7,7 +7,7 @@ import { FileText, Download, ArrowLeft, Calendar } from "lucide-react";
 import InfoContainer from "@/components/ToolTip/InfoContainer";
 import { LoadingScreen, ErrorScreen } from "@/components/StatusScreens/Screens";
 import { DocService } from "@/shared/api/services/docsService";
-import { getBaseMediaURL } from "@/shared/api/api";
+import { downloadDocument } from "@/shared/api/services/documentDownload";
 import path from "path";
 
 export default function DocumentPage() {
@@ -18,6 +18,8 @@ export default function DocumentPage() {
     const [document, setDocument] = useState<IDoc | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [downloadError, setDownloadError] = useState<string | null>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     useEffect(() => {
         if (!id) return;
@@ -27,14 +29,9 @@ export default function DocumentPage() {
             setError(null);
             try {
                 
-                DocService.getById(id).then(recDoc => {
-                    const date = recDoc.uploadedTime.split("T")[0].split("-")
-                    recDoc.uploadedTime = `${date.reverse()}`.replaceAll(",", ".");
-                    setDocument(recDoc);
-                    // console.warn(recDoc.uploadedTime)
-                })
-                
-                // setDocument(mockData);
+                const recDoc = await DocService.getById(id);
+                const date = recDoc.uploadedTime.split("T")[0].split("-");
+                setDocument({ ...recDoc, uploadedTime: date.reverse().join(".") });
             } 
             catch (err) {
                 console.error("Ошибка при получении документа:", err);
@@ -48,18 +45,17 @@ export default function DocumentPage() {
         fetchDocumentData();
     }, [id]);
 
-    const handleDownload = () => {
-        if (!document) return;
-
-
-        
-
-        const link = window.document.createElement("a");
-        link.href = `${getBaseMediaURL()}/docs/${document.id}.doc`;
-        link.setAttribute("download", document.title);
-        window.document.body.appendChild(link);
-        link.click();
-        window.document.body.removeChild(link);
+    const handleDownload = async () => {
+        if (!document?.id || isDownloading) return;
+        setDownloadError(null);
+        setIsDownloading(true);
+        try {
+            await downloadDocument(String(document.id), document.title);
+        } catch (error) {
+            setDownloadError(error instanceof Error ? error.message : "Не удалось скачать файл");
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     if (isLoading) {
@@ -107,14 +103,16 @@ export default function DocumentPage() {
 
                         <button
                             onClick={handleDownload}
-                            className="relative group inline-block w-full"
+                            disabled={isDownloading}
+                            className="relative group inline-block w-full disabled:opacity-50"
                         >
                             <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
                             <div className="relative border border-border-secondary bg-bg-secondary px-6 py-3 text-xs font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black cursor-pointer flex items-center justify-center gap-2">
                                 <Download className="w-4 h-4" />
-                                Скачать файл
+                                {isDownloading ? "Загрузка..." : "Скачать файл"}
                             </div>
                         </button>
+                        {downloadError && <p role="alert" className="text-text-secondary">{downloadError}</p>}
                     </div>
 
                     <div className="lg:col-span-2 bg-bg-secondary border border-border-secondary/40 p-4 md:p-6 shadow-sm flex flex-col gap-5 transition-colors duration-300">

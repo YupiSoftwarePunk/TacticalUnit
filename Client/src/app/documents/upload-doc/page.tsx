@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MainHeader } from "@/components/Header/MainHeader";
 import { Upload, FileText, CheckCircle2, AlertTriangle, Check } from "lucide-react";
-import { DocService } from "@/shared/api/services/docsService";
+import { uploadDocument } from "./uploadDocument";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import { UnitService } from "@/shared/api/services/unitService";
 import { RankService } from "@/shared/api/services/RankService";
@@ -13,6 +13,7 @@ export default function UploadDocumentPage() {
     const [documentName, setDocumentName] = useState<string>("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const submittingRef = useRef(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
     const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
@@ -58,6 +59,8 @@ export default function UploadDocumentPage() {
             className: "w-12",
             render: (_, item: IFormattedUnit) => (
                 <button
+                    type="button"
+                    disabled={isLoading}
                     onClick={() => toggleUnitSelection(item.discordId)}
                     className="flex items-center justify-center w-6 h-6 border border-border-secondary bg-bg-dark hover:bg-bg-accent hover:text-text-primary-accent transition-colors"
                 >
@@ -115,6 +118,7 @@ export default function UploadDocumentPage() {
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
+        if (submittingRef.current) return;
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             const file = e.dataTransfer.files[0];
             setSelectedFile(file);
@@ -127,43 +131,22 @@ export default function UploadDocumentPage() {
 
     const handleSaveDocument = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedFile || !documentName.trim()) {
-            setStatus({ type: 'error', message: 'Заполните название документа и выберите файл' });
-            return;
-        }
-
+        if (submittingRef.current) return;
+        submittingRef.current = true;
         setIsLoading(true);
         setStatus(null);
-        
-        const formData = new FormData();
-        formData.append("File", selectedFile);
-        formData.append("Title", documentName.trim());
-        selectedUnits.forEach(element => {
-            formData.append("UnitIds", element);
-        });
-        
-        // console.warn(formData)
-        // console.warn(documentName)
-        // console.warn(await selectedFile.text())
         try {
-            // обращение к ендпоинту
-            DocService.createNew({body: formData}).then(()=>{
-
-                setStatus({ type: 'success', message: 'Документ успешно загружен в базу данных' });
-            }).catch(
-                ()=>{
-                    setStatus({ type: 'error', message: 'Произошла ошибка при загрузке документа' });
-                }
-            )
+            await uploadDocument(selectedFile, documentName, selectedUnits);
+            setStatus({ type: "success", message: selectedUnits.size > 0
+                ? "Документ загружен. Привязка к бойцам ещё не реализована на сервере."
+                : "Документ успешно загружен" });
             setDocumentName("");
             setSelectedFile(null);
             if (fileInputRef.current) fileInputRef.current.value = "";
-        } 
-        catch (err) {
-            console.error("Ошибка при отправке документа:", err);
-            setStatus({ type: 'error', message: 'Не удалось отправить документ' });
-        } 
-        finally {
+        } catch (error) {
+            setStatus({ type: "error", message: error instanceof Error ? error.message : "Не удалось загрузить документ" });
+        } finally {
+            submittingRef.current = false;
             setIsLoading(false);
         }
     };
@@ -233,7 +216,7 @@ export default function UploadDocumentPage() {
                         <div
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
-                            onClick={() => fileInputRef.current?.click()}
+                            onClick={() => { if (!isLoading) fileInputRef.current?.click(); }}
                             className={`w-full min-h-[250px] lg:min-h-[350px] border-2 border-dashed bg-bg-secondary/40 flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all duration-300 group ${
                                 selectedFile 
                                     ? 'border-accent bg-bg-secondary/70' 
@@ -297,6 +280,12 @@ export default function UploadDocumentPage() {
                                         Выбрано: {selectedUnits.size}
                                     </span>
                                 </div>
+
+                                {selectedUnits.size > 0 && (
+                                    <p className="mb-4 text-text-secondary" role="status">
+                                        Привязку документа к выбранным бойцам необходимо реализовать на сервере.
+                                    </p>
+                                )}
 
                                 <div className="border border-black/10 dark:border-white/5 overflow-hidden mb-6">
                                     <UniversalTable 
