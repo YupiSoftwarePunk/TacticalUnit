@@ -26,7 +26,6 @@ export default function DocumentArchivePage() {
     const [endDate, setEndDate] = useState<string>("");
 
     useEffect(() => {
-        setIsLoading(true);
         DocService.getAll()
             .then((data) => {
                 const visibleDocs = (data as unknown as IDoc[]).filter((doc) => !doc.isHidden);

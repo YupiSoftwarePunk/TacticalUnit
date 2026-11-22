@@ -21,6 +21,19 @@ const COLUMNS_CONFIG = [
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true },
 ];
 
+type AssignedMember = {
+    nickname?: string;
+    rankId?: string | number;
+    postId?: string | number;
+    rank?: string;
+    roles?: string;
+    kit?: string;
+    steamId?: string | number;
+    postsIds: string[];
+    favoriteKit?: { name?: string };
+    unit?: { nickname?: string; rankId?: string | number; postId?: string | number; rank?: { name?: string }; posts?: { name: string }[]; favoriteKit?: { name?: string }; kit?: string };
+};
+
 export default function Page({ params }: { params: Promise<{ awardId: string }> }) {
     const { awardId } = React.use(params);
     const [canEdit, setCanEdit] = useState(false);
@@ -34,7 +47,7 @@ export default function Page({ params }: { params: Promise<{ awardId: string }> 
         color: "#F100FF"
     });
 
-    const [assignedMembers, setAssignedMembers] = useState<any[]>([]);
+    const [assignedMembers, setAssignedMembers] = useState<Record<string, unknown>[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>();
 
@@ -55,25 +68,25 @@ export default function Page({ params }: { params: Promise<{ awardId: string }> 
 
                 setReward(rewardData);
 
-                const ranksMap = new Map<string, string>(
-                    Array.isArray(rankData) ? rankData.map((r: any) => [r.id?.toString(), r.name]) : []
+                const ranksMap = new Map<string | number | undefined, string>(
+                    Array.isArray(rankData) ? rankData.map((r) => [r.id?.toString(), r.name]) : []
                 );
 
-                const postsMap = new Map<string, string>(
-                    Array.isArray(postData) ? postData.map((p: any) => [p.id?.toString(), p.name]) : []
+                const postsMap = new Map<string | number | undefined, string>(
+                    Array.isArray(postData) ? postData.map((p) => [p.id?.toString(), p.name]) : []
                 );
 
                 const rawMembers = Array.isArray(membersData) 
                     ? membersData 
-                    : (membersData && typeof membersData === 'object' && 'value' in membersData && Array.isArray((membersData as { value: any[] }).value))
-                        ? (membersData as { value: any[] }).value
+                    : (membersData && typeof membersData === 'object' && 'value' in membersData && Array.isArray((membersData as { value: AssignedMember[] }).value))
+                        ? (membersData as { value: AssignedMember[] }).value
                         : [];
 
-                const formattedMembers = rawMembers.map((member: any) => ({
+                const formattedMembers = (rawMembers as unknown as AssignedMember[]).map((member: AssignedMember) => ({
                     ...member,
                     nickname: member.nickname || member.unit?.nickname || "—",
                     rank: ranksMap.get(member.rankId?.toString() || member.unit?.rankId?.toString()) || member.rank || member.unit?.rank?.name || "—",
-                    roles: postsMap.get(member.postId?.toString() || member.unit?.postId?.toString()) || member.roles || member.unit?.posts?.map((p: any) => p.name).join(", ") || "—",
+                    roles: postsMap.get(member.postId?.toString() || member.unit?.postId?.toString()) || member.roles || member.unit?.posts?.map((p) => p.name).join(", ") || "—",
                     kit: member.favoriteKit?.name || member.unit?.favoriteKit?.name || member.kit || member.unit?.kit || "Не выбран"
                 }));
 

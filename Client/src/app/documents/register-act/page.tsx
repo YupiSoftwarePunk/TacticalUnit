@@ -99,6 +99,8 @@ function UploadDocumentContent() {
 
         const info = ACT_TYPES_INFO.get(actType);
         if (info) {
+            // Keep the existing effect timing when the selected act type changes.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setTitle(info.title);
             setDescription(info.description);
         }
@@ -428,10 +430,10 @@ function UploadDocumentContent() {
         console.log("attempting...");
         if(actType == "rewards"){
             if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
-                let chosenRewards = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
+                const chosenRewards = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
                 if (chosenRewards.length > 0){
 
-                    let act : IRewardAssignAct = {
+                    const act : IRewardAssignAct = {
                         DocId: selectedDocumentId,
                         UnitIds: [...selectedUnits],
                         RewardIds: chosenRewards as string[]
@@ -449,10 +451,10 @@ function UploadDocumentContent() {
         }
         else if(actType == "posts"){
             if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
-                let chosenPosts = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
+                const chosenPosts = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
                 if (chosenPosts.length > 0){
 
-                    let act : IPostAssignAct = {
+                    const act : IPostAssignAct = {
                         DocId: selectedDocumentId,
                         UnitIds: [...selectedUnits],
                         PostIds: chosenPosts as string[],
@@ -470,10 +472,10 @@ function UploadDocumentContent() {
         }
         else if(actType == "ranks"){
             if(multiroleList.find(x=>x.selected == true) != undefined && selectedRankId && [...selectedUnits].length > 0){
-                let chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
+                const chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
                 if (chosenRanks.length > 0){
 
-                    let act : IRankAssignAct = {
+                    const act : IRankAssignAct = {
                         DocId: selectedDocumentId,
                         UnitIds: [...selectedUnits],
                         RankId: selectedRankId
@@ -490,10 +492,10 @@ function UploadDocumentContent() {
         }
         else if(actType == "rank-altering"){
             if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
-                let chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
+                const chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
                 if (chosenRanks.length > 0){
 
-                    let act : IRankChangeAct = {
+                    const act : IRankChangeAct = {
                         DocId: selectedDocumentId,
                         UnitIds: [...selectedUnits],
                         Steps: amountOfSteps,
@@ -515,15 +517,15 @@ function UploadDocumentContent() {
             
             if([...selectedUnits].length > 0){
 
-                    let chosenSanction = sanctions.find(x=>x.selected)
+                    const chosenSanction = sanctions.find(x=>x.selected)
                     if (chosenSanction == undefined){
                         alert("Вы не выбрали тип статуса")
                         return
                     }
-                    let act : IStatusAssignAct = {
+                    const act : IStatusAssignAct = {
                         DocId: selectedDocumentId,
                         UnitIds: [...selectedUnits],
-                        StatusKey: chosenSanction?.id!,
+                        StatusKey: chosenSanction.id!,
                         Overwrite: overridePrevStatus,
                         End: `${selectedDate}`,
                         Days: 777
@@ -540,12 +542,12 @@ function UploadDocumentContent() {
         else if(actType == "resignation"){
             if([...selectedUnits].length > 0){
 
-                    let chosenUsers = sanctions.find(x=>x.selected)
+                    const chosenUsers = sanctions.find(x=>x.selected)
                     if (chosenUsers == undefined){
                         alert("Вы не выбрали ни одного пользователя")
                         return
                     }
-                    let act : IBaseAct = {
+                    const act : IBaseAct = {
                         DocId: selectedDocumentId,
                         UnitIds: [...selectedUnits]
                     }

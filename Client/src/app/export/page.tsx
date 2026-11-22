@@ -12,7 +12,7 @@ type ExportFormat = "xlsx" | "xls" | "ods" | "pdf" | "csv" | "tsv";
 
 export default function ExportPage() {
     const router = useRouter();
-    const [data, setData] = useState<Record<string, any>[]>([]);
+    const [data, setData] = useState<Record<string, unknown>[]>([]);
     const [columns, setColumns] = useState<ColumnConfig[]>([]);
     const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("xlsx");
     const [fileName, setFileName] = useState("members_export");
@@ -27,6 +27,8 @@ export default function ExportPage() {
         }
 
         try {
+            // Preserve session storage loading after the component mounts.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setData(JSON.parse(rawData));
             setColumns(JSON.parse(rawColumns));
         } 
@@ -63,7 +65,7 @@ export default function ExportPage() {
         const visibleColumns = columns.filter((col) => col.key);
 
         const exportableData = data.map((row) => {
-            const cleanRow: Record<string, any> = {};
+            const cleanRow: Record<string, unknown> = {};
             visibleColumns.forEach((col) => {
                 cleanRow[col.label] = row[col.key] ?? "";
             });
@@ -82,7 +84,7 @@ export default function ExportPage() {
         }
         else if (selectedFormat == "tsv")
         {
-            XLSX.writeFile(workbook, fullFileName, { bookType: "csv", FS: "\t" } as any);
+            XLSX.writeFile(workbook, fullFileName, { bookType: "csv", FS: "\t" } as XLSX.WritingOptions);
         }
         else if (selectedFormat == "xls")
         {

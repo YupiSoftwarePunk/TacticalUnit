@@ -18,6 +18,19 @@ const COLUMNS_CONFIG = [
     { key: "kit", label: "Избранный кит", sortable: false, filterable: true },
 ];
 
+type AssignedMember = {
+    nickname?: string;
+    rankId?: string | number;
+    postId?: string | number;
+    rank?: string;
+    roles?: string;
+    kit?: string;
+    steamId?: string | number;
+    postsIds: string[];
+    favoriteKit?: { name?: string };
+    unit?: { nickname?: string; rankId?: string | number; postId?: string | number; rank?: { name?: string }; posts?: { name: string }[]; favoriteKit?: { name?: string }; kit?: string };
+};
+
 export default function PostPage({ params }: { params: Promise<{ postName: string }> }) {
     const { postName } = React.use(params);
     const numericPostId = Number(postName);
@@ -47,7 +60,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         allPermissions: []
     });
 
-    const [members, setMembers] = useState<IAssignedReward[]>([]);
+    const [members, setMembers] = useState<Record<string, unknown>[]>([]);
     
     const [postPrompt, setPostPrompt] = useState<string>("");
     const [subdivisionPrompt, setSubdivisionPrompt] = useState<string>("");
@@ -108,8 +121,8 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
             setGivedPermissions(formattedPermissions);
             setPost(postData);
 
-            const ranksMap = new Map<string, string>(
-                Array.isArray(rankData) ? rankData.map((r: any) => [r.id?.toString(), r.name]) : []
+            const ranksMap = new Map<string | number | undefined, string>(
+                Array.isArray(rankData) ? rankData.map((r) => [r.id?.toString(), r.name]) : []
             );
 
             const rawMembers = Array.isArray(membersData) 
@@ -118,7 +131,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                     ? (membersData as { value: IAssignedReward[] }).value
                     : [];
 
-            const formattedMembers = rawMembers.map((member: any) => ({
+            const formattedMembers = (rawMembers as unknown as AssignedMember[]).map((member: AssignedMember) => ({
                 ...member,
                 nickname: member.nickname || "—",
                 rank: ranksMap.get(member.rankId) || "—",

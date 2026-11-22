@@ -28,7 +28,7 @@ export default function DocumentPage() {
             try {
                 
                 DocService.getById(id).then(recDoc => {
-                    let date = recDoc.uploadedTime.split("T")[0].split("-")
+                    const date = recDoc.uploadedTime.split("T")[0].split("-")
                     recDoc.uploadedTime = `${date.reverse()}`.replaceAll(",", ".");
                     setDocument(recDoc);
                     // console.warn(recDoc.uploadedTime)

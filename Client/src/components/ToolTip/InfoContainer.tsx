@@ -34,6 +34,8 @@ const InfoContainer = ({
 
 
     useEffect(()=>{
+        // Preserve the existing post-render pointer-event synchronization.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCatchEvents(mouseOverContent || mouseOverInfo);
     })
 
