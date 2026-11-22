@@ -11,7 +11,8 @@ import { RewardService } from "@/shared/api/services/RewardService";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import { apiClient } from "@/shared/api/api";
-import { buildActRequest } from "./actRequest";
+import { submitAct, type ActDocument } from "./submitAct";
+import { DocService } from "@/shared/api/services/docsService";
 import Tooltip from "@/components/ToolTip/ToolTip";
 
 interface IUnitCompressed {
@@ -110,7 +111,10 @@ function UploadDocumentContent() {
     }, [actType]);
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [documentTitle, setDocumentTitle] = useState("");
+    const [uploadedDocumentId, setUploadedDocumentId] = useState<string>();
+    const [documentsLoading, setDocumentsLoading] = useState(false);
+    const [documentsError, setDocumentsError] = useState<string>();
     interface IFormattedUnit {
     discordId: string;
     nickname: string;
@@ -300,63 +304,23 @@ function UploadDocumentContent() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0];
-            setSelectedFile(file);
-            // if (!documentName) {
-            //     const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-            //     setDocumentName(nameWithoutExt);
-            // }
-        }
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            const file = e.dataTransfer.files[0];
-            setSelectedFile(file);
-            // if (!documentName) {
-            //     const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-            //     setDocumentName(nameWithoutExt);
-            // }
-        }
-    };
-
-    const handleSaveDocument = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!selectedFile) {
-            setStatus({ type: 'error', message: 'Выберите файл' });
-            return;
-        }
-
-        setIsLoading(true);
-        setStatus(null);
-
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        // formData.append("name", documentName.trim());
-
+    async function loadDocuments() {
+        setDocumentsLoading(true);
+        setDocumentsError(undefined);
         try {
-            // обращение к ендпоинту
-            setStatus({ type: 'success', message: 'Документ успешно загружен в базу данных' });
-            // setDocumentName("");
-            setSelectedFile(null);
-            if (fileInputRef.current) fileInputRef.current.value = "";
-        } 
-        catch (err) {
-            console.error("Ошибка при отправке документа:", err);
-            setStatus({ type: 'error', message: 'Не удалось отправить документ' });
-        } 
-        finally {
-            setIsLoading(false);
+            const docs = await DocService.getAll();
+            setDocumentsAtDisposal(docs.filter(doc => doc.id != null).map(doc => ({ id: String(doc.id), name: doc.title })));
+        } catch (error) {
+            setDocumentsError(error instanceof Error ? error.message : "Не удалось загрузить документы");
+        } finally {
+            setDocumentsLoading(false);
         }
-    };
+    }
 
+    function updateFile(file: File | null) {
+        setSelectedFile(file);
+        setUploadedDocumentId(undefined);
+    }
 
     const tableColumns: ColumnConfig[] = [
         {
@@ -432,10 +396,17 @@ function UploadDocumentContent() {
     async function sendAct() {
         if (submittingRef.current) return;
         try {
-            const request = buildActRequest({
+            const document: ActDocument = typeOfDocument === "new"
+                ? { mode: "new", file: selectedFile, title: documentTitle, uploadedId: uploadedDocumentId }
+                : typeOfDocument === "existing"
+                    ? { mode: "existing", id: selectedDocumentId }
+                    : { mode: typeOfDocument };
+            submittingRef.current = true;
+            setIsSubmitting(true);
+            setStatus(null);
+            await submitAct({
                 type: actType ?? null,
                 unitIds: [...selectedUnits],
-                documentId: selectedDocumentId,
                 selectedIds: multiroleList.filter(item => item.selected).map(item => item.id || ""),
                 rankId: selectedRankId,
                 steps: amountOfSteps,
@@ -445,13 +416,19 @@ function UploadDocumentContent() {
                 statusId: sanctions.find(item => item.selected)?.id,
                 overwriteStatus: overridePrevStatus,
                 endDate: selectedDate,
+            }, document, {
+                createDocument: body => DocService.createNew({ body }),
+                send: apiClient,
+                onDocumentCreated: setUploadedDocumentId,
             });
-            submittingRef.current = true;
-            setIsSubmitting(true);
-            setStatus(null);
-            await apiClient(request.url, { method: request.method, body: JSON.stringify(request.body) });
             setStatus({ type: "success", message: "Акт успешно отправлен" });
             setSelectedUnits(new Set());
+            setUploadedDocumentId(undefined);
+            setSelectedFile(null);
+            setDocumentTitle("");
+            setSelectedDocumentId(undefined);
+            setDocumentPrompt("");
+            setTypeOfDocument("selection");
         } catch (error) {
             setStatus({ type: "error", message: error instanceof Error ? error.message : "Не удалось отправить акт" });
         } finally {
@@ -503,128 +480,49 @@ function UploadDocumentContent() {
                                     )}
                                 </div>
 
-                                {/* <div className="pt-4 mt-auto">
-                                    <button
-                                        type="submit"
-                                        disabled={isLoading || !selectedFile}
-                                        className="relative group inline-block disabled:opacity-50 disabled:pointer-events-none w-full"
-                                    >
-                                        <div className="absolute inset-0 bg-accent translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform"></div>
-                                        <div className="relative border border-border-secondary bg-bg-secondary px-6 py-2.5 text-xs font-text-bold text-text-primary uppercase tracking-widest transition-colors group-hover:bg-accent group-hover:text-black cursor-pointer text-center">
-                                            {isLoading ? "Сохранение..." : "Сохранить"}
-                                        </div>
-                                    </button>
-                                </div> */}
                 </div>
-                <div className="flex flex-col">
+                <fieldset disabled={isSubmitting} className="flex flex-col min-w-0 disabled:opacity-70">
                     <div className="flex">
                         <h2 className="text-2xl px-2 font-text border border-border-secondary border-b-0">Документ</h2>
                         <div className="flex flex-1 border-b border-border-secondary"></div>
                     </div>
-
-                {typeOfDocument == "selection" &&
-                                <div className="flex flex-col  min-h-[300px] lg:min-h-[400px] border border-t-0 border-border-secondary items-center w-full justify-center content-center gap-5">
-                                    <div className="gap-4 flex flex-col">
-                                        <button onClick={()=>{setTypeOfDocument("existing")}} className="bg-bg-secondary border border-border-secondary p-6 px-10 text-xl transition-all hover:border-accent hover:bg-bg-accent">Выбрать существующий</button>
-                                        <button onClick={()=>{setTypeOfDocument("new")}} className="bg-bg-secondary border border-border-secondary p-6 px-10 text-xl transition-all hover:border-accent hover:bg-bg-accent">Добавить новый</button>
-                                        <button onClick={()=>{setTypeOfDocument("empty")}} className=" px-10 text-lg text-text-secondary hover:text-text-primary-accent transition-all">Без документа</button>
-
-                                    </div>
-                                </div>
-                }
-                
-                {typeOfDocument != "selection" 
-                &&
-                <div className="flex flex-col w-full border border-t-0 border-border-secondary">
-                    <button onClick={()=>{setTypeOfDocument("selection")}} className="h-[50px] hover:bg-bg-accent border border-transparent hover:border-accent transition-all">Назад</button>
-
-                    
-                    {(typeOfDocument == "new" || typeOfDocument == "empty") &&
-                        <form onSubmit={handleSaveDocument} className={`grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start`}>
-                            
-                            
-                            {typeOfDocument == "new" && 
-                            <div className="lg:col-span-3 max-lg:col-span-3 h-full text-text-primary">
-                                <div className="flex w-full  border-border-secondary">
-                                    
-                                    <div className="flex flex-col w-full">
-                                        
-                                        <div
-                                            onDragOver={handleDragOver}
-                                            onDrop={handleDrop}
-                                            onClick={() => fileInputRef.current?.click()}
-                                            className={`w-full min-h-[250px] lg:min-h-[350px] border-2 border-dashed bg-bg-secondary/40 flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all duration-300 group ${
-                                                selectedFile 
-                                                    ? 'border-accent bg-bg-secondary/70' 
-                                                    : 'border-border-secondary/30 hover:border-accent hover:bg-bg-secondary/50'
-                                            }`}
-                                        >
-                                            <input
-                                                type="file"
-                                                ref={fileInputRef}
-                                                onChange={handleFileChange}
-                                                className="hidden"
-                                                disabled={isLoading}
-                                            />
-
-                                            {selectedFile ? (
-                                                <div className="flex flex-col items-center gap-3 animate-in fade-in duration-300">
-                                                    <div className="p-4 bg-bg-secondary border border-accent/40 shadow-sm relative">
-                                                        <FileText className="w-10 h-10 text-accent" />
-                                                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex flex-col gap-1 max-w-md">
-                                                        <p className="text-sm font-text-bold text-text-primary break-all px-2">
-                                                            {selectedFile.name}
-                                                        </p>
-                                                        <p className="text-xs text-text-secondary/60">
-                                                            {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
-                                                        </p>
-                                                    </div>
-                                                    <p className="text-[11px] text-accent font-text uppercase tracking-wider mt-2 group-hover:underline">
-                                                        Нажмите, чтобы заменить файл
-                                                    </p>
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col items-center gap-3 select-none">
-                                                    <Upload className="w-8 h-8 text-text-secondary/40 group-hover:text-accent transition-colors duration-300" />
-                                                    <div className="flex flex-col gap-1">
-                                                        <p className="text-xs font-text-bold text-text-secondary uppercase tracking-widest">
-                                                            Перетащите файл сюда или нажмите для выбора
-                                                        </p>
-                                                        <p className="text-[11px] text-text-secondary/50 font-text italic">
-                                                            Поддерживаются любые официальные форматы документов
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                        
-                                    </div>
-                                    
-                                    
-                                </div>
-                            </div>
-                            }   
-                            
-                            
-                        </form>
-                    }
-                    {typeOfDocument == "existing" &&
-                        <div className="flex">
-                            <BaseContainer className="flex flex-col">
-                                <ListedInputField list={documentsAtDisposal} textWhenEmpty="[ Введите название документа ]" editable={true} editMode={true} value={documentPrompt} onChoice={(item)=>{setSelectedDocumentId(item.id!)}} onChange={(e)=>{setDocumentPrompt(e.target.value)}}></ListedInputField>
-                                {!selectedDocumentId && <h2 className="text-lg">Выберите документ</h2> }
-                            </BaseContainer>
+                    {typeOfDocument === "selection" ? (
+                        <div className="flex flex-col min-h-[300px] border border-t-0 border-border-secondary items-center justify-center gap-4 p-6">
+                            <button type="button" onClick={() => { setTypeOfDocument("existing"); void loadDocuments(); }} className="bg-bg-secondary border border-border-secondary p-6 px-10 text-xl transition-all hover:border-accent hover:bg-bg-accent">Выбрать существующий</button>
+                            <button type="button" onClick={() => setTypeOfDocument("new")} className="bg-bg-secondary border border-border-secondary p-6 px-10 text-xl transition-all hover:border-accent hover:bg-bg-accent">Добавить новый</button>
+                            <button type="button" onClick={() => setTypeOfDocument("empty")} className="px-10 text-lg text-text-secondary hover:text-text-primary-accent transition-all">Без документа</button>
                         </div>
-                    }
-                </div>
-                
-                }
-                </div>
+                    ) : (
+                        <div className="flex flex-col border border-t-0 border-border-secondary">
+                            <button type="button" onClick={() => { setTypeOfDocument("selection"); setSelectedDocumentId(undefined); setDocumentPrompt(""); }} className="h-[50px] hover:bg-bg-accent border border-transparent hover:border-accent transition-all">Назад</button>
+                            {typeOfDocument === "new" && (
+                                <div className="flex flex-col gap-4 bg-bg-secondary p-6">
+                                    <label htmlFor="act-document-title" className="font-text-bold text-text-secondary">Название документа</label>
+                                    <input id="act-document-title" value={documentTitle} onChange={e => { setDocumentTitle(e.target.value); setUploadedDocumentId(undefined); }} className="w-full bg-bg-primary border border-border-secondary p-3 text-text-primary focus:border-accent outline-none" />
+                                    <label htmlFor="act-document-file" className="font-text-bold text-text-secondary">Файл документа</label>
+                                    <input id="act-document-file" type="file" ref={fileInputRef} onChange={e => updateFile(e.target.files?.[0] ?? null)} className="w-full bg-bg-primary border border-border-secondary p-3 text-text-primary" />
+                                    {uploadedDocumentId && <p className="text-text-secondary">Документ загружен. При повторной отправке будет использован тот же документ.</p>}
+                                </div>
+                            )}
+                            {typeOfDocument === "existing" && (
+                                <div className="flex flex-col gap-3 bg-bg-secondary p-6">
+                                    <label htmlFor="act-document-search" className="font-text-bold text-text-secondary">Поиск документа</label>
+                                    <input id="act-document-search" value={documentPrompt} onChange={e => { setDocumentPrompt(e.target.value); setSelectedDocumentId(undefined); }} className="w-full bg-bg-primary border border-border-secondary p-3 text-text-primary focus:border-accent outline-none" placeholder="Введите название документа" />
+                                    {documentsLoading && <p className="text-text-secondary">Загрузка документов...</p>}
+                                    {documentsError && <div role="alert" className="text-text-primary"><p>{documentsError}</p><button type="button" onClick={() => void loadDocuments()} className="text-accent hover:underline">Повторить загрузку</button></div>}
+                                    {!documentsLoading && !documentsError && <div className="flex flex-col max-h-60 overflow-y-auto border border-border-secondary">
+                                        {documentsAtDisposal.filter(item => (item.name || "").toLowerCase().includes(documentPrompt.toLowerCase())).map(item => (
+                                            <button type="button" key={item.id} onClick={() => { setSelectedDocumentId(item.id); setDocumentPrompt(item.name || ""); }} className={`text-left p-3 border-b border-border-secondary hover:bg-bg-accent ${selectedDocumentId === item.id ? "bg-bg-accent text-text-primary-accent" : "text-text-primary"}`}>{item.name} <span className="text-text-secondary">(ID: {item.id})</span></button>
+                                        ))}
+                                        {documentsAtDisposal.filter(item => (item.name || "").toLowerCase().includes(documentPrompt.toLowerCase())).length === 0 && <p className="p-3 text-text-secondary">Документы не найдены</p>}
+                                    </div>}
+                                    {selectedDocumentId && <p className="text-text-secondary">Выбран документ ID: {selectedDocumentId}</p>}
+                                </div>
+                            )}
+                            {typeOfDocument === "empty" && <p className="p-6 text-text-secondary">Акт будет отправлен без документа.</p>}
+                        </div>
+                    )}
+                </fieldset>
 
                 {actType == "rewards" && <SelectionList className="min-h-10" title="Выберите награды из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>}
                 {actType == "posts" && 
