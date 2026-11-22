@@ -10,7 +10,8 @@ import { useSearchParams } from "next/navigation";
 import { RewardService } from "@/shared/api/services/RewardService";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
-import axios from "axios";
+import { apiClient } from "@/shared/api/api";
+import { buildActRequest } from "./actRequest";
 import Tooltip from "@/components/ToolTip/ToolTip";
 
 interface IUnitCompressed {
@@ -75,7 +76,8 @@ function UploadDocumentContent() {
 
     const actTypesInfo = new Map<string, {title : string, description : string}>();
 
-    const [SignAsVrIO, setSignAsVrIO] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const submittingRef = useRef(false);
     
     const [today, setToday] = useState<Date>(new Date());
     const [dateInAWeek, setDateInAWeek] = useState<Date>(new Date(today.getFullYear(), today.getMonth(), today.getDate()+7));
@@ -292,7 +294,7 @@ function UploadDocumentContent() {
                 setMultiroleList2(preparedList);
             })
         }
-    }, [])
+    }, [actType])
 
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -426,148 +428,36 @@ function UploadDocumentContent() {
     };
 
 
-    function sendAct(){
-        console.log("attempting...");
-        if(actType == "rewards"){
-            if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
-                const chosenRewards = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
-                if (chosenRewards.length > 0){
-
-                    const act : IRewardAssignAct = {
-                        DocId: selectedDocumentId,
-                        UnitIds: [...selectedUnits],
-                        RewardIds: chosenRewards as string[]
-                    }
-                    
-                    RewardService.AssignRewards(act).then((r)=>{
-                        alert("Операция прошла успешно!")
-                    }).catch((e)=>{
-                        alert(`Возникла ошибка при обработке запроса: ${e}`)
-                    })
-                }
-            }else{
-                alert("Некоторые поля не были заполнены!")
-            }
+    async function sendAct() {
+        if (submittingRef.current) return;
+        try {
+            const request = buildActRequest({
+                type: actType ?? null,
+                unitIds: [...selectedUnits],
+                documentId: selectedDocumentId,
+                selectedIds: multiroleList.filter(item => item.selected).map(item => item.id || ""),
+                rankId: selectedRankId,
+                steps: amountOfSteps,
+                isDowngrade: rankTweaking.find(item => item.selected)?.id === "1",
+                ignorePostMaxRank,
+                overwritePosts: removePreviousPosts,
+                statusId: sanctions.find(item => item.selected)?.id,
+                overwriteStatus: overridePrevStatus,
+                endDate: selectedDate,
+            });
+            submittingRef.current = true;
+            setIsSubmitting(true);
+            setStatus(null);
+            await apiClient(request.url, { method: request.method, body: JSON.stringify(request.body) });
+            setStatus({ type: "success", message: "Акт успешно отправлен" });
+            setSelectedUnits(new Set());
+        } catch (error) {
+            setStatus({ type: "error", message: error instanceof Error ? error.message : "Не удалось отправить акт" });
+        } finally {
+            submittingRef.current = false;
+            setIsSubmitting(false);
         }
-        else if(actType == "posts"){
-            if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
-                const chosenPosts = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
-                if (chosenPosts.length > 0){
-
-                    const act : IPostAssignAct = {
-                        DocId: selectedDocumentId,
-                        UnitIds: [...selectedUnits],
-                        PostIds: chosenPosts as string[],
-                        Overwrite: removePreviousPosts
-                    }
-                    PostService.AssignPosts(act).then((r)=>{
-                        alert("Операция прошла успешно!")
-                    }).catch((e)=>{
-                        alert(`Возникла ошибка при обработке запроса: ${e}`)
-                    })
-                }
-            }else{
-                alert("Некоторые поля не были заполнены!")
-            }
-        }
-        else if(actType == "ranks"){
-            if(multiroleList.find(x=>x.selected == true) != undefined && selectedRankId && [...selectedUnits].length > 0){
-                const chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
-                if (chosenRanks.length > 0){
-
-                    const act : IRankAssignAct = {
-                        DocId: selectedDocumentId,
-                        UnitIds: [...selectedUnits],
-                        RankId: selectedRankId
-                    }
-                    RankService.AssignRanks(act).then((r)=>{
-                        alert("Операция прошла успешно!")
-                    }).catch((e)=>{
-                        alert(`Возникла ошибка при обработке запроса: ${e}`)
-                    })
-                }
-            }else{
-                alert("Некоторые поля не были заполнены!")
-            }
-        }
-        else if(actType == "rank-altering"){
-            if(multiroleList.find(x=>x.selected == true) != undefined && [...selectedUnits].length > 0){
-                const chosenRanks = multiroleList.filter(x=>!x.selected)!.map(x=>x.id)
-                if (chosenRanks.length > 0){
-
-                    const act : IRankChangeAct = {
-                        DocId: selectedDocumentId,
-                        UnitIds: [...selectedUnits],
-                        Steps: amountOfSteps,
-                        IgnorePostMaxRank: ignorePostMaxRank,
-                        IsDowngrade: rankTweaking.find(x=>x.selected)?.id == "1"
-                    }
-                    RankService.AlterRanks(act).then((r)=>{
-                        alert("Операция прошла успешно!")
-                    }).catch((e)=>{
-                        alert(`Возникла ошибка при обработке запроса: ${e}`)
-                    })
-                }
-            }else{
-                alert("Некоторые поля не были заполнены!")
-            }
-        }
-        else if(actType == "sanctions"){
-            
-            
-            if([...selectedUnits].length > 0){
-
-                    const chosenSanction = sanctions.find(x=>x.selected)
-                    if (chosenSanction == undefined){
-                        alert("Вы не выбрали тип статуса")
-                        return
-                    }
-                    const act : IStatusAssignAct = {
-                        DocId: selectedDocumentId,
-                        UnitIds: [...selectedUnits],
-                        StatusKey: chosenSanction.id!,
-                        Overwrite: overridePrevStatus,
-                        End: `${selectedDate}`,
-                        Days: 777
-                    }
-                    UnitService.AssignStatus(act).then((r)=>{
-                        alert("Операция прошла успешно!")
-                    }).catch((e)=>{
-                        alert(`Возникла ошибка при обработке запроса: ${e}`)
-                    })
-            }else{
-                alert("Некоторые поля не были заполнены!")
-            }
-        }
-        else if(actType == "resignation"){
-            if([...selectedUnits].length > 0){
-
-                    const chosenUsers = sanctions.find(x=>x.selected)
-                    if (chosenUsers == undefined){
-                        alert("Вы не выбрали ни одного пользователя")
-                        return
-                    }
-                    const act : IBaseAct = {
-                        DocId: selectedDocumentId,
-                        UnitIds: [...selectedUnits]
-                    }
-                    UnitService.Resignation(act).then((r)=>{
-                        alert("Операция прошла успешно!")
-                    }).catch((e)=>{
-                        alert(`Возникла ошибка при обработке запроса: ${e}`)
-                    })
-                }
-        }
-        else if(actType == "dismissal"){}
-        else if(actType == "returnal"){}
-        else{
-            console.log("no matching types of act");
-
-        }
-        // "rewards" | "posts" | "ranks" | "rank-altering" | "sanctions" | "resignation" | "dismissal" | "returnal"
     }
-
-
 
 
     return (
@@ -740,7 +630,7 @@ function UploadDocumentContent() {
                 <div className="flex flex-col">
                     <BaseContainer className="flex flex-col">
                         <CheckButton className="text-xl flex-1 text-text-primary" title="Снять с других должностей" value={removePreviousPosts} onClick={()=>{setRemovePreviousPosts(!removePreviousPosts)}}></CheckButton>
-                        <CheckButton className="text-xl flex-1 text-text-primary" title="Назначить как ВрИО" onClick={()=>{setSignAsVrIO(!SignAsVrIO)}} value={SignAsVrIO}></CheckButton>
+
 
                     </BaseContainer>
                     <SelectionList className="min-h-10" title="Выберите должности из списка" onSelection={(items)=>{setMultiroleList([...items])}} searchField list={multiroleList}></SelectionList>
@@ -749,7 +639,7 @@ function UploadDocumentContent() {
                 {actType == "ranks" && 
                 <BaseContainer className="flex-col">
                     <p className="text-text-secondary">Выберите звание из списка</p>
-                    <ListedInputField value={RankPrompt} list={foundRanks} onChange={(e)=>{setRankPrompt(e.target.value); findRanks(e.target.value, multiroleList)}} onChoice={(i)=>{setSelectedRankId(i.id); setRankPrompt(i.name)}} editMode editable></ListedInputField>
+                    <ListedInputField value={RankPrompt} list={foundRanks} onChange={(e)=>{setSelectedRankId(undefined); setRankPrompt(e.target.value); findRanks(e.target.value, multiroleList)}} onChoice={(i)=>{setSelectedRankId(i.id); setRankPrompt(i.name)}} editMode editable></ListedInputField>
                 </BaseContainer>
                 // <SelectionList className="min-h-10" title="Выберите звание из списка" onSelection={(items)=>{setMultiroleList([...items])}} maxSelectedItems={1} searchField list={multiroleList}></SelectionList>
                 }
@@ -793,7 +683,7 @@ function UploadDocumentContent() {
                 <>
                 <BaseContainer className="flex-col">
                     <p className="text-text-secondary">Выберите звание из списка</p>
-                    <ListedInputField value={RankPrompt} list={foundRanks} onChange={(e)=>{setRankPrompt(e.target.value); findRanks(e.target.value, multiroleList2)}} onChoice={(i)=>{setSelectedRankId(i.id); setRankPrompt(i.name)}} editMode editable></ListedInputField>
+                    <ListedInputField value={RankPrompt} list={foundRanks} onChange={(e)=>{setSelectedRankId(undefined); setRankPrompt(e.target.value); findRanks(e.target.value, multiroleList2)}} onChoice={(i)=>{setSelectedRankId(i.id); setRankPrompt(i.name)}} editMode editable></ListedInputField>
                 </BaseContainer>
                     <SelectionList className="min-h-10" searchField maxListHeight="300px"  title="Выберите должности" onSelection={(items)=>{setMultiroleList([...items])}} list={multiroleList}></SelectionList>
                 </>
@@ -825,11 +715,11 @@ function UploadDocumentContent() {
                             /> */}
                 </div>
             </main>
-            <button onClick={()=>{sendAct()}} className="fixed z-10 bg-bg-accent font-bold hover:bg-accent hover:text-black text-xl  border border-border-secondary right-0 bottom-0 px-10 py-7 mr-10 mb-10 transition-all">
+            <button onClick={sendAct} disabled={isSubmitting} className="disabled:opacity-50 disabled:cursor-not-allowed fixed z-10 bg-bg-accent font-bold hover:bg-accent hover:text-black text-xl  border border-border-secondary right-0 bottom-0 px-10 py-7 mr-10 mb-10 transition-all">
                 <div className="flex gap-5 justify-center">
 
                 <Upload></Upload>
-                Отправить акт
+                {isSubmitting ? "Отправка..." : "Отправить акт"}
 
                 </div>
             </button>

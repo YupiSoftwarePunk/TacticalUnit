@@ -81,6 +81,7 @@ export const apiClient = async <T>(endpoint: string, options: RequestInit = {}):
     }
 
     const rawText = await response.text();
+    if (!rawText.trim()) return undefined as T;
     const sanitizedText = rawText.replace(/:\s*(-?\d{16,})/g, ': "$1"');
     return JSON.parse(sanitizedText);
 };
