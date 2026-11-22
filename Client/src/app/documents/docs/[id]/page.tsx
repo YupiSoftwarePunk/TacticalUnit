@@ -8,6 +8,7 @@ import InfoContainer from "@/components/ToolTip/InfoContainer";
 import { LoadingScreen, ErrorScreen } from "@/components/StatusScreens/Screens";
 import { DocService } from "@/shared/api/services/docsService";
 import { downloadDocument } from "@/shared/api/services/documentDownload";
+import { getDocumentEvents } from "../documentEvents";
 import path from "path";
 
 export default function DocumentPage() {
@@ -124,15 +125,16 @@ export default function DocumentPage() {
                         </div>
 
                         <div className="flex flex-col gap-3">
+                            {(document.events == null || document.states == null) && (
+                                <p className="text-text-secondary text-sm" role="status">Сервер предоставил не все данные о событиях и состояниях документа.</p>
+                            )}
                             {(() => {
-                                const allEvents = document.events
-                                    ? document.events.flatMap(group => group.history)
-                                    : [];
+                                const allEvents = getDocumentEvents(document);
 
                                 if (allEvents.length > 0) {
                                     return allEvents.map((item) => (
                                         <div 
-                                            key={item.id} 
+                                            key={item.key}
                                             className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-bg-primary/10 border border-border-secondary/20 hover:border-border-secondary/40 hover:bg-bg-primary/20 transition-all duration-200 animate-in fade-in duration-300">
                                             <div className="flex items-start gap-3">
                                                 {item.color && (
@@ -142,11 +144,11 @@ export default function DocumentPage() {
                                                     />
                                                 )}
                                                 <div className="flex flex-col gap-0.5">
-                                                    <span className="text-[10px] font-text-bold uppercase tracking-widest text-text-secondary/60">
+                                                    {item.id && <span className="text-[10px] font-text-bold uppercase tracking-widest text-text-secondary/60">
                                                         [{item.id}]
-                                                    </span>
+                                                    </span>}
                                                     <p className="text-xs md:text-sm text-text-primary font-text leading-relaxed">
-                                                        {item.content}
+                                                        {item.text}
                                                     </p>
                                                 </div>
                                             </div>
@@ -163,7 +165,7 @@ export default function DocumentPage() {
                                 else {
                                     return (
                                         <div className="p-8 text-center text-xs text-text-secondary/40 font-text uppercase tracking-widest italic border border-dashed border-border-secondary/20">
-                                            События отсутствуют
+                                            {document.events == null || document.states == null ? "Данные о событиях и состояниях не предоставлены сервером" : "События отсутствуют"}
                                         </div>
                                     );
                                 }

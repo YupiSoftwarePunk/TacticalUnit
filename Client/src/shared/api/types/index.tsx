@@ -161,8 +161,8 @@ interface IDoc{
     title : string,
     isHidden : boolean,
     authorId : string, 
-    events : { history: { id: string; color?: string; content: string; dates?: string }[] }[],
-    state : unknown[],
+    events?: unknown[] | null,
+    states?: unknown[] | null,
     uploadedTime : string
 }
 

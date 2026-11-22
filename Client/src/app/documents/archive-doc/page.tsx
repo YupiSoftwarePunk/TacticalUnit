@@ -6,6 +6,7 @@ import { MainHeader } from "@/components/Header/MainHeader";
 import UniversalTable, { ColumnConfig } from "@/widgets/universalList/universalTable";
 import { Search, Calendar, User } from "lucide-react";
 import { DocService } from "@/shared/api/services/docsService"; 
+import { UnitService } from "@/shared/api/services/unitService";
 
 export interface IDoc {
     id: number;
@@ -19,6 +20,7 @@ export interface IDoc {
 export default function DocumentArchivePage() {
     const [documents, setDocuments] = useState<IDoc[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [authorFilter, setAuthorFilter] = useState<string>("");
@@ -26,13 +28,18 @@ export default function DocumentArchivePage() {
     const [endDate, setEndDate] = useState<string>("");
 
     useEffect(() => {
-        DocService.getAll()
-            .then((data) => {
-                const visibleDocs = (data as unknown as IDoc[]).filter((doc) => !doc.isHidden);
+        Promise.all([DocService.getAll(), UnitService.getAll().catch(() => null)])
+            .then(([data, units]) => {
+                const names = new Map((units ?? []).map(unit => [String(unit.discordId), unit.nickname]));
+                const visibleDocs = (data as unknown as IDoc[]).filter((doc) => !doc.isHidden).map(doc => ({
+                    ...doc,
+                    authorNickname: doc.authorNickname || names.get(String(doc.authorId)),
+                }));
                 setDocuments(visibleDocs);
             })
             .catch((err) => {
                 console.error("Ошибка при загрузке документов:", err);
+                setLoadError("Не удалось загрузить архив документов.");
             })
             .finally(() => {
                 setIsLoading(false);
@@ -62,7 +69,7 @@ export default function DocumentArchivePage() {
             header: "Никнейм автора",
             accessor: "authorId",
             render: (_: unknown, row: IDoc) => {
-                const displayName = row.authorNickname;
+                const displayName = row.authorNickname || `ID: ${row.authorId}`;
 
                 return (
                     <Link 
@@ -88,7 +95,8 @@ export default function DocumentArchivePage() {
                         {date.toLocaleDateString("ru-RU", {
                             day: "2-digit",
                             month: "2-digit",
-                            year: "numeric"
+                            year: "numeric",
+                            timeZone: "UTC"
                         })}
                     </span>
                 );
@@ -105,11 +113,11 @@ export default function DocumentArchivePage() {
             
             if (!doc.uploadedTime) return matchesSearch && matchesAuthor;
 
-            const docDate = new Date(doc.uploadedTime).getTime();
-            const matchesStartDate = startDate ? docDate >= new Date(startDate).getTime() : true;
-
-            const endDateTime = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
-            const matchesEndDate = endDateTime ? docDate <= endDateTime : true;
+            const parsedDate = new Date(doc.uploadedTime);
+            if (Number.isNaN(parsedDate.getTime())) return matchesSearch && matchesAuthor && !startDate && !endDate;
+            const docDate = parsedDate.toISOString().slice(0, 10);
+            const matchesStartDate = !startDate || docDate >= startDate;
+            const matchesEndDate = !endDate || docDate <= endDate;
 
             return matchesSearch && matchesAuthor && matchesStartDate && matchesEndDate;
         });
@@ -121,7 +129,7 @@ export default function DocumentArchivePage() {
             <main className="max-w-350 w-full mx-auto pt-20 md:pt-28 px-4 md:px-6 shrink-0 flex flex-col gap-6">
                 <div>
                     <h1 className="text-2xl md:text-4xl font-header text-text-primary uppercase tracking-wider">
-                        Архив документов POLK
+                        Архив документов РХБЗ
                     </h1>
                     <span className="block w-12 h-0.5 bg-accent mt-1.5"></span>
                 </div>
@@ -176,7 +184,9 @@ export default function DocumentArchivePage() {
                 </div>
 
                 <div className="border border-black/10 dark:border-white/5 overflow-hidden bg-bg-secondary p-1">
-                    {isLoading ? (
+                    {loadError ? (
+                        <div role="alert" className="text-center text-text-secondary p-6">{loadError}</div>
+                    ) : isLoading ? (
                         <div className="text-center text-text-secondary font-text uppercase tracking-widest py-20 w-full animate-pulse text-xs">
                             Запрос к архиву...
                         </div>
