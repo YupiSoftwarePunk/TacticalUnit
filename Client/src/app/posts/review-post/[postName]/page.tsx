@@ -6,6 +6,8 @@ import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import { PostService } from "@/shared/api/services/postService";
 import { RankService } from "@/shared/api/services/RankService";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
+import { useManagementPermissions } from "@/shared/api/useManagementPermissions";
+import { postUpdateBody } from "@/shared/api/services/entityUpdates";
 import { validateColor } from "@/typescript/colorValidator";
 import React, { useEffect, useState, useMemo } from "react";
 
@@ -35,8 +37,11 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     const { postName } = React.use(params);
     const numericPostId = Number(postName);
 
-    const [canEdit] = useState(false);
-    const [canGrant] = useState(true);
+    const [canEdit, setCanEdit] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const hasPermission = useManagementPermissions();
+    const canManage = hasPermission(15);
+    const canGrant = hasPermission(12);
     const [isNotSaved, setIsNotSaved] = useState(false);
 
     const [isLoading, setIsLoading] = useState(true); 
@@ -98,6 +103,11 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
 
     useEffect(() => {
         if (isNaN(numericPostId)) return;
+
+        PostService.getDiscordRoleOf(numericPostId).then((result) => {
+            const data = result as unknown as { discord_role_id?: string };
+            setDiscordRoleId(data.discord_role_id || "");
+        }).catch(() => setDiscordRoleId(""));
 
         Promise.all([
             PostService.getById(numericPostId),
@@ -161,6 +171,20 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
         });
     }, [numericPostId]);
 
+    async function savePost() {
+        if (!canManage || isSaving) return;
+        setIsSaving(true);
+        try {
+            const body = postUpdateBody(post);
+            await PostService.patchById(numericPostId, { body: JSON.stringify(body) });
+            const updated = await PostService.getById(numericPostId);
+            if (JSON.stringify(postUpdateBody(updated)) !== JSON.stringify(body)) throw new Error("Сервер не подтвердил все изменения должности");
+            setPost(updated);
+            setIsNotSaved(false);
+        } catch (err) { alert(err instanceof Error ? err.message : "Не удалось сохранить должность"); }
+        finally { setIsSaving(false); }
+    }
+
     if (isNaN(numericPostId)) {
         return <ErrorScreen error="Некорректный ID должности" />;
     }
@@ -174,12 +198,13 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
     }
 
     return (
-        <RRForm title="Должность" editable={canEdit} showSaveChangesButton={isNotSaved} saveChangesMethod={() => { setIsNotSaved(false); }}>
+        <RRForm title="Должность" editable={canEdit && canManage} showSaveChangesButton={isNotSaved} saveChangesMethod={savePost}>
             <div className="flex flex-1 gap-3">
                 <div className="flex flex-col flex-4">
+                    {canManage && <button type="button" onClick={() => setCanEdit(!canEdit)} className="self-end p-2 bg-bg-secondary text-text-primary hover:bg-bg-accent transition-all">{canEdit ? "Просмотр" : "Редактировать"}</button>}
                     <BaseContainer>
                         <ColorInputField 
-                            editable={canEdit} 
+                            editable={canEdit && canManage && !isSaving}
                             editMode={true} 
                             value={post.color} 
                             onChange={(e) => {
@@ -198,7 +223,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                                 setIsNotSaved(true);
                             }} 
                             tooltip="Наименование должности" 
-                            editable={canEdit}
+                            editable={canEdit && canManage && !isSaving}
                         />
                         <DescriptionInputField 
                             className="mt-3"
@@ -208,12 +233,12 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                                 setIsNotSaved(true);
                             }} 
                             tooltip="Описание должности" 
-                            editable={canEdit}
+                            editable={canEdit && canManage && !isSaving}
                         />
                     </BaseContainer>
                     <BaseContainer className="flex-col">
                         <ListedInputField 
-                            editable={canEdit} 
+                            editable={canEdit && canManage && !isSaving}
                             value={postPrompt} 
                             onChange={(e) => {
                                 setPostPrompt(e.target.value);
@@ -229,7 +254,7 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             textWhenEmpty="[ Нижестоящая должность не указана ]"
                         />
                         <ListedInputField 
-                            editable={canEdit} 
+                            editable={canEdit && canManage && !isSaving}
                             value={subdivisionPrompt} 
                             onChange={(e) => {
                                 setSubdivisionPrompt(e.target.value);
@@ -244,11 +269,12 @@ export default function PostPage({ params }: { params: Promise<{ postName: strin
                             tooltip="Подразделение к которому относится должность" 
                             textWhenEmpty="[ Подразделение не указано ]"
                         />
-                        <PermissionRollDownList editable={canEdit} givedPermissionList={givedPermissions}/>
+                        <PermissionRollDownList editable={false} givedPermissionList={givedPermissions}/>
+                        {canEdit && canManage && <p className="text-sm text-text-secondary">Изменение разрешений пока недоступно.</p>}
                     </BaseContainer>
                     <div className="flex opacity-50">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={discordRoleId} />
-                        <StyledButton title={"обновить роль"} />
+                        {canManage && <button type="button" onClick={async () => { try { await PostService.postDiscordRoleOf(numericPostId, {}); alert("Сервер принял запрос. Синхронизация роли с Discord ещё требует реализации на сервере."); } catch (err) { alert(err instanceof Error ? err.message : "Не удалось обновить роль"); } }} className="text-text-secondary px-2 hover:text-text-primary-accent hover:bg-bg-secondary transition-all">обновить роль</button>}
                     </div>
                 </div>
             </div>

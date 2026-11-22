@@ -4,6 +4,8 @@ import { AccordingUnitsTable, BaseContainer, ColorInputField, CopyField, Descrip
 import { RRForm } from "@/components/Forms/Review-RedactForm";
 import { ErrorScreen, LoadingScreen } from "@/components/StatusScreens/Screens";
 import { SubdivisionService } from "@/shared/api/services/SubdivisionService";
+import { useManagementPermissions } from "@/shared/api/useManagementPermissions";
+import { subdivisionUpdateBody } from "@/shared/api/services/entityUpdates";
 import { validateColor } from "@/typescript/colorValidator";
 import React, { useEffect, useState, useCallback } from "react";
 
@@ -34,6 +36,9 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
     const isIdInvalid = isNaN(numericSubdivisionId);
 
     const [canEdit, setCanEdit] = useState<boolean>(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const hasPermission = useManagementPermissions();
+    const canManage = hasPermission(15);
     const [isNotSaved, setIsNotSaved] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
@@ -144,6 +149,22 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
             });
     }, [numericSubdivisionId]);
 
+    async function saveSubdivision() {
+        if (!canManage || isSaving) return;
+        setIsSaving(true);
+        try {
+            const body = subdivisionUpdateBody(subdivision);
+            await SubdivisionService.patchById(numericSubdivisionId, { body: JSON.stringify(body) });
+            const updated = await SubdivisionService.getById(numericSubdivisionId);
+            if (updated.name !== body.name || updated.color !== body.color || String(updated.headId ?? "") !== String(body.headId ?? "")) {
+                throw new Error("Сервер не подтвердил все изменения подразделения");
+            }
+            setSubdivision({ ...updated, givedPermissions: subdivision.givedPermissions });
+            setIsNotSaved(false);
+        } catch (err) { alert(err instanceof Error ? err.message : "Не удалось сохранить подразделение"); }
+        finally { setIsSaving(false); }
+    }
+
     if (error !== undefined) {
         return <ErrorScreen error={error} />;
     }
@@ -156,26 +177,24 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
         <RRForm 
             showSaveChangesButton={isNotSaved} 
             title="Подразделение"
-            editable={canEdit}
-            saveChangesMethod={() => {
-                setIsNotSaved(false);
-            }}
+            editable={canEdit && canManage}
+            saveChangesMethod={saveSubdivision}
         >
             <div className="flex flex-col md:flex-row flex-1 gap-3">
                 <div className="flex flex-col flex-4 w-full">
                     <div className="flex justify-end mb-2">
-                        <button 
+                        {canManage && <button
                             type="button"
                             onClick={() => setCanEdit(!canEdit)}
                             className="p-2 bg-black/20 text-white rounded hover:bg-black/50 text-xs transition-all dark:bg-white/10 dark:hover:bg-white/20"
                         >
                             {canEdit ? "Просмотр" : "Редактировать"}
-                        </button>
+                        </button>}
                     </div>
 
                     <BaseContainer>
                         <ColorInputField 
-                            editable={canEdit} 
+                            editable={canEdit && canManage && !isSaving}
                             editMode={true}
                             value={subdivision.color} 
                             onChange={(e) => {
@@ -195,7 +214,7 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                                 setIsNotSaved(true);
                             }}
                             tooltip="Наименование подразделения" 
-                            editable={canEdit} 
+                            editable={canEdit && canManage && !isSaving}
                         />
                         <DescriptionInputField 
                             value={subdivision.description} 
@@ -204,13 +223,14 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                                 setIsNotSaved(true);
                             }}
                             tooltip="Описание подразделения" 
-                            editable={canEdit} 
+                            editable={false}
                         />
+                        {canEdit && canManage && <p className="text-sm text-text-secondary">Изменение описания пока недоступно.</p>}
                     </BaseContainer>
                     
                     <BaseContainer className="flex-col">
                         <ListedInputField 
-                            editable={canEdit} 
+                            editable={canEdit && canManage && !isSaving}
                             value={subdivisionPrompt} 
                             tooltip="Подразделение к которому относится это подразделение" 
                             textWhenEmpty="[ Подразделение не указано ]" 
@@ -226,11 +246,12 @@ export default function PostPage({ params }: { params: Promise<{ subdivisionName
                             }}
                             list={headList}
                         />
-                        <PermissionRollDownList editable={canEdit} givedPermissionList={subdivision.givedPermissions} />
+                        <PermissionRollDownList editable={false} givedPermissionList={subdivision.givedPermissions} />
+                        {canEdit && canManage && <p className="text-sm text-text-secondary">Изменение разрешений пока недоступно.</p>}
                     </BaseContainer>
                     <div className="flex opacity-50">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={subdivision.discordRoleId}></CopyField>
-                        <StyledButton title={"обновить роль"}></StyledButton>
+                        {canManage && <button type="button" onClick={async () => { try { await SubdivisionService.postDiscordRoleOf(numericSubdivisionId, {}); alert("Сервер принял запрос. Синхронизация роли с Discord ещё требует реализации на сервере."); } catch (err) { alert(err instanceof Error ? err.message : "Не удалось обновить роль"); } }} className="text-text-secondary px-2 hover:text-text-primary-accent hover:bg-bg-secondary transition-all">обновить роль</button>}
                     </div>
                 </div>
             </div>

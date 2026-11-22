@@ -8,6 +8,7 @@ import Tooltip from "@/components/ToolTip/ToolTip";
 import { RankService } from "@/shared/api/services/RankService";
 import { PostService } from "@/shared/api/services/postService";
 import { ImageService } from "@/shared/api/services/imageService";
+import { useManagementPermissions } from "@/shared/api/useManagementPermissions";
 import { validateColor } from "@/typescript/colorValidator";
 import { Pencil } from "lucide-react";
 import React, { useEffect, useState, ChangeEvent, useCallback } from "react";
@@ -53,7 +54,9 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     const isIdInvalid = isNaN(numericRankId);
 
     const [canEdit, setCanEdit] = useState(false);
-    const [canGrant] = useState(true);
+    const hasPermission = useManagementPermissions();
+    const canManage = hasPermission(14);
+    const canGrant = hasPermission(11);
     const [isNotSaved, setIsNotSaved] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
@@ -186,11 +189,9 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
     return (
         <RRForm 
             title="Звание" 
-            editable={canEdit} 
+            editable={canEdit && canManage}
             showSaveChangesButton={isNotSaved} 
-            saveChangesMethod={() => {
-                setIsNotSaved(false);
-            }}
+            saveChangesMethod={() => { alert("Сохранение звания пока недоступно: серверный метод требует исправления."); }}
         >
             <div className="flex flex-col md:flex-row flex-1 gap-6 md:gap-3">
                 <Tooltip tooltipText="Погон" className="flex w-full md:flex-1 max-w-full md:max-w-50" innerClassName="flex w-full">
@@ -203,15 +204,15 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                                 className="mx-auto max-h-[300px] object-contain p-6 transition-all duration-500"
                                 key={imageVersion}
                             />
-                            <button 
+                            {canManage && <button
                                 type="button"
                                 onClick={() => setCanEdit(!canEdit)}
                                 className="absolute top-2 right-2 p-2 bg-black/20 text-white rounded hover:bg-black/50 text-xs transition-all"
                             >
                                 {canEdit ? "Просмотр" : "Редактировать"}
-                            </button>
+                            </button>}
 
-                            {canEdit && (
+                            {canEdit && canManage && (
                                 <>
                                     <label 
                                         htmlFor="rank-file-updater"
@@ -234,7 +235,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                 <div className="flex flex-col flex-4 w-full">
                     <BaseContainer>
                         <ColorInputField 
-                            editable={canEdit} 
+                            editable={canEdit && canManage}
                             editMode={true} 
                             value={rank.color} 
                             onChange={(e) => {
@@ -253,7 +254,7 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                                 setIsNotSaved(true);
                             }} 
                             tooltip="Наименование звания" 
-                            editable={canEdit}
+                            editable={canEdit && canManage}
                         />
                         <MultiroleInputField 
                             value={rank.counterToReach} 
@@ -264,12 +265,12 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                             }} 
                             tooltip="Кол-во активности до повышения" 
                             type="num" 
-                            editable={canEdit}
+                            editable={canEdit && canManage}
                         />
                     </BaseContainer>
                     <BaseContainer className="flex-col">
                         <ListedInputField 
-                            editable={canEdit} 
+                            editable={canEdit && canManage}
                             value={rankPrompt} 
                             onChange={(e) => {
                                 setRankPrompt(e.target.value);
@@ -285,11 +286,12 @@ export default function PostPage({ params }: { params: Promise<{ rankId: string 
                             tooltip="Нижестоящее по иерархии звание" 
                             textWhenEmpty="[ Нижестоящее звание не указано ]"
                         />
-                        <PermissionRollDownList editable={canEdit} givedPermissionList={rank.givedPermissions}/>
+                        <PermissionRollDownList editable={false} givedPermissionList={rank.givedPermissions}/>
+                        {canEdit && canManage && <p className="text-sm text-text-secondary">Изменение разрешений пока недоступно.</p>}
                     </BaseContainer>
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 opacity-50 w-full">
                         <CopyField className="flex flex-1" title="Discord Id" copyInfo={rank.discordRoleId}></CopyField>
-                        <StyledButton title={"обновить роль"}></StyledButton>
+                        {canManage && <button type="button" onClick={async () => { try { await RankService.postDiscordRoleOf(numericRankId, {}); alert("Сервер принял запрос. Синхронизация роли с Discord ещё требует реализации на сервере."); } catch (err) { alert(err instanceof Error ? err.message : "Не удалось обновить роль"); } }} className="text-text-secondary px-2 hover:text-text-primary-accent hover:bg-bg-secondary transition-all">обновить роль</button>}
                     </div>
                 </div>
             </div>
